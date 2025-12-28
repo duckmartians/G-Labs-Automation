@@ -1,118 +1,150 @@
-# HƯỚNG DẪN SỬ DỤNG G-LABS AUTOMATION (Phiên bản v1.0.1)
+# 📘 TÀI LIỆU HƯỚNG DẪN SỬ DỤNG: G-LABS AUTOMATION
 
-Chào mừng bạn đến với **G-Labs Automation** – Giải pháp tự động hóa sáng tạo nội dung AI hàng đầu. Đây không chỉ là một công cụ tạo ảnh, mà là nền tảng **All-in-One** giúp bạn xây dựng quy trình làm việc (Workflow) chuyên nghiệp, tối ưu hóa thời gian và khai thác tối đa sức mạnh của các mô hình AI tiên tiến nhất hiện nay.
-
----
-
-## 1. Cài Đặt Phần Mềm
-
-Phần mềm đã được đóng gói thành bộ cài đặt tiêu chuẩn (Installer), giúp việc thiết lập trở nên đơn giản chỉ với vài cú click chuột.
-
-1. **Tải Bộ Cài Đặt:**
-* Tìm file cài đặt có tên `Setup_G-Labs_Automation_v1.0.1.exe`.
-
-
-2. **Chạy File Cài Đặt:**
-* Nhấn đúp vào file `.exe` vừa tải.
-
-
-3. **Thiết Lập:**
-* Chọn ngôn ngữ cài đặt (Mặc định: English) -> Nhấn **OK**.
-* Chọn thư mục cài đặt (Mặc định nằm trong `AppData\Local`) -> Nhấn **Next**.
-* Chọn tạo shortcut ngoài màn hình (Create a desktop shortcut) -> Nhấn **Next** -> **Install**.
-
-
-4. **Hoàn Tất:**
-* Chờ quá trình cài đặt hoàn tất (Trình duyệt lõi Chromium sẽ được tự động giải nén kèm theo).
-* Nhấn **Finish** để khởi động phần mềm ngay lập tức.
-
-
+**(Phiên bản v1.0.1 - All-in-One AI Content Creator)**
 
 ---
 
-## 2. Thiết Lập Tài Khoản (Bước Quan Trọng Nhất)
+## 🌟 1. GIỚI THIỆU CHUNG & TẦM NHÌN
 
-Để sử dụng các tính năng tạo ảnh, bạn cần kết nối tài khoản Google. Phần mềm hỗ trợ **đa tài khoản** để tối ưu hóa hiệu suất.
+**G-Labs Automation** không chỉ là một tool "bấm nút tạo ảnh". Đây là một **hệ sinh thái tự động hóa** được thiết kế cho các nhà sáng tạo nội dung (Content Creators), Marketing Agency và những người đam mê AI.
 
-1. Tại giao diện chính, chọn mục **"Cài đặt" (Settings)** ở thanh điều hướng bên trái hoặc icon bánh răng.
-2. Tại tab **"Tài khoản Google"**, nhấn nút **"Thêm tài khoản"** (Add Account).
-3. Một cửa sổ trình duyệt sẽ hiện lên. Hãy đăng nhập vào tài khoản Google của bạn.
-4. Sau khi đăng nhập thành công, phần mềm sẽ tự động lưu Session và Cookie an toàn vào máy tính của bạn.
-5. **Lặp lại** bước trên nếu bạn muốn thêm nhiều tài khoản khác (Giúp chạy đa luồng nhanh hơn).
+**Điểm khác biệt cốt lõi:**
 
-> **💡 Mẹo:** Bạn có thể cấu hình Proxy cho từng tài khoản nếu muốn quản lý IP riêng biệt.
+* **Vô hạn & Miễn phí:** Khai thác tối đa tài nguyên Google Labs để tạo ảnh không giới hạn.
+* **Workflow Chuyên Nghiệp:** Tự do thiết kế quy trình làm việc (Node-based) thay vì bị gò bó trong các nút bấm cố định.
+* **Tương lai All-in-One:** Hướng tới việc tích hợp tất cả các siêu AI (Meta, Grok, Sora...) vào một phần mềm duy nhất.
 
 ---
 
-## 3. Chế Độ Tạo Ảnh (AI Image Generator)
+## 📥 2. CÀI ĐẶT & THIẾT LẬP BAN ĐẦU
 
-Đây là chế độ cơ bản giúp bạn tạo hàng loạt ảnh nhanh chóng từ danh sách Prompts.
+### Bước 1: Cài đặt Phần mềm
 
-1. **Chọn Chế độ:** Nhấn vào **"Tạo Ảnh" (AI Image)** ở menu bên trái.
-2. **Cấu hình Model:**
-* **Imagen 4 & Nano Banana:** Sử dụng MIỄN PHÍ và KHÔNG GIỚI HẠN số lượng ảnh tạo ra. Phù hợp cho mọi tài khoản thường.
-* **Nano Banana Pro:** Yêu cầu tài khoản Google có gói **Gemini Advanced (Pro/Ultra)** trở lên. Cho chất lượng ảnh vượt trội và chi tiết cao hơn.
-
-
-3. **Thiết lập thông số:**
-* **Tỷ lệ ảnh:** Chọn tỷ lệ mong muốn (16:9, 9:16, 1:1, v.v.).
-* **Số lượng:** Số ảnh muốn tạo cho mỗi Prompt.
-* **Số luồng:** Số lượng tác vụ chạy song song (Tùy thuộc vào gói License của tool bạn đang sở hữu: Basic, Plus hoặc Max).
-
-
-4. **Nhập Prompt:**
-* Nhập danh sách mô tả ảnh vào ô trống, mỗi dòng là một prompt riêng biệt.
-
-
-5. **Chạy:**
-* Nhấn **"🚀 CHẠY NGAY" (START NOW)**. Phần mềm sẽ tự động phân phối công việc cho các tài khoản đang hoạt động.
+1. Tải file cài đặt `Setup_G-Labs_Automation_v1.0.1.exe`.
+2. Chạy file `.exe`. Nếu Windows hiện cảnh báo (do phần mềm mới chưa có chứng chỉ số lượng lớn), chọn **More Info** -> **Run anyway**.
+3. Làm theo hướng dẫn trên màn hình (Next -> Next -> Install).
+* *Lưu ý:* Trình cài đặt đã tích hợp sẵn nhân trình duyệt Chromium cần thiết, bạn không cần cài thêm gì cả.
 
 
 
----
+### Bước 2: Quản lý Tài khoản (Hệ thống Multi-Account)
 
-## 4. Chế Độ Workflow (Sáng Tạo Không Giới Hạn)
+Đây là "trái tim" của phần mềm. Việc quản lý tốt tài khoản giúp bạn chạy đa luồng cực mạnh.
 
-Đây là tính năng mạnh mẽ nhất của G-Labs Automation, cho phép bạn thiết kế quy trình làm việc dạng sơ đồ tư duy (Node-based).
-
-* **Truy cập:** Chọn tab **"Luồng CV" (Workflow)** ở menu trái.
-* **Cách hoạt động:** Bạn kéo thả các "Node" (Khối chức năng) và nối chúng lại với nhau để tạo thành một dây chuyền xử lý tự động.
-* **Các Node hỗ trợ:**
-* **Batch Loader:** Tự động quét và lấy ảnh từ thư mục trên máy tính để làm nguyên liệu đầu vào.
-* **Batch Prompt:** Nạp danh sách prompt hàng loạt từ file text.
-* **Reference (Ảnh tham chiếu):** Dùng ảnh mẫu để hướng dẫn AI tạo ảnh theo phong cách hoặc bố cục mong muốn (Hỗ trợ chế độ Standard và Pro).
-* **Generate (Tạo ảnh):** Khối xử lý chính để sinh ra hình ảnh từ Prompt và Reference.
-* **Save (Lưu):** Tự động lưu kết quả vào thư mục chỉ định.
-* **Reroute:** Giúp đi dây nối gọn gàng hơn.
+1. Mở phần mềm, vào menu **Cài đặt (Settings)** -> Tab **Tài khoản Google**.
+2. Bấm **Thêm tài khoản (Add Account)** -> Đăng nhập Gmail của bạn trên cửa sổ trình duyệt hiện ra.
+3. **Cơ chế phân loại tài khoản:**
+* Phần mềm tự động nhận diện loại tài khoản (Free, Gemini Advanced).
+* Nên add nhiều tài khoản Free để tận dụng tối đa tốc độ (Load balancing).
 
 
-
-> **✨ Điểm đặc biệt:** Bạn có thể tạo ra các quy trình cực kỳ phức tạp, ví dụ: *Load 100 ảnh sản phẩm -> Dùng làm Reference -> Tạo ảnh quảng cáo với Model Nano Banana -> Lưu kết quả*. Tất cả diễn ra tự động hoàn toàn!
+4. **Proxy (Nâng cao):** Nếu dùng >5 tài khoản, hãy gán Proxy (HTTP/SOCKS5) cho từng acc để tránh bị Google chặn IP.
 
 ---
 
-## 5. Lưu Ý Về Gói Tài Khoản & Model
+## 🎨 3. CHẾ ĐỘ 1: TẠO ẢNH HÀNG LOẠT (AI IMAGE)
 
-Để đảm bảo trải nghiệm tốt nhất, hãy lưu ý sự khác biệt giữa các Model:
+Chế độ này dành cho việc "sản xuất công nghiệp" - nhanh, gọn, số lượng lớn.
 
-| Model AI | Yêu cầu Tài khoản Google | Giới hạn |
-| --- | --- | --- |
-| **Imagen 4** | Tài khoản thường (Free) | **KHÔNG GIỚI HẠN** số lượng tạo. |
-| **Nano Banana** | Tài khoản thường (Free) | **KHÔNG GIỚI HẠN** số lượng tạo. |
-| **Nano Banana Pro** | **Gemini Advanced (Pro/Ultra)** | Yêu cầu gói trả phí của Google. Chất lượng cao nhất. |
+### A. Lựa chọn Model (Quan trọng)
+
+* **🟢 Imagen 4 / Nano Banana (Khuyên dùng):**
+* **Giá:** MIỄN PHÍ 100%.
+* **Giới hạn:** KHÔNG GIỚI HẠN số lượng ảnh.
+* **Ứng dụng:** Tạo ảnh minh họa, idea, stock photo số lượng lớn.
+
+
+* **🟣 Nano Banana Pro:**
+* **Yêu cầu:** Tài khoản Google phải có gói **Gemini Advanced** (Pro/Ultra).
+* **Sức mạnh:** Hiểu prompt cực sâu, chi tiết ảnh sắc nét vượt trội (High Fidelity), hỗ trợ text trong ảnh tốt hơn.
+
+
+
+### B. Thiết lập thông số
+
+1. **Tỷ lệ (Ratio):** Hỗ trợ đầy đủ 16:9 (Youtube), 9:16 (Tiktok/Reels), 1:1 (Avatar/Insta).
+2. **Số lượng (Count):** Số ảnh sinh ra cho MỖI dòng prompt.
+3. **Số luồng (Threads):**
+* *Tài khoản Free:* Mặc định 1 luồng.
+* *License Plus/Max:* Mở khóa chạy song song 10-20 luồng cùng lúc (Tốc độ tên lửa).
+
+
+
+### C. Nhập Prompt & Chạy
+
+* Nhập danh sách prompt (mỗi dòng 1 cái).
+* Bấm **"🚀 CHẠY NGAY"**.
+* Ảnh sẽ tự động lưu vào thư mục `Output`, được phân loại gọn gàng.
 
 ---
 
-## 6. Lộ Trình Phát Triển (Future Roadmap)
+## 🔄 4. CHẾ ĐỘ 2: WORKFLOW EDITOR (SÁNG TẠO KHÔNG GIỚI HẠN)
 
-G-Labs Automation đang hướng tới trở thành công cụ **"All-in-One"** cho nhà sáng tạo nội dung. Trong các bản cập nhật sắp tới, chúng tôi sẽ không chỉ giới hạn ở Google mà sẽ mở rộng tích hợp đa nền tảng:
+Đây là tính năng "Killer Feature" giúp bạn tùy biến quy trình làm việc như những chuyên gia AI thực thụ (tương tự ComfyUI nhưng dễ dùng hơn).
 
-* **Đa Nền Tảng AI:** Tích hợp các model đình đám như **Meta (Imagine)**, **Hailuo**, **Grok (xAI)**, **Sora (OpenAI)** ngay trên cùng một giao diện.
-* **Tạo Video AI:** Module "AI Video" sẽ sớm được kích hoạt, cho phép tạo video chất lượng cao tự động.
-* **Viết Kịch Bản (AI Script):** Tự động hóa quy trình sáng tạo nội dung từ ý tưởng đến kịch bản chi tiết.
+### Cách tư duy theo "Node" (Khối)
 
-Chúng tôi cam kết cập nhật liên tục để mang lại những công nghệ mới nhất cho cộng đồng người dùng.
+Thay vì bấm nút, bạn sẽ nối dây các khối chức năng để tạo ra một dây chuyền tự động.
+
+### Danh sách các Node & Công dụng:
+
+#### 1. Input Nodes (Đầu vào)
+
+* **📁 Batch Loader (Load ảnh hàng loạt):**
+* Chỉ đường dẫn đến 1 thư mục ảnh trên máy tính.
+* Node này sẽ lần lượt bốc từng ảnh ra để xử lý (Vòng lặp).
+* *Ứng dụng:* Dùng để nạp 1000 ảnh sản phẩm thô vào quy trình.
+
+
+* **📝 Batch Prompt (Load chữ hàng loạt):**
+* Nạp danh sách prompt từ text.
+* Kết hợp với Batch Loader để vừa thay ảnh, vừa thay prompt tự động.
+
+
+
+#### 2. Processing Nodes (Xử lý)
+
+* **📷 Reference (Ảnh tham chiếu):**
+* Nhận ảnh từ *Batch Loader* hoặc ảnh tải lên trực tiếp.
+* **Chức năng:** Dùng ảnh này làm mẫu về Bố cục (Structure) hoặc Phong cách (Style) cho ảnh mới.
+* *Ví dụ:* Bạn có ảnh cái chai (Input) -> Nối vào Ref Node (chế độ Subject) -> AI sẽ giữ nguyên hình dáng cái chai nhưng thay đổi background.
+
+
+* **🎨 Generate (Tạo ảnh AI):**
+* Trái tim của workflow. Nhận dữ liệu từ Ref Node và Prompt.
+* Tại đây bạn chọn Model (Imagen 4/Nano Banana/Pro) và Tỷ lệ ảnh.
+
+
+
+#### 3. Utility Nodes (Tiện ích)
+
+* **🔀 Reroute:** Nút trung gian giúp đi dây nối đẹp và gọn hơn.
+* **💾 Save (Lưu):** Điểm cuối của quy trình. Tự động lưu ảnh thành phẩm với tên file tùy chỉnh (có thể thêm tiền tố, hậu tố, ngày giờ).
+
+### Ví dụ Kịch bản Workflow: "Biến hóa sản phẩm thời trang"
+
+1. **Node 1 (Batch Loader):** Trỏ vào thư mục chứa 50 ảnh ma-nơ-canh mặc áo.
+2. **Node 2 (Reference):** Nối từ Node 1 sang. Chọn chế độ "Subject" (Giữ nguyên cái áo).
+3. **Node 3 (Generate):** Nối từ Node 2 sang. Prompt: "A model wearing this shirt, walking on paris street, fashion photography". Chọn Model Nano Banana Pro.
+4. **Node 4 (Save):** Nối từ Node 3 sang.
+5. **Kết quả:** Bạn bấm "Run Flow", tool tự động biến 50 ảnh ma-nơ-canh thành 50 ảnh người mẫu thật đang đi ở Paris.
 
 ---
 
-*Chúc bạn có những trải nghiệm tuyệt vời và bùng nổ sáng tạo cùng G-Labs Automation!*
+## ⚙️ 5. QUẢN LÝ TÁC VỤ (QUEUE MANAGER)
+
+Khi bạn làm việc chuyên nghiệp, bạn sẽ không ngồi chờ từng ảnh xong.
+
+* **Thêm vào hàng đợi (Add to Queue):** Bạn có thể setup 10 task khác nhau (Task 1: Mèo, Task 2: Xe hơi, Task 3: Workflow sản phẩm...).
+* **Quản lý:** Bấm vào nút "Queue Manager" để xem tiến độ, xóa, hoặc ưu tiên task nào chạy trước.
+* Tool sẽ tự động chạy lần lượt đến khi hết danh sách, kể cả khi bạn đi ngủ.
+
+---
+
+## 🚀 6. LỘ TRÌNH PHÁT TRIỂN (ROADMAP) - TƯƠNG LAI CỦA G-LABS
+
+Chúng tôi đang xây dựng G-Labs Automation trở thành một "Siêu công cụ" (Super App) cho AI
+
+---
+
+**G-Labs Automation - Trao quyền năng AI vào tay bạn.**
