@@ -23,7 +23,15 @@ Dưới đây là hướng dẫn chi tiết từ A-Z.
 2. Chọn ngôn ngữ cài đặt (English) và nhấn **Next**.
 4. Sau khi cài xong, tích chọn "Launch G-Labs Automation" và nhấn **Finish**.
 
-> **Lưu ý:** Tool sẽ tự động tải thêm các thành phần bổ trợ (như trình duyệt lõi) trong lần chạy đầu tiên, vui lòng đợi một chút.
+> Cam kết về an toàn phần mềm
+> 
+> Chúng tôi cam kết phần mềm này không chứa virus, mã độc, spyware, ransomware hoặc bất kỳ thành phần gây hại nào đối với hệ thống và dữ liệu của khách hàng.
+> 
+> Phần mềm được phát triển với mục đích duy nhất là cung cấp đúng các chức năng đã công bố, không thu thập dữ liệu cá nhân, không chạy ngầm trái phép, không tự sao chép, không can thiệp hệ thống ngoài phạm vi cần thiết để vận hành.
+> 
+> Việc một số phần mềm diệt virus cảnh báo có thể xảy ra do ứng dụng được tự phát triển, chưa có chữ ký số thương mại và chưa đủ độ phổ biến, dẫn đến nhận diện nhầm theo cơ chế đánh giá hành vi tự động. Điều này không phản ánh bản chất độc hại của phần mềm.
+> 
+> Chúng tôi sẵn sàng hợp tác để khách hàng kiểm tra, quét độc lập hoặc xác minh kỹ thuật nhằm đảm bảo sự minh bạch và an toàn tuyệt đối khi sử dụng.
 
 ---
 
