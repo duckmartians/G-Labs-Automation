@@ -17,15 +17,13 @@ Below is the detailed step-by-step guide.
 
 First, download the official installer from our repository:
 
-* **Download Link:** [Setup_G-Labs_Automation_v1.0.3.exe](https://github.com/duckmartians/G-Labs-Automation/releases/download/v1.0.3/Setup_G-Labs_Automation_v1.0.3.exe)
-* **File:** `Setup_G-Labs_Automation_v1.0.3.exe`
+* **Download Link:** [Portable_G-Labs_Automation_v1.0.3.zip](https://github.com/duckmartians/G-Labs-Automation/releases/download/v1.0.3/Portable_G-Labs_Automation_v1.0.3.zip)
 
 ### 2. Installation
 
-1. Double-click the downloaded `.exe` file to start.
-2. Select the installation language (English) and click **Next**.
-3. Click **Install** to begin the process.
-4. Once installed, check the box "Launch G-Labs Automation" and click **Finish**.
+1. Extract the downloaded Portable_G-Labs_Automation_v1.0.3.zip file to begin.
+
+2. After installation is complete, select the "Launch G-Labs Automation" checkbox and click **Done**.
 
 > Security & Malware-Free Commitment
 > 
