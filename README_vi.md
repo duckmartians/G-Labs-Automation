@@ -14,7 +14,7 @@ Dưới đây là hướng dẫn chi tiết từ A-Z.
 
 Đầu tiên, bạn cần tải bộ cài đặt chính thức tại kho lưu trữ của chúng tôi:
 
-* **Link tải:** [[https://github.com/duckmartians/G-Labs-Automation](https://github.com/duckmartians/G-Labs-Automation)](https://github.com/duckmartians/G-Labs-Automation/releases/download/v1.0.3/Setup_G-Labs_Automation_v1.0.3.exe)
+* **Link tải:** [Setup_G-Labs_Automation_v1.0.3.exe](https://github.com/duckmartians/G-Labs-Automation/releases/download/v1.0.3/Setup_G-Labs_Automation_v1.0.3.exe)
 * **File cần tải:** `Setup_G-Labs_Automation_v1.0.3.exe`
 
 ### 2. Cài đặt lên máy tính
