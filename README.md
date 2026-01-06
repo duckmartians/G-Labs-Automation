@@ -1,7 +1,7 @@
 [![Download for Windows](https://img.shields.io/badge/Download%20for%20Windows-%F0%9F%92%BB-blue?style=for-the-badge)](https://github.com/duckmartians/G-Labs-Automation/releases/latest) [![Download Here](https://img.shields.io/badge/⬇_Download-Here-success?style=for-the-badge)](https://github.com/duckmartians/G-Labs-Automation/releases/latest)
 
 [![Tiếng Việt](https://img.shields.io/badge/Tiếng%20Việt-green)](README_vi.md)     [![English](https://img.shields.io/badge/English-blue)](README.md) 
-# COMPREHENSIVE USER GUIDE: G-LABS AUTOMATION v1.0.1
+# COMPREHENSIVE USER GUIDE: G-LABS AUTOMATION v1.0.3
 
 **The Ultimate All-in-One AI Image & Video Automation Tool**
 
@@ -18,7 +18,7 @@ Below is the detailed step-by-step guide.
 First, download the official installer from our repository:
 
 * **Download Link:** [https://github.com/duckmartians/G-Labs-Automation](https://github.com/duckmartians/G-Labs-Automation)
-* **File:** `Setup_G-Labs_Automation_v1.0.1.exe`
+* **File:** `Setup_G-Labs_Automation_v1.0.3.exe`
 
 ### 2. Installation
 
