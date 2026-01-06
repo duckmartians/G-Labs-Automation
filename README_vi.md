@@ -14,14 +14,13 @@ Dưới đây là hướng dẫn chi tiết từ A-Z.
 
 Đầu tiên, bạn cần tải bộ cài đặt chính thức tại kho lưu trữ của chúng tôi:
 
-* **Link tải:** [Setup_G-Labs_Automation_v1.0.3.exe](https://github.com/duckmartians/G-Labs-Automation/releases/download/v1.0.3/Setup_G-Labs_Automation_v1.0.3.exe)
-* **File cần tải:** `Setup_G-Labs_Automation_v1.0.3.exe`
+* **Link tải:** [Portable_G-Labs_Automation_v1.0.3.zip](https://github.com/duckmartians/G-Labs-Automation/releases/download/v1.0.3/Portable_G-Labs_Automation_v1.0.3.zip)
 
 ### 2. Cài đặt lên máy tính
 
-1. Nhấn đúp vào file `.exe` vừa tải về.
-2. Chọn ngôn ngữ cài đặt (English) và nhấn **Next**.
-4. Sau khi cài xong, tích chọn "Launch G-Labs Automation" và nhấn **Finish**.
+1. Giải nén tệp Portable_G-Labs_Automation_v1.0.3.zip đã tải xuống để bắt đầu.
+
+2. Sau khi cài đặt xong, chọn hộp "Khởi chạy G-Labs Automation" và nhấp vào **Hoàn tất**.
 
 > Cam kết về an toàn phần mềm
 > 
