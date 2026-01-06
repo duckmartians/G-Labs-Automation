@@ -1,4 +1,4 @@
-# HƯỚNG DẪN SỬ DỤNG TOÀN TẬP: G-LABS AUTOMATION v1.0.1
+# HƯỚNG DẪN SỬ DỤNG TOÀN TẬP: G-LABS AUTOMATION v1.0.3
 
 **Siêu Công Cụ Tự Động Hóa Tạo Ảnh & Video AI Đỉnh Cao**
 
@@ -15,7 +15,7 @@ Dưới đây là hướng dẫn chi tiết từ A-Z.
 Đầu tiên, bạn cần tải bộ cài đặt chính thức tại kho lưu trữ của chúng tôi:
 
 * **Link tải:** [https://github.com/duckmartians/G-Labs-Automation](https://github.com/duckmartians/G-Labs-Automation)
-* **File cần tải:** `Setup_G-Labs_Automation_v1.0.1.exe`
+* **File cần tải:** `Setup_G-Labs_Automation_v1.0.3.exe`
 
 ### 2. Cài đặt lên máy tính
 
