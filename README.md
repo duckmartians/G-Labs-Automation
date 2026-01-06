@@ -27,7 +27,15 @@ First, download the official installer from our repository:
 3. Click **Install** to begin the process.
 4. Once installed, check the box "Launch G-Labs Automation" and click **Finish**.
 
-> **Note:** The tool will automatically download additional components (such as the core browser engine) during the first launch. Please wait a moment for this process to complete.
+> Security & Malware-Free Commitment
+> 
+> We hereby commit that this software does not contain any virus, malware, spyware, ransomware, or any other malicious components that could harm users’ systems or data.
+> 
+> This software is developed solely to provide the functionalities explicitly described in its documentation. It does not collect personal data, does not run hidden background processes, does not self-replicate, and does not modify system settings beyond what is strictly required for its intended operation.
+> 
+> In some cases, antivirus software may flag this application due to the fact that it is custom-developed, independently packaged, not digitally signed with a commercial certificate, and has limited distribution. Modern antivirus solutions rely heavily on heuristic and reputation-based analysis, which can occasionally result in false positives for legitimate software. Such warnings do not indicate malicious behavior.
+> 
+> We fully support transparency and are willing to cooperate with users by providing independent security scans, technical verification, or additional information to ensure confidence in the safety and integrity of this software.
 
 ---
 
