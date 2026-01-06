@@ -17,7 +17,7 @@ Below is the detailed step-by-step guide.
 
 First, download the official installer from our repository:
 
-* **Download Link:** [https://github.com/duckmartians/G-Labs-Automation](https://github.com/duckmartians/G-Labs-Automation)
+* **Download Link:** [[https://github.com/duckmartians/G-Labs-Automation](https://github.com/duckmartians/G-Labs-Automation)](https://github.com/duckmartians/G-Labs-Automation/releases/download/v1.0.3/Setup_G-Labs_Automation_v1.0.3.exe)
 * **File:** `Setup_G-Labs_Automation_v1.0.3.exe`
 
 ### 2. Installation
