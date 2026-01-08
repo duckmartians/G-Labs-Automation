@@ -73,19 +73,15 @@ To use the tool effectively and safely, you need to clearly distinguish between 
 1. **License Account:**
 
 * This is your primary Google account used to log in to the software for the first time.
-
 * The system will register your subscription plan (Basic/Plus/Max) based on this email.
-
 * **Recommendation:** Use your primary, highly reliable email address to ensure your purchasing rights and long-term support.
 
 2. **Worker Accounts:**
-
+* With Nano Banana and Imagen 4: a regular (free) Gmail account is sufficient for image creation.
+* With Nano Banana Pro and Veo 3.1: a Gmail account with a Google One Pro or Ultra plan is required for image creation.
 * These are Google (Gmail) accounts added in the *Settings* section to create images/videos.
-
 * The tool supports an **unlimited** number of worker accounts.
-
 * In the future, we will support other platforms, so worker accounts will not be limited to Google.
-
 * **Tip:** You can use secondary or inexpensive accounts to run this feature without affecting your main email account.
 
 ---
@@ -93,20 +89,13 @@ To use the tool effectively and safely, you need to clearly distinguish between 
 ## SYSTEM SETUP & ADDING ACCOUNTS
 
 Before you begin, load the "ingredients" (worker accounts) for this machine.
-
 1. On the main interface, click the **⚙️ Settings** button or the gear icon in the bottom left corner.
-
 2. Switch to the **"Google Accounts"** tab.
-
 3. **Add Account:**
-
 * Click the **"➕ Add Account"** button. A browser window will appear; simply log in to Gmail as usual. The tool will automatically capture the Cookie and Token.
-
 4. **Proxy Configuration (For Professionals):**
 * To manage a large number of accounts and run multiple threads without being blocked by Google IP, you should assign a Proxy to each account.
-
 * Click the "Edit" icon (pencil) next to the account to add a Proxy (HTTP/SOCKS5).
-
 > **Optimal Feature:** The tool has an **Auto-Renew Token** mechanism. When the Google Token expires, the tool will automatically open a background browser to renew the session, ensuring uninterrupted 24/7 operation.
 
 ---
@@ -144,14 +133,14 @@ Go to **⚙️ Settings** → **General Settings** section:
 |--------|-------------|-------------------|
 | **Language** | Interface language (Vietnamese/English) | `English` |
 | **Output Folder** | Folder to save images/videos | [./output](file:///d:/Data_Online/G-Labs%20Automation/DEV/PC-Home/G-Labs%20Automation%20-%20backup%208%20-%20Copy/src/ui/workflow/node_editor.py#541-544) |
-| **Max Threads** | Number of concurrent processing threads | `3-5` (Plus/Max) |
+| **Max Threads** | Number of concurrent processing threads | `6-10` (Plus/Max) |
 | **Auto Upscale** | Auto upscale images to 1080p | `✅` |
 | **Retry Count** | Number of retries on error | `3` |
 
 **Note:**
 - Free accounts: 1 thread
-- Plus accounts: 3-5 threads
-- Max accounts: 5-10 threads
+- Plus accounts: 6 threads
+- Max accounts: unlimited threads
 
 ---
 
