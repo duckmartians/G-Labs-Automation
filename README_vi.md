@@ -65,6 +65,39 @@ G-Labs Automation là công cụ desktop GUI giúp tự động hóa việc tạ
 - Tài khoản xuất hiện trong danh sách với trạng thái **✅ Ready**
 - Nếu lỗi, xem phần [Xử Lý Lỗi](#-xử-lý-lỗi)
 
+## TƯ DUY VỀ TÀI KHOẢN
+
+Để sử dụng hiệu quả và an toàn, bạn cần phân biệt rõ **2 loại tài khoản** trong tool:
+
+1. **Tài Khoản Bản Quyền (License Account):**
+* Đây là tài khoản Google chính chủ của bạn dùng để đăng nhập *vào phần mềm* lần đầu tiên.
+* Hệ thống sẽ ghi nhận gói cước (Basic/Plus/Max) dựa trên email này.
+* **Khuyến nghị:** Nên dùng Email chính, có độ tin cậy cao để đảm bảo quyền lợi mua hàng và hỗ trợ lâu dài.
+
+
+2. **Tài Khoản Chạy Tool (Worker Accounts):**
+* Đây là các tài khoản Google (Gmail) được thêm vào trong phần *Cài đặt (Settings)* để thực hiện việc tạo ảnh/video.
+* Tool hỗ trợ thêm **không giới hạn** số lượng tài khoản worker.
+* Trong tương lai, chúng tôi sẽ hỗ trợ thêm các nền tảng khác, nên worker account không chỉ giới hạn ở Google.
+* **Mẹo:** Bạn có thể dùng các tài khoản phụ, tài khoản giá rẻ để chạy tính năng này mà không lo ảnh hưởng đến Email bản quyền chính.
+
+---
+
+## THIẾT LẬP HỆ THỐNG & THÊM TÀI KHOẢN
+
+Trước khi bắt đầu, hãy nạp "nguyên liệu" (tài khoản worker) cho cỗ máy này.
+
+1. Tại giao diện chính, bấm nút **"⚙️ Cài đặt" (Settings)** hoặc biểu tượng bánh răng ở góc dưới bên trái.
+2. Chuyển sang tab **"Tài khoản Google"**.
+3. **Thêm tài khoản:**
+* Bấm nút **"➕ Thêm tài khoản"**. Một trình duyệt sẽ hiện ra, bạn chỉ cần đăng nhập Gmail như bình thường. Tool sẽ tự động bắt lấy Cookie và Token.
+
+4. **Cấu hình Proxy (Dành cho dân chuyên):**
+* Để nuôi số lượng lớn tài khoản và chạy đa luồng mà không bị Google chặn IP, bạn nên gán Proxy cho từng tài khoản.
+* Bấm vào biểu tượng "Sửa" (cây bút) bên cạnh tài khoản để thêm Proxy (HTTP/SOCKS5).
+
+> **Điểm tối ưu:** Tool có cơ chế **Auto-Renew Token**. Khi Token của Google hết hạn, tool sẽ tự động mở trình duyệt ngầm để gia hạn phiên làm việc (Session), đảm bảo quy trình treo máy 24/7 không bị gián đoạn.
+
 ---
 
 ### 2. Cấu Hình Proxy (Tùy Chọn)
