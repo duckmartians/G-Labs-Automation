@@ -66,6 +66,49 @@ G-Labs Automation is a desktop GUI tool that automates AI image and video genera
 - Account appears in list with status **✅ Ready**
 - If error, see [Error Handling](#-error-handling) section
 
+## ACCOUNT UNDERSTANDING
+
+To use the tool effectively and safely, you need to clearly distinguish between **2 types of accounts**:
+
+1. **License Account:**
+
+* This is your primary Google account used to log in to the software for the first time.
+
+* The system will register your subscription plan (Basic/Plus/Max) based on this email.
+
+* **Recommendation:** Use your primary, highly reliable email address to ensure your purchasing rights and long-term support.
+
+2. **Worker Accounts:**
+
+* These are Google (Gmail) accounts added in the *Settings* section to create images/videos.
+
+* The tool supports an **unlimited** number of worker accounts.
+
+* In the future, we will support other platforms, so worker accounts will not be limited to Google.
+
+* **Tip:** You can use secondary or inexpensive accounts to run this feature without affecting your main email account.
+
+---
+
+## SYSTEM SETUP & ADDING ACCOUNTS
+
+Before you begin, load the "ingredients" (worker accounts) for this machine.
+
+1. On the main interface, click the **⚙️ Settings** button or the gear icon in the bottom left corner.
+
+2. Switch to the **"Google Accounts"** tab.
+
+3. **Add Account:**
+
+* Click the **"➕ Add Account"** button. A browser window will appear; simply log in to Gmail as usual. The tool will automatically capture the Cookie and Token.
+
+4. **Proxy Configuration (For Professionals):**
+* To manage a large number of accounts and run multiple threads without being blocked by Google IP, you should assign a Proxy to each account.
+
+* Click the "Edit" icon (pencil) next to the account to add a Proxy (HTTP/SOCKS5).
+
+> **Optimal Feature:** The tool has an **Auto-Renew Token** mechanism. When the Google Token expires, the tool will automatically open a background browser to renew the session, ensuring uninterrupted 24/7 operation.
+
 ---
 
 ### 2. Configure Proxy (Optional)
