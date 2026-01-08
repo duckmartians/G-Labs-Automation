@@ -61,18 +61,6 @@ G-Labs Automation là công cụ desktop GUI giúp tự động hóa việc tạ
 1. Vào tab **⚙️ Cài Đặt**
 2. Click **📋 Thêm Tài Khoản**
 
-**Format Cookie Hỗ Trợ:**
-```
-# Netscape format (from Cookie Editor)
-.google.com	TRUE	/	TRUE	1234567890	COOKIE_NAME	value
-
-# JSON format
-[{"name": "COOKIE_NAME", "value": "...", "domain": ".google.com"}]
-
-# Header format
-COOKIE_NAME=value; ANOTHER=value2
-```
-
 #### Bước 2: Kiểm Tra
 - Tài khoản xuất hiện trong danh sách với trạng thái **✅ Ready**
 - Nếu lỗi, xem phần [Xử Lý Lỗi](#-xử-lý-lỗi)
