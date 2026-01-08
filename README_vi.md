@@ -40,7 +40,7 @@ User manual: [![English](https://img.shields.io/badge/English-blue)](README.md)
 
 G-Labs Automation là công cụ desktop GUI giúp tự động hóa việc tạo ảnh và video AI thông qua Google Labs APIs:
 - **Imagen 4 / Nano Banana**: Tạo ảnh từ text hoặc reference images
-- **Veo 2**: Tạo video từ text, images hoặc components
+- **Veo 3.1**: Tạo video từ text, images hoặc components
 - **Workflow System**: Tạo pipeline tự động với node-based editor
 
 ### Yêu Cầu Hệ Thống
