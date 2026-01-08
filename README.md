@@ -1,3 +1,5 @@
+# Version v1.0.4 is coming soon. All issues related to image and video creation will be stable. Expected release date: January 8th, 2026.
+
 [![Download for Windows](https://img.shields.io/badge/Download%20for%20Windows-%F0%9F%92%BB-blue?style=for-the-badge)](https://github.com/duckmartians/G-Labs-Automation/releases/latest) [![Download Here](https://img.shields.io/badge/⬇_Download-Here-success?style=for-the-badge)](https://github.com/duckmartians/G-Labs-Automation/releases/download/v1.0.3/Setup_G-Labs_Automation_v1.0.3.exe)
 
 [![Tiếng Việt](https://img.shields.io/badge/Tiếng%20Việt-green)](README_vi.md)     [![English](https://img.shields.io/badge/English-blue)](README.md) 
