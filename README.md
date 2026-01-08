@@ -57,34 +57,12 @@ G-Labs Automation is a desktop GUI tool that automates AI image and video genera
 
 ### 1. Add Google Account
 
-#### Step 1: Get Cookies
-1. Open Chrome/Edge browser
-2. Sign in to [Google Labs](https://labs.google/fx)
-3. Press `F12` to open DevTools
-4. Switch to **Application** → **Cookies** tab
-5. Copy all cookies (you can use extensions like [Cookie Editor](https://cookie-editor.cgagnier.ca/))
-
-#### Step 2: Add to Application
+#### Step 1: Add to Application
 1. Go to **⚙️ Settings** tab
 2. Click **📋 Add Account**
-3. Paste cookies into **Cookies** field
-4. Enter corresponding **Email**
-5. (Optional) Enter **Proxy** if needed
-6. Click **💾 Save**
+3. Click **💾 Save**
 
-**Supported Cookie Formats:**
-```
-# Netscape format (from Cookie Editor)
-.google.com	TRUE	/	TRUE	1234567890	COOKIE_NAME	value
-
-# JSON format
-[{"name": "COOKIE_NAME", "value": "...", "domain": ".google.com"}]
-
-# Header format
-COOKIE_NAME=value; ANOTHER=value2
-```
-
-#### Step 3: Verify
+#### Step 2: Verify
 - Account appears in list with status **✅ Ready**
 - If error, see [Error Handling](#-error-handling) section
 
