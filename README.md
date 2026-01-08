@@ -1,6 +1,8 @@
 [![Download for Windows](https://img.shields.io/badge/Download%20for%20Windows-%F0%9F%92%BB-blue?style=for-the-badge)](https://github.com/duckmartians/G-Labs-Automation/releases/latest) [![Download Here](https://img.shields.io/badge/⬇_Download-Here-success?style=for-the-badge)](https://github.com/duckmartians/G-Labs-Automation/releases/latest)
 
-[![Tiếng Việt](https://img.shields.io/badge/Tiếng%20Việt-green)](README_vi.md)     [![English](https://img.shields.io/badge/English-blue)](README.md) 
+Hướng dẫn sử dụng: [![Tiếng Việt](https://img.shields.io/badge/Tiếng%20Việt-green)](README_vi.md)
+
+User manual: [![English](https://img.shields.io/badge/English-blue)](README.md) 
 
 # G-Labs Automation - Complete User Guide v1.0.4
 
