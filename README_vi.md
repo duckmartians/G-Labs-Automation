@@ -60,10 +60,6 @@ G-Labs Automation là công cụ desktop GUI giúp tự động hóa việc tạ
 #### Bước 1: Thêm Vào Ứng Dụng
 1. Vào tab **⚙️ Cài Đặt**
 2. Click **📋 Thêm Tài Khoản**
-3. Paste cookies vào ô **Cookies**
-4. Nhập **Email** tương ứng
-5. (Tùy chọn) Nhập **Proxy** nếu cần
-6. Click **💾 Lưu**
 
 **Format Cookie Hỗ Trợ:**
 ```
