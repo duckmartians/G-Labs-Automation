@@ -76,6 +76,8 @@ G-Labs Automation là công cụ desktop GUI giúp tự động hóa việc tạ
 
 
 2. **Tài Khoản Chạy Tool (Worker Accounts):**
+* Với mô hình Nano Banana và Imagen 4: chỉ cần gmail loại thường (free) là có thể chạy tạo ảnh.
+* Với mô hình Nano Banana Pro và Veo 3.1: cần có gmail loại có gói Google One Pro hoặc Ultra mới có thể tạo.
 * Đây là các tài khoản Google (Gmail) được thêm vào trong phần *Cài đặt (Settings)* để thực hiện việc tạo ảnh/video.
 * Tool hỗ trợ thêm **không giới hạn** số lượng tài khoản worker.
 * Trong tương lai, chúng tôi sẽ hỗ trợ thêm các nền tảng khác, nên worker account không chỉ giới hạn ở Google.
