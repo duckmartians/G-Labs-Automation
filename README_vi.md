@@ -47,6 +47,10 @@ G-Labs Automation là công cụ desktop GUI giúp tự động hóa việc tạ
 - Windows 10/11
 - Tài khoản Google có quyền truy cập Google Labs
 
+## ⚠️ Lưu ý về cảnh báo bảo mật:
+- Do đây là phần mềm cá nhân và chưa có chứng chỉ số (Digital Signature) đắt tiền từ Microsoft, nên Windows Defender hoặc bộ lọc SmartScreen có thể nhận diện nhầm là phần mềm lạ/nguy hiểm (False Positive).
+- Cam kết an toàn: Tool hoàn toàn sạch. Nếu bạn quét bằng các phần mềm diệt virus chuyên sâu và uy tín như Kaspersky, Bitdefender hay ESET, kết quả sẽ là AN TOÀN. Vui lòng chọn "Run anyway" (Vẫn chạy) hoặc thêm vào danh sách loại trừ để sử dụng.
+
 ---
 
 ## ⚙️ Cài Đặt Ban Đầu
