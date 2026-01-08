@@ -1,3 +1,5 @@
+# Phiên bản v1.0.4 sắp ra mắt. Tất cả các vấn đề liên quan đến việc tạo ảnh và video sẽ được khắc phục ổn định. Ngày phát hành dự kiến: 8 tháng 1 năm 2026.
+
 # HƯỚNG DẪN SỬ DỤNG TOÀN TẬP: G-LABS AUTOMATION v1.0.3
 
 **Siêu Công Cụ Tự Động Hóa Tạo Ảnh & Video AI Đỉnh Cao**
