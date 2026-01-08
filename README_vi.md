@@ -135,14 +135,14 @@ Vào tab **⚙️ Cài Đặt** → Mục **Cài Đặt Chung**:
 |----------|-------|-----------------|
 | **Ngôn Ngữ** | Giao diện tiếng Việt/English | `Tiếng Việt` |
 | **Output Folder** | Thư mục lưu ảnh/video | [./output](file:///d:/Data_Online/G-Labs%20Automation/DEV/PC-Home/G-Labs%20Automation%20-%20backup%208%20-%20Copy/src/ui/workflow/node_editor.py#541-544) |
-| **Max Threads** | Số luồng xử lý đồng thời | `3-5` (Plus/Max) |
+| **Max Threads** | Số luồng xử lý đồng thời | `6-10` (Plus/Max) |
 | **Auto Upscale** | Tự động upscale ảnh 1080p | `✅` |
 | **Retry Count** | Số lần retry khi lỗi | `3` |
 
 **Lưu ý:**
-- Free accounts: 1 thread
-- Plus accounts: 3-5 threads
-- Max accounts: 5-10 threads
+- Free accounts: 1 luồng
+- Plus accounts: 6 luồng
+- Max accounts: không giới hạn số luồng chạy đồng thời
 
 ---
 
