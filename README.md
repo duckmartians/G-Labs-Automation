@@ -140,7 +140,7 @@ Go to **⚙️ Settings** → **General Settings** section:
 **Note:**
 - Free accounts: 1 thread
 - Plus accounts: 6 threads
-- Max accounts: unlimited threads
+- Max accounts: no limit on the number of concurrent threads
 
 ---
 
