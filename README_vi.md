@@ -39,7 +39,6 @@ G-Labs Automation là công cụ desktop GUI giúp tự động hóa việc tạ
 
 ### Yêu Cầu Hệ Thống
 - Windows 10/11
-- Python 3.9+
 - Tài khoản Google có quyền truy cập Google Labs
 
 ---
