@@ -57,14 +57,7 @@ G-Labs Automation là công cụ desktop GUI giúp tự động hóa việc tạ
 
 ### 1. Thêm Tài Khoản Google
 
-#### Bước 1: Lấy Cookie
-1. Mở trình duyệt Chrome/Edge
-2. Đăng nhập vào [Google Labs](https://labs.google/fx)
-3. Nhấn `F12` để mở DevTools
-4. Chuyển sang tab **Application** → **Cookies**
-5. Copy toàn bộ cookies (có thể dùng extension như [Cookie Editor](https://cookie-editor.cgagnier.ca/))
-
-#### Bước 2: Thêm Vào Ứng Dụng
+#### Bước 1: Thêm Vào Ứng Dụng
 1. Vào tab **⚙️ Cài Đặt**
 2. Click **📋 Thêm Tài Khoản**
 3. Paste cookies vào ô **Cookies**
@@ -84,7 +77,7 @@ G-Labs Automation là công cụ desktop GUI giúp tự động hóa việc tạ
 COOKIE_NAME=value; ANOTHER=value2
 ```
 
-#### Bước 3: Kiểm Tra
+#### Bước 2: Kiểm Tra
 - Tài khoản xuất hiện trong danh sách với trạng thái **✅ Ready**
 - Nếu lỗi, xem phần [Xử Lý Lỗi](#-xử-lý-lỗi)
 
