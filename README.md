@@ -4,174 +4,717 @@
 [![Download for Windows](https://img.shields.io/badge/Download%20for%20Windows-%F0%9F%92%BB-blue?style=for-the-badge)](https://github.com/duckmartians/G-Labs-Automation/releases/latest) [![Download Here](https://img.shields.io/badge/⬇_Download-Here-success?style=for-the-badge)](https://github.com/duckmartians/G-Labs-Automation/releases/download/v1.0.3/Setup_G-Labs_Automation_v1.0.3.exe)
 
 [![Tiếng Việt](https://img.shields.io/badge/Tiếng%20Việt-green)](README_vi.md)     [![English](https://img.shields.io/badge/English-blue)](README.md) 
-# COMPREHENSIVE USER GUIDE: G-LABS AUTOMATION v1.0.3
 
-**The Ultimate All-in-One AI Image & Video Automation Tool**
+# G-Labs Automation - Complete User Guide
 
-Welcome to **G-Labs Automation** – an advanced solution designed to help you harness the full power of state-of-the-art AI models (Imagen, Veo, Nano Banana) from Google Labs. This tool transforms manual, tedious tasks into intelligent automated workflows, saving you hundreds of hours of work.
-
-Below is the detailed step-by-step guide.
+**AI Image & Video Generation Automation Tool using Google Labs (Imagen, Veo)**
 
 ---
 
-## PART 1: DOWNLOAD AND INSTALLATION
+## 📋 Table of Contents
 
-### 1. Download the Software
-
-First, download the official installer from our repository:
-
-* **Download Link:** [Portable_G-Labs_Automation_v1.0.3.zip](https://github.com/duckmartians/G-Labs-Automation/releases/download/v1.0.3/Portable_G-Labs_Automation_v1.0.3.zip)
-
-### 2. Installation
-
-1. Extract the downloaded Portable_G-Labs_Automation_v1.0.3.zip file to begin.
-
-2. After installation is complete, select the "Launch G-Labs Automation" checkbox and click **Done**.
-
-> Security & Malware-Free Commitment
-> 
-> We hereby commit that this software does not contain any virus, malware, spyware, ransomware, or any other malicious components that could harm users’ systems or data.
-> 
-> This software is developed solely to provide the functionalities explicitly described in its documentation. It does not collect personal data, does not run hidden background processes, does not self-replicate, and does not modify system settings beyond what is strictly required for its intended operation.
-> 
-> In some cases, antivirus software may flag this application due to the fact that it is custom-developed, independently packaged, not digitally signed with a commercial certificate, and has limited distribution. Modern antivirus solutions rely heavily on heuristic and reputation-based analysis, which can occasionally result in false positives for legitimate software. Such warnings do not indicate malicious behavior.
-> 
-> We fully support transparency and are willing to cooperate with users by providing independent security scans, technical verification, or additional information to ensure confidence in the safety and integrity of this software.
-
----
-
-## PART 2: UNDERSTANDING ACCOUNTS (CRITICAL)
-
-To use the tool effectively and safely, you need to distinguish between the **2 types of accounts**:
-
-1. **License Account:**
-* This is your personal Google account used to **log in to the software** upon opening.
-* The system verifies your subscription plan (Basic/Plus/Max) based on this email.
-* **Recommendation:** Use your main, reliable email to ensure purchase rights and long-term support.
-
-
-2. **Worker Accounts:**
-* These are the Google accounts (Gmail) added within the *Settings* menu to perform the actual tasks (generating images/videos).
-* The tool supports adding **unlimited** worker accounts.
-* **Tip:** You can use secondary accounts or bulk-created accounts for this purpose to protect your main License Account from any potential platform risks.
-
-
+- [Introduction](#-introduction)
+- [Initial Setup](#️-initial-setup)
+  - [Add Google Account](#1-add-google-account)
+  - [Configure Proxy (Optional)](#2-configure-proxy-optional)
+  - [General Settings](#3-general-settings)
+- [Image Generation with Imagen](#️-image-generation-with-imagen)
+  - [Nano Banana (Standard)](#nano-banana-standard)
+  - [Nano Banana Pro (Advanced)](#nano-banana-pro-advanced)
+  - [Whisk](#whisk)
+- [Video Generation with Veo](#-video-generation-with-veo)
+  - [Text-to-Video](#1-text-to-video)
+  - [Image-to-Video](#2-image-to-video)
+  - [Components (3 References)](#3-components-3-references)
+- [Workflow System](#-workflow-system)
+  - [Node Types](#node-types)
+  - [Creating Workflows](#creating-workflows)
+  - [Batch Processing](#batch-processing)
+  - [Save & Load Workflow](#save--load-workflow)
+- [Advanced Features](#-advanced-features)
+- [Error Handling](#-error-handling)
+- [FAQ](#-faq)
 
 ---
 
-## PART 3: SYSTEM SETUP & ADDING ACCOUNTS
+## 🎯 Introduction
 
-Before starting, you need to fuel the engine by adding Worker Accounts.
+G-Labs Automation is a desktop GUI tool that automates AI image and video generation through Google Labs APIs:
+- **Imagen 4 / Nano Banana**: Generate images from text or reference images
+- **Veo 2**: Generate videos from text, images, or components
+- **Workflow System**: Create automated pipelines with a node-based editor
 
-1. On the main interface, click the **"⚙️ Settings"** button.
-2. Navigate to the **"Google Accounts"** tab.
-3. **Add Account:**
-* **Method 1 (Automatic):** Click **"➕ Add Account"**. A browser window will appear; simply log in to Gmail as usual. The tool will automatically capture the Cookie and Token.
-* **Method 2 (Manual):** Paste the Cookie (JSON or Netscape format) into the text box and click "Add".
-
-
-4. **Proxy Configuration (For Power Users):**
-* To manage a large number of accounts and run multiple threads without IP blocking, assign a Proxy to each account.
-* Click the "Edit" icon (pencil) next to an account to add a Proxy (HTTP/SOCKS5).
-
-
-
-> **Smart Feature:** The tool features an **Auto-Renew Token** mechanism. When a Google Token expires, the tool will automatically open a background process to renew the Session, ensuring your 24/7 automation workflow is never interrupted.
+### System Requirements
+- Windows 10/11
+- Google account with access to Google Labs
 
 ---
 
-## PART 4: AI IMAGE GENERATOR – COST OPTIMIZATION
+## ⚙️ Initial Setup
 
-This function allows you to generate thousands of images daily with minimal or zero cost.
+### 1. Add Google Account
 
-### 1. Smart Model Selection
+#### Step 1: Get Cookies
+1. Open Chrome/Edge browser
+2. Sign in to [Google Labs](https://labs.google/fx)
+3. Press `F12` to open DevTools
+4. Switch to **Application** → **Cookies** tab
+5. Copy all cookies (you can use extensions like [Cookie Editor](https://cookie-editor.cgagnier.ca/))
 
-* **Imagen 4 & Nano Banana:** This is a key strength! You can use **Free Tier Gmail accounts** to run these models. The tool automatically rotates accounts to maximize the free daily quota.
-* **Nano Banana Pro:** High-quality generation requiring a **PRO** or **ULTRA** Gmail account.
+#### Step 2: Add to Application
+1. Go to **⚙️ Settings** tab
+2. Click **📋 Add Account**
+3. Paste cookies into **Cookies** field
+4. Enter corresponding **Email**
+5. (Optional) Enter **Proxy** if needed
+6. Click **💾 Save**
 
-### 2. Upscale
+**Supported Cookie Formats:**
+```
+# Netscape format (from Cookie Editor)
+.google.com	TRUE	/	TRUE	1234567890	COOKIE_NAME	value
 
-* Supports upscaling to **2K** (requires PRO/ULTRA account) and **4K** (requires ULTRA account).
-* Delivers significantly sharper results compared to the original generation.
+# JSON format
+[{"name": "COOKIE_NAME", "value": "...", "domain": ".google.com"}]
 
-### 3. Queue Manager
+# Header format
+COOKIE_NAME=value; ANOTHER=value2
+```
 
-* No need to wait for each image. Enter a list of Prompts, configure the count and aspect ratio, then click **"➕ Add to Queue"**.
-* Click **"🚀 START NOW"** and let the tool do the work. It automatically processes tasks, retries upon network errors, and skips tasks if a Prompt violates safety policies.
-
----
-
-## PART 5: WORKFLOW EDITOR – ULTIMATE CUSTOMIZATION (HIGHLIGHT)
-
-Designed for professionals who need absolute control over the creative process. Unlike rigid tools, G-Labs Workflow allows you to "draw" your process:
-
-* **Node-based Interface:** Drag and drop functional nodes and wire them together.
-* *Example:* `Batch Loader (Load images from folder)` -> `Reference Node (Use as input)` -> `Generate Node` -> `Save Node`.
-
-
-* **Extreme Customization:**
-* Create a flow that runs 2-3 different models simultaneously to compare results.
-* Chain the output of Generation 1 as the input (Reference) for Generation 2 (Advanced Image-to-Image).
-
-
-* **Batch Processing:**
-* **Batch Image Loader:** Automatically scans a local folder, picks images one by one for processing, and loops until the folder is empty.
-* **Batch Prompt Loader:** Automatically reads line-by-line from a text file to use as prompts.
-
-
-
-> **Why is it smart?** You can save successful Workflows (`.json` files) to reuse later or share with your team. The core logic handles complex threading automatically.
+#### Step 3: Verify
+- Account appears in list with status **✅ Ready**
+- If error, see [Error Handling](#-error-handling) section
 
 ---
 
-## PART 6: AI VIDEO CREATOR – POWERED BY VEO
+### 2. Configure Proxy (Optional)
 
-A "killer feature" with exceptional resource optimization capabilities.
+To use proxy for avoiding rate limits or geo-restrictions:
 
-### 1. Smart Account Filtering
+**Proxy Format:**
+```
+# HTTP/HTTPS
+http://username:password@proxy.example.com:8080
 
-* **Veo 3.1 Fast (Lower Priority) Model:** This tool allows **unlimited video generation** if you own an **ULTRA** Gmail account. This is a massive bargain compared to buying credits on other platforms.
-* The tool automatically filters and selects only eligible accounts (Pro/Ultra) for video tasks, ensuring basic accounts aren't wasted on incompatible tasks.
+# SOCKS5
+socks5://username:password@proxy.example.com:1080
 
-### 2. "Component-based Video" Tab – Intelligent Recognition
+# No auth
+http://proxy.example.com:8080
+```
 
-This is the smartest feature for Bulk Creation:
-
-* **The Problem:** You have 100 prompts, along with 100 specific Character images and 100 Background images. You want to create 100 matching videos.
-* **The Solution:**
-* Simply select the folder containing your component images.
-* The tool **automatically scans filenames** and compares them with **keywords in your Prompt**.
-* *Example:* Prompt is "A cat running in the forest". If the folder contains `cat.png` and `forest.jpg`, the tool **automatically grabs** these 2 images and inserts them into the Reference Image slots for that specific prompt row.
-* This eliminates the need to manually select images for every single video.
-
-
-
-### 3. Advanced Pair Modes
-
-* **Start - End:** Generates a video transitioning from Image A to Image B.
-* **Sequential Chain:** Automatically uses the "End Frame" of Video 1 as the "Start Frame" of Video 2. Extremely useful for creating long, seamless storytelling videos.
+**How to Add:**
+1. Go to **⚙️ Settings** tab
+2. Select account to add proxy
+3. Click **✏️ Edit**
+4. Enter proxy in **Proxy** field
+5. Click **💾 Save**
 
 ---
 
-## PART 7: OTHER OPTIMIZATIONS
+### 3. General Settings
 
-1. **Multi-threading:**
-* Run multiple accounts simultaneously. The MAX plan supports unlimited threads (dependent only on your computer's hardware and the number of accounts you have).
+Go to **⚙️ Settings** → **General Settings** section:
 
+| Option | Description | Recommended Value |
+|--------|-------------|-------------------|
+| **Language** | Interface language (Vietnamese/English) | `English` |
+| **Output Folder** | Folder to save images/videos | [./output](file:///d:/Data_Online/G-Labs%20Automation/DEV/PC-Home/G-Labs%20Automation%20-%20backup%208%20-%20Copy/src/ui/workflow/node_editor.py#541-544) |
+| **Max Threads** | Number of concurrent processing threads | `3-5` (Plus/Max) |
+| **Auto Upscale** | Auto upscale images to 1080p | `✅` |
+| **Retry Count** | Number of retries on error | `3` |
 
-2. **Anti-Detect Technology:**
-* Integrated `Playwright` with browser fingerprint masking (Stealth JS) minimizes the risk of Google checkpoints or account locks.
-
-
-3. **Auto Update System:**
-* Never miss a new feature. Upon opening, the tool checks for updates. Future features like **Script Writer** and **Auto Upload** will be delivered seamlessly via this system.
-
-
+**Note:**
+- Free accounts: 1 thread
+- Plus accounts: 3-5 threads
+- Max accounts: 5-10 threads
 
 ---
 
-**G-Labs Automation** is not just a tool; it is a diligent virtual assistant that multiplies your productivity.
+## 🖼️ Image Generation with Imagen
 
-Start today! If you need support or wish to upgrade your License (Plus/Max), please contact us via the information provided in the Settings tab.
+### Nano Banana (Standard)
 
-*Wish you create amazing masterpieces!*
+Generate images from text prompt + up to 4 reference images (2 Subject, 1 Scene, 1 Style).
+
+#### Step 1: Select Model
+Go to **🎨 Image Generation** tab → Select **Nano Banana**
+
+#### Step 2: Enter Prompt
+```
+Prompt: A futuristic cyberpunk city at night with neon lights
+```
+
+**Prompt Writing Tips:**
+- Be clear and detailed
+- Add style keywords: `realistic, anime, oil painting, 3D render`
+- Length: 10-100 words
+
+#### Step 3: Add Reference Images (Optional)
+
+**Subject (Main subject - Max 2):**
+```
+📷 Subject 1: [person.jpg]
+📷 Subject 2: [object.jpg]
+```
+
+**Scene (Background - Max 1):**
+```
+🌆 Scene: [background.jpg]
+```
+
+**Style (Art style - Max 1):**
+```
+🎨 Style: [art_style.jpg]
+```
+
+**How to add:**
+1. Click **📁 Select Image** next to each Reference
+2. Choose image file (JPG, PNG, WebP)
+3. Image shows preview
+
+#### Step 4: Configuration
+
+| Option | Values |
+|--------|--------|
+| **Aspect Ratio** | `1:1 Square` / `16:9 Landscape` / `9:16 Portrait` |
+| **Resolution** | `720p` / `1080p (Upscale)` |
+| **Number of Images** | `1-4` |
+| **Seed Mode** | `Random` / `Fixed` |
+
+#### Step 5: Generate
+1. Click **▶️ Generate Image**
+2. Monitor progress in **Log**
+3. Images saved to **Output Folder**
+
+**Output Files:**
+```
+output/
+├── 01_A_futuristic_cyberpunk_city_subject1_20260108_220000.jpg
+├── 02_A_futuristic_cyberpunk_city_subject1_20260108_220001.jpg
+└── ...
+```
+
+---
+
+### Nano Banana Pro (Advanced)
+
+Generate images with up to **10 reference images** (no categorization required).
+
+#### Key Differences
+- ✅ Supports 10 refs (vs 4 in Standard)
+- ✅ No need to categorize (Subject/Scene/Style)
+- ⚠️ Only supports **Landscape (16:9)**
+
+#### Usage
+1. Go to **🎨 Image Generation** → **Nano Banana Pro**
+2. Enter prompt
+3. Click **📁 Add Reference** (max 10 times)
+4. Aspect ratio automatically locks to **16:9**
+5. Click **▶️ Generate Image**
+
+---
+
+### Whisk
+
+Generate images from 3 reference images (Subject + Scene + Style) without text prompt.
+
+#### Step 1: Add References
+1. Go to **🎨 Image Generation** → **Whisk**
+2. Click **📁 Subject** → Select subject image
+3. Click **📁 Scene** → Select background image
+4. Click **📁 Style** → Select style image
+
+**Requirements:**
+- ✅ All 3 references are **required**
+- ✅ Prompt is optional
+
+#### Step 2: Configure & Generate
+- Select aspect ratio
+- Select resolution
+- Click **▶️ Generate Image**
+
+---
+
+## 🎬 Video Generation with Veo
+
+Go to **🎥 Video Generation** tab
+
+### 1. Text-to-Video
+
+Generate video from text description.
+
+#### Usage
+```
+Prompt: A cat walking on a beach during sunset, waves crashing
+```
+
+1. Enter prompt describing video
+2. Select **Aspect Ratio**: 16:9 / 9:16 / 1:1
+3. Select **Resolution**: 720p / 1080p
+4. Click **▶️ Generate Video**
+
+**Tips:**
+- Describe motion clearly: `walking, running, flying, rotating`
+- Add environment details: `during sunset, in the rain, underwater`
+- Length: 10-50 words
+
+---
+
+### 2. Image-to-Video
+
+Generate animated video from 1 or 2 images.
+
+#### Mode 1: Single Image
+```
+Start Image: cat.jpg
+Prompt: The cat starts walking forward
+```
+
+Video will animate from static image according to prompt.
+
+#### Mode 2: Two Images (Interpolation)
+```
+Start Image: cat_standing.jpg
+End Image: cat_sitting.jpg
+Prompt: The cat slowly sits down
+```
+
+Video will transition from start → end.
+
+#### Usage
+1. Click **📁 Start Image** → Select first image
+2. (Optional) Click **📁 End Image** → Select end image
+3. Enter prompt describing motion
+4. Select aspect ratio & resolution
+5. Click **▶️ Generate Video**
+
+---
+
+### 3. Components (3 References)
+
+Generate video from 3 reference images (like Whisk but for video).
+
+#### Requirements
+- ✅ 3 references: Subject + Style + Scene
+- ⚠️ **Only supports Landscape (16:9)**
+
+#### Usage
+1. Click **📁 Subject** → Select subject image
+2. Click **📁 Style** → Select style image
+3. Click **📁 Scene** → Select scene image
+4. Enter prompt describing motion
+5. Aspect ratio automatically locks to **16:9**
+6. Click **▶️ Generate Video**
+
+---
+
+### Video Output
+
+**File Format:**
+```
+output/
+├── 01_prompt_text_slot1_20260108_220500.mp4
+└── ...
+```
+
+**Specifications:**
+- Duration: ~5 seconds
+- FPS: 24
+- Codec: H.264
+- Resolution: 1280x720 (720p) or 1920x1080 (1080p)
+
+---
+
+## 🔀 Workflow System
+
+Node-based visual programming for complex automation.
+
+### Node Types
+
+#### 1. 📷 Reference (Reference Image)
+**Inputs:** None  
+**Outputs:** Image  
+**Function:** Load image from file as input for other nodes
+
+**Usage:**
+1. Right-click canvas → **Add: Reference Standard/Pro**
+2. Click **📁 Browse** → Select image
+3. Drag wire from output socket
+
+**2 Modes:**
+- **Standard**: For Nano Banana (4 refs)
+- **Pro**: For Nano Banana Pro (10 refs)
+
+---
+
+#### 2. 🎨 Generate (Image Generation)
+**Inputs:** Image (0-10 refs)  
+**Outputs:** Image  
+**Function:** Generate image from prompt + references
+
+**Widgets:**
+- Model: Nano Banana / Nano Banana Pro
+- Prompt: Text description
+- Aspect Ratio: 1:1 / 16:9 / 9:16
+- Resolution: 720p / 1080p
+- Seed Mode: Random / Fixed
+- Number of Images: 1-4
+
+**Validation Rules:**
+- Nano Banana: Max 2 Subject + 1 Scene + 1 Style
+- Nano Banana Pro: Max 10 refs, Landscape only
+
+---
+
+#### 3. 💾 Save (Save Image)
+**Inputs:** Image  
+**Outputs:** None  
+**Function:** Save image to file
+
+**Widgets:**
+- **📁 Select Folder**: Choose custom save folder
+- **Filename Prefix**: File name prefix
+
+**Default:** Saves to shared Output folder
+
+---
+
+#### 4. 📂 Batch Loader (Batch Image Loader)
+**Inputs:** None  
+**Outputs:** Image (batch)  
+**Function:** Load multiple images from folder for sequential processing
+
+**Widgets:**
+- **📁 Select Folder**: Choose folder containing images
+- **Sort Order**: A-Z / Z-A / Newest / Oldest / Random
+- **Limit**: All / Custom number
+
+**Batch Processing:**
+```
+Folder: /my_images/
+  ├── cat1.jpg
+  ├── cat2.jpg
+  └── cat3.jpg
+
+→ Workflow runs 3 times (1 for each image)
+```
+
+---
+
+#### 5. 📝 Batch Prompt (Batch Prompt Loader)
+**Inputs:** None  
+**Outputs:** Prompt (batch)  
+**Function:** Load multiple prompts for sequential processing
+
+**Widgets:**
+- **Prompt List**: Enter prompts (one per line)
+- **Mode**: Sequential / Random
+- **Limit**: All / Custom
+
+**Example:**
+```
+A cat on the beach
+A dog in the park
+A bird in the sky
+```
+→ Workflow runs 3 times
+
+---
+
+#### 6. 🔄 Reroute
+**Inputs:** Any  
+**Outputs:** Any  
+**Function:** Intermediate point for cleaner wire routing
+
+---
+
+### Creating Workflows
+
+#### Example 1: Batch Image Generation
+```
+[Batch Prompt] → [Generate] → [Save]
+```
+
+**Goal:** Generate multiple images from list of prompts
+
+**Steps:**
+1. Right-click → **Add: Batch Prompt**
+2. Enter prompts (one per line)
+3. Right-click → **Add: Generate**
+4. Drag wire: Batch Prompt output → Generate prompt input
+5. Configure Generate (model, ratio, etc.)
+6. Right-click → **Add: Save**
+7. Drag wire: Generate output → Save input
+8. Click **▶️ Run Workflow**
+
+---
+
+#### Example 2: Reference Image + Batch Prompts
+```
+[Reference] ──┐
+              ├─→ [Generate] → [Save]
+[Batch Prompt]┘
+```
+
+**Goal:** Create variations of 1 ref image with multiple prompts
+
+**Steps:**
+1. Add Reference node → Load image
+2. Add Batch Prompt node → Enter 10 prompts
+3. Add Generate node
+4. Connect:
+   - Reference output → Generate image input
+   - Batch Prompt output → Generate prompt input
+5. Add Save node → Connect
+6. Run → Generates 10 image variations
+
+---
+
+### Batch Processing
+
+#### Multiple Batch Nodes
+
+Workflow supports **multiple Batch nodes** simultaneously with **intelligent looping**.
+
+**Example:**
+```
+[Batch Loader] ──┐ (5 images)
+                 ├─→ [Generate] → [Save]
+[Batch Prompt] ──┘ (10 prompts)
+```
+
+**Result:** 10 iterations (max count)
+- Iteration 1: image1 + prompt1
+- Iteration 2: image2 + prompt2
+- Iteration 3: image3 + prompt3
+- Iteration 4: image4 + prompt4
+- Iteration 5: image5 + prompt5
+- Iteration 6: image1 + prompt6 (loop back)
+- ...
+
+**Rule:** Modulo wrapping for shorter lists.
+
+---
+
+### Quick Add Menu
+
+Drag wire from socket outward → Menu appears for quick node addition.
+
+**Usage:**
+1. **From OUTPUT socket**: Drag out → Menu → Select node → Auto-connect
+2. **From INPUT socket**: Drag out → Menu → Select node → Auto-connect in reverse
+
+**Keyboard Shortcuts:**
+- `L`: Auto-arrange nodes
+- `Ctrl+C`: Copy selected nodes
+- `Ctrl+V`: Paste nodes
+- `Ctrl+S`: Save workflow
+- `Ctrl+O`: Load workflow
+- [Delete](file:///d:/Data_Online/G-Labs%20Automation/DEV/PC-Home/G-Labs%20Automation%20-%20backup%208%20-%20Copy/src/ui/workflow/node_editor.py#143-196): Delete selected
+
+---
+
+### Save & Load Workflow
+
+**Save:**
+1. Click **💾 Save Workflow**
+2. Choose location & filename (.json)
+
+**Load:**
+1. Click **📂 Load Workflow**
+2. Select .json file
+
+**Format:**
+```json
+{
+  "nodes": [...],
+  "edges": [...],
+  "groups": [...]
+}
+```
+
+---
+
+## 🚀 Advanced Features
+
+### 1. Bulk Prompt Import
+
+Go to **🎨 Image Generation** or **🎥 Video Generation** tab → Click **📥 Import Prompts**
+
+**Supported Formats:**
+
+**TXT File:**
+```
+A cat on the beach
+A dog in the park
+A bird in the sky
+```
+
+**Excel File (.xlsx):**
+| Column A | Column B (ignored) |
+|----------|-------------------|
+| Prompt 1 | ... |
+| Prompt 2 | ... |
+
+**Mode:**
+- **Append**: Add to end of current prompts
+- Supports Unicode & newlines in Excel cells
+
+---
+
+### 2. Parallel Processing
+
+**Plus/Max Accounts:**
+- Configure `Max Threads` = 3-5
+- Workflow runs multiple jobs concurrently
+- Saves time for large batches
+
+**Smart Delays:**
+- Different accounts: 10-20s stagger
+- Same account: 20-30s delay
+
+---
+
+### 3. Captcha Queue System
+
+Automatically handles reCAPTCHA in background.
+
+**How it works:**
+- Worker maintains 1 Chrome instance
+- Queues tokens for workers
+- Avoids blocks from too many captcha requests
+
+---
+
+### 4. Unified Filename Convention
+
+All output files:
+```
+{row:02d}_{prompt}_{slot}_{timestamp}
+
+Example:
+01_A_cat_on_beach_subject1_20260108_220500.jpg
+```
+
+---
+
+## 🛠️ Error Handling
+
+### Common Errors
+
+#### 1. `401 Unauthorized`
+**Cause:** Expired cookies  
+**Solution:**
+1. Get fresh cookies from browser
+2. Update in **Settings** → **Edit account**
+
+---
+
+#### 2. `403 Forbidden / reCAPTCHA Failed`
+**Cause:** Google blocking due to spam requests  
+**Solutions:**
+- Wait 5-10 minutes
+- Reduce thread count
+- Use proxy
+- Refresh browser cookies
+
+---
+
+#### 3. `400 Bad Request - INVALID_ARGUMENT`
+**Cause:** Invalid parameters  
+**Check:**
+- Aspect ratio with model (Pro = Landscape only)
+- Reference count (Nano Banana = 4 max, Pro = 10 max)
+- Image format (JPG, PNG, WebP)
+
+---
+
+#### 4. Workflow `Missing Input`
+**Cause:** Node missing required input  
+**Solution:**
+- Check all required inputs are connected
+- Generate node needs prompt (from widget or socket)
+
+---
+
+#### 5. Cannot Generate Video
+**Causes:**
+- Components mode + not landscape
+- Start image missing (image-to-video mode)
+
+**Solutions:**
+- Change aspect ratio to 16:9
+- Add start image
+
+---
+
+## ❓ FAQ
+
+### Q: What are Free account limitations?
+**A:** 
+- 1 thread (no parallel processing)
+- Daily quota limited by Google
+- All other features available
+
+---
+
+### Q: How to increase speed?
+**A:**
+1. Upgrade to Plus/Max account
+2. Increase `Max Threads` to 3-5
+3. Use multiple Google accounts
+4. Use proxy to avoid rate limits
+
+---
+
+### Q: Where are images/videos saved?
+**A:** 
+- Default: [./output/](file:///d:/Data_Online/G-Labs%20Automation/DEV/PC-Home/G-Labs%20Automation%20-%20backup%208%20-%20Copy/src/ui/workflow/node_editor.py#541-544)
+- Custom: Configure in **Settings** → **Output Folder**
+- Workflow Save node: Can choose separate folder
+
+---
+
+### Q: What size should reference images be?
+**A:**
+- Min: 200x200px
+- Max: 4096x4096px (auto-resize)
+- Format: JPG, PNG, WebP
+- Recommended: 1024x1024px
+
+---
+
+### Q: Is there a limit on workflow nodes?
+**A:** No. However:
+- Many complex nodes = slower
+- Recommend: < 20 nodes/workflow
+
+---
+
+### Q: Can I export to other video formats?
+**A:** 
+- Default output: MP4 (H.264)
+- To convert: Use external FFmpeg
+```bash
+ffmpeg -i video.mp4 -c:v libx265 output.mp4
+```
+
+---
+
+### Q: How to backup workflows?
+**A:**
+1. Save workflows as .json files
+2. Copy to cloud storage (Google Drive, Dropbox)
+3. Version control with Git
+
+---
+
+## 📞 Support
+
+- **Website**: [https://duckmartians.info/](https://duckmartians.info/)
+- **Discord**: [https://discord.gg/munMZEBMw5](https://discord.gg/munMZEBMw5)
+
+---
+
+**Created by Đặng Minh Đức [@duckmartians](https://github.com/duckmartians)**
