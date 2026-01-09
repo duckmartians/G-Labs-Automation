@@ -322,6 +322,33 @@ Tạo video từ 3 ảnh reference (giống Whisk nhưng cho video).
 5. Aspect ratio tự động lock ở **16:9**
 6. Click **▶️ Tạo Video**
 
+## TẠO VIDEO AI (VIDEO CREATOR) - SỨC MẠNH CỦA VEO
+
+Đây là tính năng "sát thủ" với khả năng tối ưu hóa tài nguyên cực tốt.
+
+### 1. Cơ chế tài khoản thông minh
+
+* **Model Veo 3.1 Fast (Lower Priority):** Tool cho phép bạn **tạo vô hạn video** nếu bạn sở hữu tài khoản Gmail gói **ULTRA**. Đây là một món hời lớn so với việc mua credits ở các nền tảng khác.
+* Tool tự động lọc ra các tài khoản đủ điều kiện (Pro/Ultra) để chạy tác vụ video, các tài khoản thường sẽ không bị lãng phí vào đây.
+
+### 2. Tab "Tạo video từ các thành phần" - Đỉnh cao nhận diện
+
+Đây là tính năng thông minh nhất giúp bạn làm video hàng loạt (Bulk Create):
+
+* **Bài toán:** Bạn có 100 câu prompt, và bạn có 100 ảnh nhân vật (Character) + 100 ảnh bối cảnh (Background). Bạn muốn tạo 100 video khớp nhau.
+* **Giải pháp của Tool:**
+* Bạn chỉ cần chọn thư mục chứa ảnh.
+* Tool sẽ **tự động quét tên file ảnh** và so sánh với **từ khóa trong Prompt**.
+* *Ví dụ:* Prompt là "A cat running in the forest". Nếu trong folder ảnh có file `cat.png` và `forest.jpg`, tool sẽ **tự động nhặt** 2 ảnh này ném vào ô Reference Image của dòng prompt đó.
+* Điều này giúp bạn không phải ngồi chọn thủ công từng ảnh cho từng prompt.
+
+
+
+### 3. Các chế độ ghép (Pair Mode)
+
+* **Start - End:** Tạo video chuyển cảnh từ ảnh A sang ảnh B.
+* **Chain Mode (Nối tiếp):** Tự động lấy ảnh End của video 1 làm ảnh Start của video 2. Cực kỳ hữu ích để làm các video storytelling dài và liền mạch.
+
 ---
 
 ### Video Output
