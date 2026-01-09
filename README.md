@@ -4,7 +4,7 @@ Hướng dẫn sử dụng: [![Tiếng Việt](https://img.shields.io/badge/Ti�
 
 User manual: [![English](https://img.shields.io/badge/English-blue)](README.md) 
 
-# G-Labs Automation - Complete User Guide v1.0.4
+# G-Labs Automation - Complete User Guide
 
 **AI Image & Video Generation Automation Tool using Google Labs (Imagen, Veo)**
 
