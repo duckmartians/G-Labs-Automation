@@ -320,6 +320,33 @@ Generate video from 3 reference images (like Whisk but for video).
 5. Aspect ratio automatically locks to **16:9**
 6. Click **▶️ Generate Video**
 
+## AI VIDEO CREATOR – POWERED BY VEO
+
+A "killer feature" with exceptional resource optimization capabilities.
+
+### 1. Smart Account Filtering
+
+* **Veo 3.1 Fast (Lower Priority) Model:** This tool allows **unlimited video generation** if you own an **ULTRA** Gmail account. This is a massive bargain compared to buying credits on other platforms.
+* The tool automatically filters and selects only eligible accounts (Pro/Ultra) for video tasks, ensuring basic accounts aren't wasted on incompatible tasks.
+
+### 2. "Component-based Video" Tab – Intelligent Recognition
+
+This is the smartest feature for Bulk Creation:
+
+* **The Problem:** You have 100 prompts, along with 100 specific Character images and 100 Background images. You want to create 100 matching videos.
+* **The Solution:**
+* Simply select the folder containing your component images.
+* The tool **automatically scans filenames** and compares them with **keywords in your Prompt**.
+* *Example:* Prompt is "A cat running in the forest". If the folder contains `cat.png` and `forest.jpg`, the tool **automatically grabs** these 2 images and inserts them into the Reference Image slots for that specific prompt row.
+* This eliminates the need to manually select images for every single video.
+
+
+
+### 3. Advanced Pair Modes
+
+* **Start - End:** Generates a video transitioning from Image A to Image B.
+* **Sequential Chain:** Automatically uses the "End Frame" of Video 1 as the "Start Frame" of Video 2. Extremely useful for creating long, seamless storytelling videos.
+
 ---
 
 ### Video Output
