@@ -133,7 +133,7 @@ Go to **⚙️ Settings** → **General Settings** section:
 |--------|-------------|-------------------|
 | **Language** | Interface language (Vietnamese/English) | `English` |
 | **Output Folder** | Folder to save images/videos | [./output](file:///d:/Data_Online/G-Labs%20Automation/DEV/PC-Home/G-Labs%20Automation%20-%20backup%208%20-%20Copy/src/ui/workflow/node_editor.py#541-544) |
-| **Max Threads** | Number of concurrent processing threads | `≥10` (Plus/Max) |
+| **Max Threads** | Number of concurrent processing threads | `3` (Plus/Max) |
 | **Auto Upscale** | Auto upscale images to 1080p | `✅` |
 | **Retry Count** | Number of retries on error | `3` |
 
