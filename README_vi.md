@@ -55,6 +55,10 @@ G-Labs Automation là công cụ desktop GUI giúp tự động hóa việc tạ
 
 ---
 
+Khởi chạy **G-LabsAutomation**
+
+<img width="147" height="162" alt="image" src="https://github.com/user-attachments/assets/754240c1-9924-44ef-9214-7aab59d5cfeb" />
+
 ## ⚙️ Cài Đặt Ban Đầu
 
 ### 1. Thêm Tài Khoản Google
