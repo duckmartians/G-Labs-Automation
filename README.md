@@ -55,6 +55,10 @@ G-Labs Automation is a desktop GUI tool that automates AI image and video genera
 
 ---
 
+Run **G-LabsAutomation**
+
+<img width="147" height="162" alt="image" src="https://github.com/user-attachments/assets/754240c1-9924-44ef-9214-7aab59d5cfeb" />
+
 ## ⚙️ Initial Setup
 
 ### 1. Add Google Account
