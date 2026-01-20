@@ -50,7 +50,7 @@ G-Labs Automation is a desktop GUI tool that automates AI image and video genera
 - Google account with access to Google Labs
 
 ### ⚠️ Important Security Notice
-- This application is developed in Python and compiled using Nuitka. Since this is independent software without a Digital Signature, Windows Defender or SmartScreen may mistakenly flag it as a potential threat. This is a common "False Positive".
+- This application is developed in Python and Since this is independent software without a Digital Signature, Windows Defender or SmartScreen may mistakenly flag it as a potential threat. This is a common "False Positive".
 - Safety Guarantee: This tool is completely clean and safe. If you scan it with specialized antivirus software such as Kaspersky, Bitdefender, or ESET, it will be recognized as SAFE. Please select "Run anyway" or add the file to your exception list to proceed.
 
 ---
