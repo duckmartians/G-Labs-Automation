@@ -12,32 +12,6 @@ User manual: [![English](https://img.shields.io/badge/English-blue)](README.md)
 
 ---
 
-## 📋 Table of Contents
-
-- [Introduction](#-introduction)
-- [Initial Setup](#️-initial-setup)
-  - [Add Google Account](#1-add-google-account)
-  - [Configure Proxy (Optional)](#2-configure-proxy-optional)
-  - [General Settings](#3-general-settings)
-- [Image Generation with Imagen](#️-image-generation-with-imagen)
-  - [Nano Banana (Standard)](#nano-banana-standard)
-  - [Nano Banana Pro (Advanced)](#nano-banana-pro-advanced)
-  - [Whisk](#whisk)
-- [Video Generation with Veo](#-video-generation-with-veo)
-  - [Text-to-Video](#1-text-to-video)
-  - [Image-to-Video](#2-image-to-video)
-  - [Components (3 References)](#3-components-3-references)
-- [Workflow System](#-workflow-system)
-  - [Node Types](#node-types)
-  - [Creating Workflows](#creating-workflows)
-  - [Batch Processing](#batch-processing)
-  - [Save & Load Workflow](#save--load-workflow)
-- [Advanced Features](#-advanced-features)
-- [Error Handling](#-error-handling)
-- [FAQ](#-faq)
-
----
-
 ## 🎯 Introduction
 
 G-Labs Automation is a desktop GUI tool that automates AI image and video generation through Google Labs APIs:
@@ -103,6 +77,56 @@ Before you begin, load the "ingredients" (worker accounts) for this machine.
 * To manage a large number of accounts and run multiple threads without being blocked by Google IP, you should assign a Proxy to each account.
 * Click the "Edit" icon (pencil) next to the account to add a Proxy (HTTP/SOCKS5).
 > **Optimal Feature:** The tool has an **Auto-Renew Token** mechanism. When the Google Token expires, the tool will automatically open a background browser to renew the session, ensuring uninterrupted 24/7 operation.
+
+---
+
+# Guide: Fix Issue Creating Images/Videos (Nano Banana Pro & Veo 3.1)
+
+## Problem
+
+If you are unable to generate **images with nano banana pro** or **videos with veo 3.1**,  
+there is a high chance that **your device has been restricted by Google**.
+
+This restriction may persist even if you try:
+- Fake IP
+- VPN
+- Proxy
+- DNS changes
+
+In most cases, these methods do **not** work reliably.
+
+## Working Solution
+
+The only method that currently works (tested) is using **Proton VPN (Free version)**.
+
+🔗 https://protonvpn.com/free-vpn
+
+### Why Proton VPN?
+- Completely **free** to use
+- No credit card required
+- Stable and reliable
+- Paid plans are also **very affordable** if you need more features
+
+## Steps
+
+1. Download and install **Proton VPN**
+2. Use the **Free plan**
+3. Connect to any available free server
+4. Retry creating images with **nano banana pro** or videos with **veo 3.1**
+
+## Notes
+
+- This workaround may not be permanent
+- Effectiveness depends on Google’s current restriction policies
+- If one server does not work, try reconnecting to another free server
+
+## Conclusion
+
+If your device is blocked and nothing else works,  
+**Proton VPN Free** is currently the most effective solution to bypass the limitation.
+
+Give it a try.
+
 
 ---
 
