@@ -12,32 +12,6 @@ User manual: [![English](https://img.shields.io/badge/English-blue)](README.md)
 
 ---
 
-## 📋 Mục Lục
-
-- [Giới Thiệu](#-giới-thiệu)
-- [Cài Đặt Ban Đầu](#️-cài-đặt-ban-đầu)
-  - [Thêm Tài Khoản Google](#1-thêm-tài-khoản-google)
-  - [Cấu Hình Proxy (Tùy Chọn)](#2-cấu-hình-proxy-tùy-chọn)
-  - [Cài Đặt Chung](#3-cài-đặt-chung)
-- [Tạo Ảnh với Imagen](#️-tạo-ảnh-với-imagen)
-  - [Nano Banana (Standard)](#nano-banana-standard)
-  - [Nano Banana Pro (Advanced)](#nano-banana-pro-advanced)
-  - [Whisk](#whisk)
-- [Tạo Video với Veo](#-tạo-video-với-veo)
-  - [Text-to-Video](#1-text-to-video)
-  - [Image-to-Video](#2-image-to-video)
-  - [Components (3 References)](#3-components-3-references)
-- [Workflow System](#-workflow-system)
-  - [Các Loại Node](#các-loại-node)
-  - [Tạo Workflow](#tạo-workflow)
-  - [Batch Processing](#batch-processing)
-  - [Lưu & Load Workflow](#lưu--load-workflow)
-- [Tính Năng Nâng Cao](#-tính-năng-nâng-cao)
-- [Xử Lý Lỗi](#-xử-lý-lỗi)
-- [FAQ](#-faq)
-
----
-
 ## 🎯 Giới Thiệu
 
 G-Labs Automation là công cụ desktop GUI giúp tự động hóa việc tạo ảnh và video AI thông qua Google Labs APIs:
@@ -105,6 +79,59 @@ Trước khi bắt đầu, hãy nạp "nguyên liệu" (tài khoản worker) cho
 * Bấm vào biểu tượng "Sửa" (cây bút) bên cạnh tài khoản để thêm Proxy (HTTP/SOCKS5).
 
 > **Điểm tối ưu:** Tool có cơ chế **Auto-Renew Token**. Khi Token của Google hết hạn, tool sẽ tự động mở trình duyệt ngầm để gia hạn phiên làm việc (Session), đảm bảo quy trình treo máy 24/7 không bị gián đoạn.
+
+---
+
+# Hướng dẫn: Khắc phục sự cố tạo ảnh/video (Nano Banana Pro & Veo 3.1)
+
+## Vấn đề
+
+Nếu bạn không thể tạo **ảnh với Nano Banana Pro** hoặc **video với Veo 3.1**,
+
+rất có thể **thiết bị của bạn đã bị Google hạn chế**.
+
+Sự hạn chế này có thể vẫn tồn tại ngay cả khi bạn thử:
+
+- IP giả
+- VPN
+- Proxy
+- Thay đổi DNS
+
+Trong hầu hết các trường hợp, các phương pháp này **không** hoạt động hiệu quả.
+
+## Giải pháp hiệu quả
+
+Phương pháp duy nhất hiện đang hoạt động (đã được kiểm tra) là sử dụng **Proton VPN (phiên bản miễn phí)**.
+
+🔗 https://protonvpn.com/free-vpn
+
+### Tại sao nên dùng Proton VPN?
+
+- Hoàn toàn **miễn phí** sử dụng
+- Không cần thẻ tín dụng
+- Ổn định và đáng tin cậy
+- Các gói trả phí cũng **rất phải chăng** nếu bạn cần nhiều tính năng hơn
+
+## Các bước
+
+1. Tải xuống và cài đặt **Proton VPN**
+2. Sử dụng **gói miễn phí**
+3. Kết nối với bất kỳ máy chủ miễn phí nào có sẵn
+4. Thử lại việc tạo ảnh bằng **nano banana pro** hoặc video bằng **veo 3.1**
+
+## Lưu ý
+
+- Giải pháp này có thể không vĩnh viễn
+- Hiệu quả phụ thuộc vào chính sách hạn chế hiện tại của Google
+- Nếu một máy chủ không hoạt động, hãy thử kết nối lại với máy chủ miễn phí khác
+
+## Kết luận
+
+Nếu thiết bị của bạn bị chặn và không có giải pháp nào khác hiệu quả,
+
+**Proton VPN Free** hiện là giải pháp hiệu quả nhất để vượt qua hạn chế này.
+
+Hãy thử xem.
 
 ---
 
