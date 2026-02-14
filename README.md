@@ -188,19 +188,19 @@ License is managed in **Settings → License tab**.
 
 **PLUS 💎 Plan:**
 
-| Duration | VND |
+| Duration | USD |
 |----------|-----|
-| 1 month | 79,000 |
-| 6 months | 399,000 |
-| 1 year | 799,000 |
+| 1 month | 3$ |
+| 6 months | 15$ |
+| 1 year | 30$ |
 
 **MAX 👑 Plan:**
 
-| Duration | VND |
+| Duration | USD$ |
 |----------|-----|
-| 1 month | 149,000 |
-| 6 months | 749,000 |
-| 1 year | 1,499,000 |
+| 1 month | 6$ |
+| 6 months | 30$ |
+| 1 year | 60$ |
 
 **Payment methods:**
 - 🇻🇳 **VietQR bank transfer** (VPBank, auto-generated QR code)
