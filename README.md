@@ -196,7 +196,7 @@ License is managed in **Settings → License tab**.
 
 **MAX 👑 Plan:**
 
-| Duration | USD$ |
+| Duration | USD |
 |----------|-----|
 | 1 month | 6$ |
 | 6 months | 30$ |
