@@ -16,6 +16,8 @@
 
 > Complete user guide for **G-Labs Automation** — an automated AI image and video generation application.
 
+> 🎬 **Video Tutorial:** [Watch on YouTube](https://www.youtube.com/watch?v=Oqr7fGJVilE)
+
 ## Table of Contents
 
 | # | Section | Description |
