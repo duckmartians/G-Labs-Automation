@@ -16,6 +16,8 @@
 
 > Tài liệu hướng dẫn sử dụng chi tiết cho **G-Labs Automation** — ứng dụng tạo ảnh và video AI tự động.
 
+> 🎬 **Video hướng dẫn:** [Xem trên YouTube](https://www.youtube.com/watch?v=Opoc__tGX1s)
+
 ## Mục Lục
 
 | # | Nội dung | Mô tả |
