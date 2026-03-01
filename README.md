@@ -192,17 +192,17 @@ License is managed in **Settings → License tab**.
 
 | Duration | USD |
 |----------|-----|
-| 1 month | 3$ |
-| 6 months | 15$ |
-| 1 year | 30$ |
+| 1 month | $3 |
+| 6 months | $15 |
+| 1 year | $30 |
 
 **MAX 👑 Plan:**
 
 | Duration | USD |
 |----------|-----|
-| 1 month | 6$ |
-| 6 months | 30$ |
-| 1 year | 60$ |
+| 1 month | $6 |
+| 6 months | $30 |
+| 1 year | $60 |
 
 **Payment methods:**
 - 🇻🇳 **VietQR bank transfer** (VPBank, auto-generated QR code)
@@ -444,7 +444,7 @@ Local REST API server for external tools (n8n, Make.com, Zapier, Python...).
 | Tab | Content |
 |-----|---------|
 | **Google Accounts** | Add/remove/renew Google accounts |
-| **Proxy Pool** | Custom proxies (HTTP/SOCKS5) + WARP VPN + Auto-Rotate |
+| **Proxy Pool** | Custom proxies (HTTP/SOCKS5) + Auto-Rotate |
 | **License & Upgrade** | Login/purchase Plus/Max, periodic auto-check |
 | **General Settings** | Language (9+), dark/light theme, author info |
 | **Logs** | Detailed activity logs |
@@ -456,7 +456,6 @@ Local REST API server for external tools (n8n, Make.com, Zapier, Python...).
 | 403 Forbidden | Refresh session → rotate account |
 | Timeout | Retry up to 3 times |
 | Captcha | Browser auto-solves, 10 tokens/session |
-| Connection lost | WARP auto-reconnects |
 | No accounts available | Stops after 5 consecutive failures |
 
 ### 7.4 Auto-Update
@@ -464,6 +463,24 @@ Local REST API server for external tools (n8n, Make.com, Zapier, Python...).
 App checks version from server → shows notification → downloads → replaces files → restarts.
 
 </details>
+
+---
+
+## ✅ Tips to Reduce 403 Errors
+
+### ✅ Fixed
+- Reduced **403 errors** by adding more **regular email addresses** 📧
+- These emails are **only used to run the captcha code** 🤖
+
+### 🔄 Changed
+- In **account settings**, under the **options** section ⚙️:
+  - **Disable image** or **video processing** 🖼️🎬
+  - After disabling, the system will only execute the **captcha code**, without processing images or videos
+![image](https://github.com/user-attachments/assets/a30700b4-07da-4a2d-9f36-c72aaea9120b)
+
+### 📝 Notes
+- More email addresses ➜ lower chance of encountering **403 errors** 🚫
+- This setup **does not affect** any features outside of captcha
 
 ---
 
