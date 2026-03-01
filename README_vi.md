@@ -444,7 +444,7 @@ Máy chủ API cục bộ cho công cụ bên ngoài (n8n, Make.com, Zapier, Pyt
 | Tab | Nội dung |
 |-----|----------|
 | **Tài khoản Google** | Thêm/xóa/gia hạn tài khoản Google |
-| **Proxy Pool** | Proxy tùy chỉnh (HTTP/SOCKS5) + WARP VPN + Tự động xoay IP |
+| **Proxy Pool** | Proxy tùy chỉnh (HTTP/SOCKS5) + Tự động xoay IP |
 | **Bản quyền & Nâng cấp** | Đăng nhập/mua Plus/Max, tự động kiểm tra định kỳ |
 | **Cài đặt chung** | Ngôn ngữ (9+), giao diện sáng/tối, thông tin tác giả |
 | **Logs** | Nhật ký hoạt động chi tiết |
@@ -456,7 +456,6 @@ Máy chủ API cục bộ cho công cụ bên ngoài (n8n, Make.com, Zapier, Pyt
 | 403 (Bị từ chối) | Làm mới phiên → xoay tài khoản |
 | Hết thời gian chờ | Thử lại tối đa 3 lần |
 | Captcha | Trình duyệt tự giải, 10 lượt/phiên |
-| Mất kết nối | WARP tự kết nối lại |
 | Hết tài khoản | Dừng sau 5 lần liên tiếp không tìm được |
 
 ### 7.4 Cập Nhật Tự Động
@@ -464,6 +463,24 @@ Máy chủ API cục bộ cho công cụ bên ngoài (n8n, Make.com, Zapier, Pyt
 Ứng dụng kiểm tra phiên bản từ máy chủ → thông báo → tải xuống → thay file → khởi động lại.
 
 </details>
+
+---
+
+## ✅ Mẹo giảm lỗi 403
+
+### ✅ Đã khắc phục
+- Giảm lỗi **403** bằng cách thêm nhiều **địa chỉ email thông thường** 📧
+- Các email này **chỉ được sử dụng cho việc chạy mã captcha** 🤖
+
+### 🔄 Thay đổi
+- Trong **cài đặt tài khoản**, tại cột **tùy chọn** ⚙️:
+  - Bỏ chọn **xử lý hình ảnh** hoặc **xử lý video** 🖼️🎬
+  - Sau khi tắt, hệ thống chỉ chạy **mã captcha**, không xử lý nội dung hình ảnh hay video
+![image](https://github.com/user-attachments/assets/a30700b4-07da-4a2d-9f36-c72aaea9120b)
+
+### 📝 Ghi chú
+- Số lượng email càng nhiều ➜ khả năng gặp lỗi **403** càng thấp 🚫
+- Thiết lập này **không ảnh hưởng** đến các chức năng khác ngoài captcha
 
 ---
 
