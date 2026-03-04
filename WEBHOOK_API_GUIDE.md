@@ -61,7 +61,7 @@ X-API-Key: YOUR_API_KEY
 | Field | Type | Required | Default | Description |
 |---|---|---|---|---|
 | `prompt` | string | ✅ | — | Image description |
-| `model` | string | — | `imagen4` | Model: `imagen4`, `nano_banana`, `nano_banana_pro` |
+| `model` | string | — | `imagen4` | Model: `imagen4`, `nano_banana`, `nano_banana_2`, `nano_banana_pro` |
 | `count` | integer | — | `1` | Number of images (1–8) |
 | `aspect_ratio` | string | — | `1:1` | Ratio: `1:1`, `16:9`, `9:16`, `4:3`, `3:4` |
 
