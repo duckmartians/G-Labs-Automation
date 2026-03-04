@@ -28,7 +28,7 @@
 | 4 | [Tạo Ảnh AI](#phan-4) | 3 model AI, cấu hình, xử lý hàng loạt |
 | 5 | [Tạo Video AI](#phan-5) | 3 tab: Văn bản/Ảnh, Thành phần, Khung hình |
 | 6 | [Biên Tập Quy Trình](#phan-6) | Trình soạn thảo trực quan dạng node |
-| 7 | [Tính Năng Bổ Sung](#phan-7) | Webhook API, Cài đặt, Khôi phục lỗi |
+| 7 | [Tính Năng Bổ Sung](#phan-7) | Webhook API, Extension Auth, Cài đặt, Khôi phục lỗi |
 
 ---
 
@@ -419,13 +419,16 @@ Dùng thuật toán **sắp xếp topo** để xác định thứ tự chạy. T
 
 Máy chủ API cục bộ cho công cụ bên ngoài (n8n, Make.com, Zapier, Python...).
 
+> 📖 **Tài liệu tích hợp chi tiết:** [WEBHOOK_API_GUIDE_VI.md](WEBHOOK_API_GUIDE_VI.md) (bao gồm code mẫu Python, JavaScript, cURL)
+
 | Đường dẫn | Phương thức | Xác thực | Mô tả |
 |------------|-------------|----------|-------|
 | `/api/health` | GET | ❌ | Kiểm tra máy chủ |
 | `/api/image/generate` | POST | ✅ | Gửi yêu cầu tạo ảnh |
+| `/api/video/generate` | POST | ✅ | Gửi yêu cầu tạo video |
 | `/api/status/{task_id}` | GET | ✅ | Xem trạng thái |
 | `/api/result/{task_id}` | GET | ✅ | Lấy kết quả |
-| `/api/files/{filename}` | GET | ❌ | Tải ảnh về |
+| `/api/files/{filename}` | GET | ✅ | Tải file về |
 | `/api/tasks` | GET | ✅ | Danh sách tác vụ |
 
 **Xác thực:** Thêm header `X-API-Key: KHÓA_CỦA_BẠN` | **Cổng:** 1024-65535 (mặc định 8765)
@@ -439,13 +442,14 @@ Máy chủ API cục bộ cho công cụ bên ngoài (n8n, Make.com, Zapier, Pyt
 }
 ```
 
-### 7.2 Cài Đặt (5 Tab)
+### 7.2 Cài Đặt (6 Tab)
 
 | Tab | Nội dung |
 |-----|----------|
 | **Tài khoản Google** | Thêm/xóa/gia hạn tài khoản Google |
-| **Proxy Pool** | Proxy tùy chỉnh (HTTP/SOCKS5) + Tự động xoay IP |
+| **Proxy Pool** | Proxy tùy chỉnh (HTTP/SOCKS5) + WARP VPN + Tự động xoay IP |
 | **Bản quyền & Nâng cấp** | Đăng nhập/mua Plus/Max, tự động kiểm tra định kỳ |
+| **Chế độ Xác thực** | Chọn chế độ: Tích hợp sẵn hoặc Chrome Extension ([xem 7.5](#ext-auth)) |
 | **Cài đặt chung** | Ngôn ngữ (9+), giao diện sáng/tối, thông tin tác giả |
 | **Logs** | Nhật ký hoạt động chi tiết |
 
@@ -455,32 +459,61 @@ Máy chủ API cục bộ cho công cụ bên ngoài (n8n, Make.com, Zapier, Pyt
 |-----------|-------|
 | 403 (Bị từ chối) | Làm mới phiên → xoay tài khoản |
 | Hết thời gian chờ | Thử lại tối đa 3 lần |
-| Captcha | Trình duyệt tự giải, 10 lượt/phiên |
+| Captcha (Tích hợp) | Trình duyệt tự giải, 10 lượt/phiên, xoay profile |
+| Captcha (Extension) | Chrome Extension tự xử lý, yêu cầu giữ Chrome mở |
+| Mất kết nối | WARP tự kết nối lại |
 | Hết tài khoản | Dừng sau 5 lần liên tiếp không tìm được |
 
 ### 7.4 Cập Nhật Tự Động
 
 Ứng dụng kiểm tra phiên bản từ máy chủ → thông báo → tải xuống → thay file → khởi động lại.
 
+<a name="ext-auth"></a>
+
+### 7.5 Chế Độ Xác Thực Chrome Extension 🧩
+
+Ngoài chế độ xác thực **Tích hợp sẵn** (tự động sử dụng trình duyệt Chromium nội bộ), ứng dụng hỗ trợ chế độ **Chrome Extension** — sử dụng phiên trình duyệt Chrome thật của bạn.
+
+**So sánh 2 chế độ:**
+
+| | 🖥️ Tích hợp sẵn (Mặc định) | 🧩 Chrome Extension |
+|---|---|---|
+| **Thiết lập** | Không cần | Cài extension từ Chrome Web Store |
+| **Trình duyệt** | Chromium tự động (ẩn) | Chrome thật của bạn |
+| **Ưu điểm** | Hoàn toàn tự động, không cần tương tác | Dùng phiên đăng nhập thật, ổn định hơn |
+| **Yêu cầu** | Không | Giữ Chrome mở với trang Labs |
+
+**Cách thiết lập Chrome Extension:**
+
+1. **Cài đặt Extension** — Cài extension **G-Labs Automation - Auth Helper** từ Chrome Web Store (nút trong Cài đặt → Chế độ Xác thực)
+2. **Đăng nhập Google Labs** — Mở [labs.google/fx/tools/flow](https://labs.google/fx/tools/flow) trong Chrome và đăng nhập tài khoản Google
+3. **Bắt đầu tạo ảnh** — Quay lại G-Labs Automation, extension tự động kết nối và xử lý xác thực ở nền
+
+> ⚠️ **Lưu ý:** Giữ Chrome mở cùng trang Labs trong khi tạo ảnh hoặc video. Nếu gặp lỗi, tải lại trang Labs trên Chrome.
+
+**Trạng thái kết nối:** Xem trong Cài đặt → Chế độ Xác thực:
+- 🟢 **Extension: Đã kết nối** — Sẵn sàng hoạt động
+- 🔴 **Extension: Chưa kết nối** — Kiểm tra Chrome đã mở trang Labs chưa
+
+### 7.6 Phần Mềm Xung Đột
+
+Các phần mềm sau có thể gây **xung đột** khi chạy đồng thời với G-Labs Automation, dẫn đến lỗi `Environment check failed — worker cannot start`.
+
+| # | Phần mềm | Loại |
+|---|---|---|
+| 1 | **Fiddler** / Fiddler Everywhere | HTTP Debugging Proxy |
+| 2 | **Charles Proxy** | HTTP Proxy / Monitor |
+| 3 | **mitmproxy** / mitmweb / mitmdump | Network Proxy Tool |
+| 4 | **Burp Suite** / Burp Loader | Web Testing Platform |
+| 5 | **Proxyman** | HTTP Debugging Proxy |
+| 6 | **HTTP Toolkit** | HTTP Debugging Tool |
+| 7 | **HTTP Debugger Pro** | Network Analyzer |
+| 8 | **Reqable** | API Debugging Tool |
+| 9 | **OWASP ZAP** (Zed Attack Proxy) | Web App Scanner |
+
+> ⚠️ **Khắc phục:** Tắt hoàn toàn phần mềm xung đột trước khi sử dụng, sau đó khởi động lại ứng dụng.
+
 </details>
-
----
-
-## ✅ Mẹo giảm lỗi 403
-
-### ✅ Đã khắc phục
-- Giảm lỗi **403** bằng cách thêm nhiều **địa chỉ email thông thường** 📧
-- Các email này **chỉ được sử dụng cho việc chạy mã captcha** 🤖
-
-### 🔄 Thay đổi
-- Trong **cài đặt tài khoản**, tại cột **tùy chọn** ⚙️:
-  - Bỏ chọn **xử lý hình ảnh** hoặc **xử lý video** 🖼️🎬
-  - Sau khi tắt, hệ thống chỉ chạy **mã captcha**, không xử lý nội dung hình ảnh hay video
-![image](https://github.com/user-attachments/assets/a30700b4-07da-4a2d-9f36-c72aaea9120b)
-
-### 📝 Ghi chú
-- Số lượng email càng nhiều ➜ khả năng gặp lỗi **403** càng thấp 🚫
-- Thiết lập này **không ảnh hưởng** đến các chức năng khác ngoài captcha
 
 ---
 
