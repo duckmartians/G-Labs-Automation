@@ -25,7 +25,7 @@
 | 1 | [Overview & Installation](#section-1) | Introduction, requirements, installation |
 | 2 | [Account Management](#section-2) | Add, remove, renew Google accounts |
 | 3 | [License System](#section-3) | Basic/Plus/Max plans, payment |
-| 4 | [AI Image Creator](#section-4) | 3 AI models, config, batch processing |
+| 4 | [AI Image Creator](#section-4) | 4 AI models, config, batch processing |
 | 5 | [AI Video Creator](#section-5) | 3 tabs: Text, Compose, Scene Builder |
 | 6 | [Workflow Editor](#section-6) | Visual node-based editor |
 | 7 | [Additional Features](#section-7) | Webhook API, Extension Auth, Settings, Recovery |
@@ -41,11 +41,11 @@
 **G-Labs Automation** is a Windows desktop application that automates AI image and video generation. It supports multiple AI models (Nano Banana, Imagen 4, Nano Banana Pro), batch processing, and advanced automation workflows.
 
 **Key features:**
-- **AI Image Creator**: 3 models, reference images, upscaling, batch processing
+- **AI Image Creator**: 4 models, reference images, upscaling, batch processing
 - **AI Video Creator**: Text-to-Video, Scene Builder, Compose
 - **Workflow Editor**: Visual node-based editor for automation pipelines
 - **Webhook API**: Local REST API server for external integrations
-- **Multi-language**: Supports 2 languages
+- **Multi-language**: Vietnamese & English
 
 ### 1.2 System Requirements
 
@@ -229,20 +229,20 @@ The system automatically checks license status periodically (silently, no popups
 | **Left panel** | Configuration + Prompt input + Control buttons |
 | **Right panel** | 7-column prompt table + Toolbar |
 
-### 4.2 Three AI Models
+### 4.2 Four AI Models
 
-| Feature | 🍌 Nano Banana | 🖼️ Imagen 4 | 🍌 Nano Banana Pro |
-|---------|---------------|-------------|-------------------|
-| **Reference mode** | Whisk — categorized | Whisk — categorized | Flow — uncategorized |
-| **Max references** | 5 (Subject ×3, Scene ×1, Style ×1) | 5 (Subject ×3, Scene ×1, Style ×1) | 10 (generic, uncategorized) |
-| **Captcha** | ❌ | ❌ | ✅ Automatic |
-| **Aspect Ratio** | 16:9, 9:16, 1:1 | 16:9, 9:16, 4:3, 3:4, 1:1 | 16:9, 9:16 |
+| Feature | 🍌 Nano Banana | 🖼️ Imagen 4 | 🍌 Nano Banana 2 | 🍌 Nano Banana Pro |
+|---------|---------------|-------------|-------------------|-------------------|
+| **Reference mode** | Whisk — categorized | Whisk — categorized | Flow — uncategorized | Flow — uncategorized |
+| **Max references** | 5 (Subject ×3, Scene ×1, Style ×1) | 5 (Subject ×3, Scene ×1, Style ×1) | 10 (generic, uncategorized) | 10 (generic, uncategorized) |
+| **Captcha** | ❌ | ❌ | ✅ Automatic | ✅ Automatic |
+| **Aspect Ratio** | 16:9, 9:16, 1:1 | 16:9, 9:16, 4:3, 3:4, 1:1 | 16:9, 9:16 | 16:9, 9:16 |
 
 ### 4.3 Configuration
 
 | Setting | Details |
 |---------|---------|
-| **Model** | Nano Banana (default), Imagen 4, Nano Banana Pro |
+| **Model** | Nano Banana (default), Imagen 4, Nano Banana 2, Nano Banana Pro |
 | **Quality** | 1K (original), 2K (Plus/Max), 4K (Plus/Max + Ultra account) |
 | **Aspect Ratio** | Depends on model (see table above) |
 | **Images/Prompt** | 1-4 (Basic: 1 only) |
@@ -392,7 +392,7 @@ A visual node-based editor — connect processing steps into an automated pipeli
 |------|-------|--------|-------------|
 | 📦 **Batch Image Loader** | — | Image | Load images from folder (sort: A-Z, newest/oldest, random, match prompt) |
 | 📝 **Batch Prompt Loader** | — | Prompt | Prompt list (sequential/random, with count limit) |
-| 🖼 **Generate Image** | Ref, Prompt | Image | Generate image (3 models, ratio, seed, resolution) |
+| 🖼 **Generate Image** | Ref, Prompt | Image | Generate image (4 models, ratio, seed, resolution) |
 | 📎 **Reference Image** | Image | Ref | For Nano Banana / Imagen 4 — categorized (Subject/Scene/Style) |
 | 📎 **Reference Image (Pro)** | Image | Ref | For Nano Banana Pro — uncategorized |
 | 💾 **Save Image** | Image | — | Save image (prefix + folder) |
@@ -450,7 +450,7 @@ Local REST API server for external tools (n8n, Make.com, Zapier, Python...).
 | **Proxy Pool** | Custom proxies (HTTP/SOCKS5) + WARP VPN + Auto-Rotate |
 | **License & Upgrade** | Login/purchase Plus/Max, periodic auto-check |
 | **Authentication Mode** | Choose mode: Built-in (automatic) or Chrome Extension ([see 7.5](#ext-auth)) |
-| **General Settings** | Language (9+), dark/light theme, author info |
+| **General Settings** | Language (Vietnamese / English), dark/light theme, author info |
 | **Logs** | Detailed activity logs |
 
 ### 7.3 Recovery & Error Handling
