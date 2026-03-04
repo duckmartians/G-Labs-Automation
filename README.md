@@ -45,7 +45,7 @@
 - **AI Video Creator**: Text-to-Video, Scene Builder, Compose
 - **Workflow Editor**: Visual node-based editor for automation pipelines
 - **Webhook API**: Local REST API server for external integrations
-- **Multi-language**: Supports 9+ languages
+- **Multi-language**: Supports 2 languages
 
 ### 1.2 System Requirements
 
