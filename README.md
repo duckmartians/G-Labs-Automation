@@ -433,11 +433,28 @@ Local REST API server for external tools (n8n, Make.com, Zapier, Python...).
 
 **Auth:** Header `X-API-Key: YOUR_KEY` | **Port:** 1024-65535 (default 8765)
 
+**Image models:** `imagen4`, `nano_banana`, `nano_banana_2`, `nano_banana_pro`
+
+**Video models:**
+
+| Model | Display Name | Credits | Note |
+|---|---|---|---|
+| `veo_31_fast_relaxed` | Veo 3.1 Fast Relaxed | 0 | Default, low priority (ULTRA only) |
+| `veo_31_fast` | Veo 3.1 Fast | 10 | Normal priority |
+| `veo_31_quality` | Veo 3.1 Quality | 100 | Highest quality |
+
 ```json
 // POST /api/image/generate
 {
   "prompt": "image description",
   "model": "imagen4",
+  "aspect_ratio": "16:9"
+}
+
+// POST /api/video/generate
+{
+  "prompt": "video description",
+  "model": "veo_31_fast",
   "aspect_ratio": "16:9"
 }
 ```
