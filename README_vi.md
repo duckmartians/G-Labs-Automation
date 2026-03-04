@@ -45,7 +45,7 @@
 - **Tạo Video AI**: Văn bản thành video, Chuỗi cảnh, Ghép ảnh thành phần
 - **Trình Soạn Luồng**: Biên tập trực quan dạng node cho quy trình tự động
 - **Webhook API**: Máy chủ API cục bộ để tích hợp với hệ thống bên ngoài
-- **Đa ngôn ngữ**: Hỗ trợ 9+ ngôn ngữ
+- **Đa ngôn ngữ**: Hỗ trợ 2 ngôn ngữ
 
 ### 1.2 Yêu Cầu Hệ Thống
 
