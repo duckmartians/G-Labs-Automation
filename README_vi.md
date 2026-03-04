@@ -433,11 +433,28 @@ Máy chủ API cục bộ cho công cụ bên ngoài (n8n, Make.com, Zapier, Pyt
 
 **Xác thực:** Thêm header `X-API-Key: KHÓA_CỦA_BẠN` | **Cổng:** 1024-65535 (mặc định 8765)
 
+**Model ảnh:** `imagen4`, `nano_banana`, `nano_banana_2`, `nano_banana_pro`
+
+**Model video:**
+
+| Model | Tên hiển thị | Credit | Ghi chú |
+|---|---|---|---|
+| `veo_31_fast_relaxed` | Veo 3.1 Fast Relaxed | 0 | Mặc định, ưu tiên thấp (chỉ ULTRA) |
+| `veo_31_fast` | Veo 3.1 Fast | 10 | Ưu tiên bình thường |
+| `veo_31_quality` | Veo 3.1 Quality | 100 | Chất lượng cao nhất |
+
 ```json
 // POST /api/image/generate
 {
   "prompt": "mô tả ảnh",
   "model": "imagen4",
+  "aspect_ratio": "16:9"
+}
+
+// POST /api/video/generate
+{
+  "prompt": "mô tả video",
+  "model": "veo_31_fast",
   "aspect_ratio": "16:9"
 }
 ```
