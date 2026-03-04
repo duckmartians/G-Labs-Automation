@@ -103,8 +103,16 @@ X-API-Key: YOUR_API_KEY
 | Field | Type | Required | Default | Description |
 |---|---|---|---|---|
 | `prompt` | string | ✅ | — | Video description |
-| `model` | string | — | `veo_31_fast_relaxed` | Video model |
+| `model` | string | — | `veo_31_fast_relaxed` | Model: `veo_31_fast_relaxed`, `veo_31_fast`, `veo_31_quality` |
 | `aspect_ratio` | string | — | `16:9` | Ratio: `16:9`, `9:16` |
+
+**Available video models:**
+
+| `model` value | Display Name | Credits | Note |
+|---|---|---|---|
+| `veo_31_fast_relaxed` | Veo 3.1 Fast Relaxed | 0 | Default. Low priority (ULTRA only) |
+| `veo_31_fast` | Veo 3.1 Fast | 10 | Normal priority |
+| `veo_31_quality` | Veo 3.1 Quality | 100 | Highest quality |
 
 **Example:**
 ```bash
@@ -113,7 +121,7 @@ curl -X POST http://127.0.0.1:8765/api/video/generate \
   -H "Content-Type: application/json" \
   -d '{
     "prompt": "a golden retriever running on the beach, slow motion",
-    "model": "veo_31_fast_relaxed",
+    "model": "veo_31_fast",
     "aspect_ratio": "16:9"
   }'
 ```
