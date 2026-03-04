@@ -25,7 +25,7 @@
 | 1 | [Tổng Quan & Cài Đặt](#phan-1) | Giới thiệu, yêu cầu hệ thống, cài đặt |
 | 2 | [Quản Lý Tài Khoản](#phan-2) | Thêm, xóa, gia hạn tài khoản Google |
 | 3 | [Hệ Thống Bản Quyền](#phan-3) | 3 gói Basic/Plus/Max, thanh toán |
-| 4 | [Tạo Ảnh AI](#phan-4) | 3 model AI, cấu hình, xử lý hàng loạt |
+| 4 | [Tạo Ảnh AI](#phan-4) | 4 model AI, cấu hình, xử lý hàng loạt |
 | 5 | [Tạo Video AI](#phan-5) | 3 tab: Văn bản/Ảnh, Thành phần, Khung hình |
 | 6 | [Biên Tập Quy Trình](#phan-6) | Trình soạn thảo trực quan dạng node |
 | 7 | [Tính Năng Bổ Sung](#phan-7) | Webhook API, Extension Auth, Cài đặt, Khôi phục lỗi |
@@ -41,11 +41,11 @@
 **G-Labs Automation** là ứng dụng desktop Windows tự động hóa việc tạo ảnh và video bằng AI. Ứng dụng hỗ trợ nhiều model AI (Nano Banana, Imagen 4, Nano Banana Pro), xử lý hàng loạt, và tích hợp luồng tự động hóa nâng cao.
 
 **Tính năng chính:**
-- **Tạo Ảnh AI**: 3 model, hỗ trợ ảnh tham chiếu, nâng cấp độ phân giải, xử lý hàng loạt
+- **Tạo Ảnh AI**: 4 model, hỗ trợ ảnh tham chiếu, nâng cấp độ phân giải, xử lý hàng loạt
 - **Tạo Video AI**: Văn bản thành video, Chuỗi cảnh, Ghép ảnh thành phần
 - **Trình Soạn Luồng**: Biên tập trực quan dạng node cho quy trình tự động
 - **Webhook API**: Máy chủ API cục bộ để tích hợp với hệ thống bên ngoài
-- **Đa ngôn ngữ**: Hỗ trợ 2 ngôn ngữ
+- **Đa ngôn ngữ**: Tiếng Việt & English
 
 ### 1.2 Yêu Cầu Hệ Thống
 
@@ -229,20 +229,20 @@ Hệ thống tự động kiểm tra trạng thái bản quyền định kỳ (i
 | **Bảng điều khiển trái** | Cấu hình + Nhập prompt + Nút điều khiển |
 | **Bảng điều khiển phải** | Bảng prompt 7 cột + Thanh công cụ |
 
-### 4.2 Ba Model AI
+### 4.2 Bốn Model AI
 
-| Đặc điểm | 🍌 Nano Banana | 🖼️ Imagen 4 | 🍌 Nano Banana Pro |
-|-----------|---------------|-------------|-------------------|
-| **Chế độ tham chiếu** | Whisk — chia danh mục | Whisk — chia danh mục | Flow — không chia danh mục |
-| **Số ảnh tham chiếu** | 5 (Chủ thể ×3, Cảnh ×1, Phong cách ×1) | 5 (Chủ thể ×3, Cảnh ×1, Phong cách ×1) | 10 (ảnh chung, không phân loại) |
-| **Captcha** | ❌ | ❌ | ✅ Tự động |
-| **Tỷ lệ** | 16:9, 9:16, 1:1 | 16:9, 9:16, 4:3, 3:4, 1:1 | 16:9, 9:16 |
+| Đặc điểm | 🍌 Nano Banana | 🖼️ Imagen 4 | 🍌 Nano Banana 2 | 🍌 Nano Banana Pro |
+|-----------|---------------|-------------|-------------------|-------------------|
+| **Chế độ tham chiếu** | Whisk — chia danh mục | Whisk — chia danh mục | Flow — không chia danh mục | Flow — không chia danh mục |
+| **Số ảnh tham chiếu** | 5 (Chủ thể ×3, Cảnh ×1, Phong cách ×1) | 5 (Chủ thể ×3, Cảnh ×1, Phong cách ×1) | 10 (ảnh chung, không phân loại) | 10 (ảnh chung, không phân loại) |
+| **Captcha** | ❌ | ❌ | ✅ Tự động | ✅ Tự động |
+| **Tỷ lệ** | 16:9, 9:16, 1:1 | 16:9, 9:16, 4:3, 3:4, 1:1 | 16:9, 9:16 | 16:9, 9:16 |
 
 ### 4.3 Cấu Hình
 
 | Mục | Chi tiết |
 |-----|----------|
-| **Model** | Nano Banana (mặc định), Imagen 4, Nano Banana Pro |
+| **Model** | Nano Banana (mặc định), Imagen 4, Nano Banana 2, Nano Banana Pro |
 | **Chất lượng** | 1K (gốc), 2K (Plus/Max), 4K (Plus/Max + tài khoản Ultra) |
 | **Tỷ lệ** | Tùy model (xem bảng trên) |
 | **Số ảnh/Prompt** | 1-4 (Basic: chỉ 1) |
@@ -392,7 +392,7 @@ Trình soạn thảo trực quan dạng node — kết nối các bước xử l
 |------|---------|--------|-------|
 | 📦 **Tải Ảnh Hàng Loạt** | — | Ảnh | Tải ảnh từ thư mục (sắp xếp: A-Z, mới/cũ, ngẫu nhiên, khớp prompt) |
 | 📝 **Tải Prompt Hàng Loạt** | — | Prompt | Danh sách prompt (tuần tự/ngẫu nhiên, giới hạn số lượng) |
-| 🖼 **Tạo Ảnh** | Tham chiếu, Prompt | Ảnh | Tạo ảnh (3 model, tỷ lệ, seed, độ phân giải) |
+| 🖼 **Tạo Ảnh** | Tham chiếu, Prompt | Ảnh | Tạo ảnh (4 model, tỷ lệ, seed, độ phân giải) |
 | 📎 **Ảnh Tham Chiếu** | Ảnh | Tham chiếu | Dùng cho Nano Banana / Imagen 4 — chia danh mục (Chủ thể/Cảnh/Phong cách) |
 | 📎 **Ảnh Tham Chiếu (Pro)** | Ảnh | Tham chiếu | Dùng cho Nano Banana Pro — không phân danh mục |
 | 💾 **Lưu Ảnh** | Ảnh | — | Lưu ảnh (tiền tố + thư mục) |
@@ -450,7 +450,7 @@ Máy chủ API cục bộ cho công cụ bên ngoài (n8n, Make.com, Zapier, Pyt
 | **Proxy Pool** | Proxy tùy chỉnh (HTTP/SOCKS5) + WARP VPN + Tự động xoay IP |
 | **Bản quyền & Nâng cấp** | Đăng nhập/mua Plus/Max, tự động kiểm tra định kỳ |
 | **Chế độ Xác thực** | Chọn chế độ: Tích hợp sẵn hoặc Chrome Extension ([xem 7.5](#ext-auth)) |
-| **Cài đặt chung** | Ngôn ngữ (9+), giao diện sáng/tối, thông tin tác giả |
+| **Cài đặt chung** | Ngôn ngữ (Tiếng Việt / English), giao diện sáng/tối, thông tin tác giả |
 | **Logs** | Nhật ký hoạt động chi tiết |
 
 ### 7.3 Khôi Phục & Xử Lý Lỗi
