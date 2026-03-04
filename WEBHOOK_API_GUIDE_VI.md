@@ -103,8 +103,16 @@ X-API-Key: YOUR_API_KEY
 | Trường | Kiểu | Bắt buộc | Mặc định | Mô tả |
 |---|---|---|---|---|
 | `prompt` | string | ✅ | — | Mô tả video cần tạo |
-| `model` | string | — | `veo_31_fast_relaxed` | Model tạo video |
+| `model` | string | — | `veo_31_fast_relaxed` | Model: `veo_31_fast_relaxed`, `veo_31_fast`, `veo_31_quality` |
 | `aspect_ratio` | string | — | `16:9` | Tỉ lệ: `16:9`, `9:16` |
+
+**Các model video khả dụng:**
+
+| Giá trị `model` | Tên hiển thị | Credit | Ghi chú |
+|---|---|---|---|
+| `veo_31_fast_relaxed` | Veo 3.1 Fast Relaxed | 0 | Mặc định. Ưu tiên thấp (chỉ ULTRA) |
+| `veo_31_fast` | Veo 3.1 Fast | 10 | Ưu tiên bình thường |
+| `veo_31_quality` | Veo 3.1 Quality | 100 | Chất lượng cao nhất |
 
 **Ví dụ:**
 ```bash
@@ -113,7 +121,7 @@ curl -X POST http://127.0.0.1:8765/api/video/generate \
   -H "Content-Type: application/json" \
   -d '{
     "prompt": "chú chó golden chạy trên bãi biển, quay chậm, cinematic",
-    "model": "veo_31_fast_relaxed",
+    "model": "veo_31_fast",
     "aspect_ratio": "16:9"
   }'
 ```
