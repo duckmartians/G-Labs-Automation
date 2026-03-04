@@ -28,7 +28,7 @@
 | 4 | [AI Image Creator](#section-4) | 3 AI models, config, batch processing |
 | 5 | [AI Video Creator](#section-5) | 3 tabs: Text, Compose, Scene Builder |
 | 6 | [Workflow Editor](#section-6) | Visual node-based editor |
-| 7 | [Additional Features](#section-7) | Webhook API, Settings, Recovery |
+| 7 | [Additional Features](#section-7) | Webhook API, Extension Auth, Settings, Recovery |
 
 ---
 
@@ -419,13 +419,16 @@ Uses **topological sort** to determine execution order. Node states: 🟡 Runnin
 
 Local REST API server for external tools (n8n, Make.com, Zapier, Python...).
 
+> 📖 **Detailed integration guide:** [WEBHOOK_API_GUIDE.md](WEBHOOK_API_GUIDE.md) (includes Python, JavaScript, cURL examples)
+
 | Endpoint | Method | Auth | Description |
 |----------|--------|------|-------------|
 | `/api/health` | GET | ❌ | Server health check |
 | `/api/image/generate` | POST | ✅ | Submit image generation request |
+| `/api/video/generate` | POST | ✅ | Submit video generation request |
 | `/api/status/{task_id}` | GET | ✅ | Check task status |
 | `/api/result/{task_id}` | GET | ✅ | Get result |
-| `/api/files/{filename}` | GET | ❌ | Download image |
+| `/api/files/{filename}` | GET | ✅ | Download file |
 | `/api/tasks` | GET | ✅ | List all tasks |
 
 **Auth:** Header `X-API-Key: YOUR_KEY` | **Port:** 1024-65535 (default 8765)
@@ -439,13 +442,14 @@ Local REST API server for external tools (n8n, Make.com, Zapier, Python...).
 }
 ```
 
-### 7.2 Settings (5 Tabs)
+### 7.2 Settings (6 Tabs)
 
 | Tab | Content |
 |-----|---------|
 | **Google Accounts** | Add/remove/renew Google accounts |
-| **Proxy Pool** | Custom proxies (HTTP/SOCKS5) + Auto-Rotate |
+| **Proxy Pool** | Custom proxies (HTTP/SOCKS5) + WARP VPN + Auto-Rotate |
 | **License & Upgrade** | Login/purchase Plus/Max, periodic auto-check |
+| **Authentication Mode** | Choose mode: Built-in (automatic) or Chrome Extension ([see 7.5](#ext-auth)) |
 | **General Settings** | Language (9+), dark/light theme, author info |
 | **Logs** | Detailed activity logs |
 
@@ -455,32 +459,61 @@ Local REST API server for external tools (n8n, Make.com, Zapier, Python...).
 |------------|---------------|
 | 403 Forbidden | Refresh session → rotate account |
 | Timeout | Retry up to 3 times |
-| Captcha | Browser auto-solves, 10 tokens/session |
+| Captcha (Built-in) | Browser auto-solves, 10 tokens/session, profile rotation |
+| Captcha (Extension) | Chrome Extension handles it, requires Chrome to stay open |
+| Connection lost | WARP auto-reconnects |
 | No accounts available | Stops after 5 consecutive failures |
 
 ### 7.4 Auto-Update
 
 App checks version from server → shows notification → downloads → replaces files → restarts.
 
+<a name="ext-auth"></a>
+
+### 7.5 Chrome Extension Authentication Mode 🧩
+
+In addition to the default **Built-in** authentication (automatic Chromium browser), the app supports **Chrome Extension** mode — using your real Chrome browser session.
+
+**Comparison:**
+
+| | 🖥️ Built-in (Default) | 🧩 Chrome Extension |
+|---|---|---|
+| **Setup** | None required | Install extension from Chrome Web Store |
+| **Browser** | Automatic Chromium (hidden) | Your real Chrome browser |
+| **Advantage** | Fully automatic, no interaction needed | Uses real login session, more stable |
+| **Requirement** | None | Keep Chrome open with Labs page |
+
+**How to set up Chrome Extension:**
+
+1. **Install Extension** — Install **G-Labs Automation - Auth Helper** from Chrome Web Store (button in Settings → Authentication Mode)
+2. **Login to Google Labs** — Open [labs.google/fx/tools/flow](https://labs.google/fx/tools/flow) in Chrome and sign in with your Google account
+3. **Start Generating** — Return to G-Labs Automation, the extension will automatically connect and handle authentication in the background
+
+> ⚠️ **Note:** Keep Chrome open with the Labs page while generating images or videos. If you encounter errors, try reloading the Labs page in Chrome.
+
+**Connection status:** Check in Settings → Authentication Mode:
+- 🟢 **Extension: Connected** — Ready to work
+- 🔴 **Extension: Not connected** — Check if Chrome has the Labs page open
+
+### 7.6 Incompatible Software
+
+The following software may **conflict** when running alongside G-Labs Automation, causing `Environment check failed — worker cannot start` error.
+
+| # | Software | Type |
+|---|---|---|
+| 1 | **Fiddler** / Fiddler Everywhere | HTTP Debugging Proxy |
+| 2 | **Charles Proxy** | HTTP Proxy / Monitor |
+| 3 | **mitmproxy** / mitmweb / mitmdump | Network Proxy Tool |
+| 4 | **Burp Suite** / Burp Loader | Web Testing Platform |
+| 5 | **Proxyman** | HTTP Debugging Proxy |
+| 6 | **HTTP Toolkit** | HTTP Debugging Tool |
+| 7 | **HTTP Debugger Pro** | Network Analyzer |
+| 8 | **Reqable** | API Debugging Tool |
+| 9 | **OWASP ZAP** (Zed Attack Proxy) | Web App Scanner |
+
+> ⚠️ **Fix:** Close the conflicting software completely before using the app, then restart G-Labs Automation.
+
 </details>
-
----
-
-## ✅ Tips to Reduce 403 Errors
-
-### ✅ Fixed
-- Reduced **403 errors** by adding more **regular email addresses** 📧
-- These emails are **only used to run the captcha code** 🤖
-
-### 🔄 Changed
-- In **account settings**, under the **options** section ⚙️:
-  - **Disable image** or **video processing** 🖼️🎬
-  - After disabling, the system will only execute the **captcha code**, without processing images or videos
-![image](https://github.com/user-attachments/assets/a30700b4-07da-4a2d-9f36-c72aaea9120b)
-
-### 📝 Notes
-- More email addresses ➜ lower chance of encountering **403 errors** 🚫
-- This setup **does not affect** any features outside of captcha
 
 ---
 
