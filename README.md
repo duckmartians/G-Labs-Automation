@@ -64,18 +64,58 @@
 
 > ⚠️ **Do not** place the application folder in `C:\Program Files` or system directories requiring admin rights.
 
+> 🚫 **Important:** Avoid extracting or placing the app on the **C:\ drive** (system drive). Windows may restrict read/write/execute permissions on this drive, causing errors or preventing the app from starting. Use **D:\**, **E:\**, or another data drive instead.
+
+> 🛡️ **IMPORTANT — Read before installing!** Open the section below to add the app to **Windows Defender exclusions** before extracting, to prevent file deletion!
+
 <details>
-<summary>⚠️ Antivirus False Positive Warning (click to expand)</summary>
+<summary><b>🛡️⚠️ Adding the App to Windows Defender Exclusions — MUST READ ⚠️🛡️</b></summary>
 
-Since the application is packaged as a packed executable, some antivirus software may **flag it as a false positive**.
+#### Why is this needed?
 
-**To add a Windows Defender exclusion:**
+Personal applications (like G-Labs Automation) packaged as `.exe` files are typically **not digitally signed** (no code signing certificate) — think of it like a car driving on the road **without license plates**. 🚗💨
 
-1. Open **Windows Security** → **Virus & threat protection**
-2. Click **Manage settings** → scroll to **Exclusions**
-3. Click **Add an exclusion** → **Folder** → Select the G-Labs Automation folder
+The car might run perfectly fine, but the traffic police (Windows Defender) will find it suspicious and **pull it over** for inspection. In some cases, Defender may even **"impound"** the app — meaning it silently deletes the `.exe` file without asking you!
 
-> 💡 Add the exclusion **before extracting** to prevent file deletion.
+A code signing certificate is like a license plate: it proves the developer's identity. However, certificates cost **hundreds of USD per year**, so personal and open-source applications often don't have one.
+
+**What happens without an exclusion:**
+- ❌ The `.exe` file gets deleted immediately after extraction
+- ❌ The app is blocked from running
+- ❌ The firewall blocks the app's network connections
+
+#### Step-by-Step Guide
+
+**Step 1: Open Windows Security**
+1. Click the **Start** button (or press `Win` key)
+2. Type **Windows Security**
+3. Open the **Windows Security** app
+
+**Step 2: Go to Virus Protection**
+1. In the Windows Security window, select **Virus & threat protection**
+
+**Step 3: Open Settings**
+1. Find the **Virus & threat protection settings** section
+2. Click **Manage settings**
+
+**Step 4: Open Exclusions List**
+1. Scroll all the way down
+2. Find the **Exclusions** section
+3. Click **Add or remove exclusions**
+
+**Step 5: Add the G-Labs Automation Folder**
+1. Click **Add an exclusion**
+2. Select **Folder**
+3. Navigate to your G-Labs Automation folder (e.g., `D:\G-Labs Automation\`)
+4. Click **Select Folder**
+
+#### ✅ Result
+
+The selected folder will appear in the Exclusions list. From now on, Windows Defender will **not scan or delete** any files inside that folder.
+
+> 💡 **Tip:** Add the exclusion **before extracting** the zip file to prevent Defender from deleting files during extraction.
+
+> ℹ️ **Note:** This guide is only needed if you use **Windows Defender** (Windows' built-in firewall). If your computer uses a smarter antivirus such as **Kaspersky**, you typically **don't need** to add exclusions — Kaspersky is smart enough to recognize that the app is not a virus and allows it to run normally.
 
 </details>
 
@@ -529,6 +569,7 @@ The following software may **conflict** when running alongside G-Labs Automation
 | 9 | **OWASP ZAP** (Zed Attack Proxy) | Web App Scanner |
 
 > ⚠️ **Fix:** Close the conflicting software completely before using the app, then restart G-Labs Automation.
+
 
 </details>
 
