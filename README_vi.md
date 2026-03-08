@@ -64,18 +64,58 @@
 
 > ⚠️ **Không** đặt thư mục ứng dụng trong `C:\Program Files` hoặc các thư mục hệ thống yêu cầu quyền quản trị.
 
+> 🚫 **Khuyến cáo:** Không nên giải nén hoặc đặt ứng dụng trên **ổ C:\** (ổ hệ thống). Windows có thể giới hạn quyền đọc/ghi/chạy file trên ổ này, gây ra lỗi hoặc không thể khởi động ứng dụng. Hãy sử dụng ổ **D:\**, **E:\** hoặc ổ dữ liệu khác.
+
+> 🛡️ **QUAN TRỌNG — Đọc trước khi cài đặt!** Hãy mở phần hướng dẫn bên dưới để thêm ứng dụng vào **ngoại lệ Windows Defender** trước khi giải nén, tránh bị xóa file!
+
 <details>
-<summary>⚠️ Xử Lý Cảnh Báo Phần Mềm Diệt Virus (nhấn để mở)</summary>
+<summary><b>🛡️⚠️ Thêm Ứng Dụng Vào Ngoại Lệ Windows Defender — BẮT BUỘC ĐỌC ⚠️🛡️</b></summary>
 
-Do ứng dụng được đóng gói, một số phần mềm diệt virus có thể **nhận nhầm là mã độc** (báo nhầm).
+#### Tại sao cần thêm vào ngoại lệ?
 
-**Cách thêm vào danh sách loại trừ của Windows Defender:**
+Các ứng dụng cá nhân (như G-Labs Automation) khi được đóng gói thành file `.exe` sẽ **không có chữ ký số** (code signing certificate) — giống như một chiếc xe chạy trên đường mà **không gắn biển số**. 🚗💨
 
-1. Mở **Windows Security** → **Bảo vệ khỏi virus & mối đe dọa**
-2. Nhấn **Quản lý thiết đặt** → cuộn xuống **Loại trừ**
-3. Nhấn **Thêm loại trừ** → **Thư mục** → Chọn thư mục G-Labs Automation
+Chiếc xe đó có thể hoạt động hoàn toàn bình thường, nhưng cảnh sát giao thông (Windows Defender) sẽ nghi ngờ và **chặn lại** để kiểm tra. Trong một số trường hợp, Defender thậm chí còn **"tịch thu"** — tức là xóa mất file `.exe` mà không hỏi bạn!
 
-> 💡 Nên thêm loại trừ **trước khi giải nén** để tránh bị xóa file.
+Chữ ký số giống như tấm biển số xe: nó chứng minh danh tính của nhà phát triển. Tuy nhiên, chứng chỉ ký mã có giá **hàng trăm USD/năm**, vì vậy các ứng dụng cá nhân và mã nguồn mở thường không có.
+
+**Ảnh hưởng khi không thêm ngoại lệ:**
+- ❌ File `.exe` bị xóa ngay khi giải nén
+- ❌ Ứng dụng bị chặn không cho chạy
+- ❌ Tường lửa chặn kết nối mạng của ứng dụng
+
+#### Các bước thêm vào ngoại lệ
+
+**Bước 1: Mở Windows Security**
+1. Nhấn nút **Start** (hoặc phím `Win`)
+2. Gõ **Windows Security**
+3. Nhấn mở ứng dụng **Windows Security**
+
+**Bước 2: Mở phần bảo vệ virus**
+1. Trong cửa sổ Windows Security, chọn **Virus & threat protection** (Bảo vệ khỏi virus & mối đe dọa)
+
+**Bước 3: Vào phần cài đặt**
+1. Tìm mục **Virus & threat protection settings**
+2. Nhấn **Manage settings** (Quản lý thiết đặt)
+
+**Bước 4: Mở danh sách Exclusions**
+1. Cuộn xuống phía dưới cùng
+2. Tìm mục **Exclusions** (Loại trừ)
+3. Nhấn **Add or remove exclusions** (Thêm hoặc xóa mục loại trừ)
+
+**Bước 5: Thêm thư mục G-Labs Automation**
+1. Nhấn **Add an exclusion** (Thêm mục loại trừ)
+2. Chọn **Folder** (Thư mục)
+3. Tìm đến thư mục chứa G-Labs Automation (ví dụ: `D:\G-Labs Automation\`)
+4. Nhấn **Select Folder** (Chọn thư mục)
+
+#### ✅ Kết quả
+
+Thư mục đã chọn sẽ xuất hiện trong danh sách Exclusions. Từ lúc này, Windows Defender sẽ **không quét và không xóa** các file bên trong thư mục đó.
+
+> 💡 **Mẹo:** Nên thêm ngoại lệ **trước khi giải nén** file zip để tránh bị Defender xóa file trong quá trình giải nén.
+
+> ℹ️ **Lưu ý:** Hướng dẫn trên chỉ cần thiết khi bạn sử dụng **Windows Defender** (tường lửa mặc định của Windows). Nếu máy tính của bạn sử dụng phần mềm diệt virus thông minh hơn như **Kaspersky** thì thường **không cần** thêm ngoại lệ — Kaspersky đủ thông minh để nhận diện ứng dụng không phải virus và cho phép hoạt động bình thường.
 
 </details>
 
@@ -529,6 +569,7 @@ Các phần mềm sau có thể gây **xung đột** khi chạy đồng thời v
 | 9 | **OWASP ZAP** (Zed Attack Proxy) | Web App Scanner |
 
 > ⚠️ **Khắc phục:** Tắt hoàn toàn phần mềm xung đột trước khi sử dụng, sau đó khởi động lại ứng dụng.
+
 
 </details>
 
