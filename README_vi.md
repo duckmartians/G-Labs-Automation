@@ -533,16 +533,21 @@ Ngoài chế độ xác thực **Tích hợp sẵn** (tự động sử dụng t
 
 **So sánh 2 chế độ:**
 
-| | 🖥️ Tích hợp sẵn (Mặc định) | 🧩 Chrome Extension |
+| | 🖥️ Tích hợp sẵn (Mặc định) | 🧩 Chrome Extension (Khuyến nghị) |
 |---|---|---|
 | **Thiết lập** | Không cần | Cài extension từ Chrome Web Store |
 | **Trình duyệt** | Chromium tự động (ẩn) | Chrome thật của bạn |
-| **Ưu điểm** | Hoàn toàn tự động, không cần tương tác | Dùng phiên đăng nhập thật, ổn định hơn |
+| **Tài nguyên** | Nặng — khởi chạy trình duyệt Chromium ẩn (tốn RAM & CPU) | Rất nhẹ — tận dụng Chrome đang mở sẵn |
+| **Tốc độ** | Chậm hơn (phải khởi động trình duyệt) | Nhanh hơn — không cần mở trình duyệt, xác thực tức thì |
+| **Độ ổn định** | Có thể gặp lỗi phiên | Mượt mà hơn — dùng phiên đăng nhập thật, ít lỗi hơn |
+| **Ưu điểm** | Hoàn toàn tự động, không cần thiết lập | Nhẹ, nhanh, ổn định |
 | **Yêu cầu** | Không | Giữ Chrome mở với trang Labs |
+
+> 💡 **Khuyến nghị:** Nếu bạn đã dùng Chrome, hãy chọn **chế độ Extension** — nhẹ hơn đáng kể về tài nguyên hệ thống, xác thực nhanh hơn, và trải nghiệm mượt mà hơn.
 
 **Cách thiết lập Chrome Extension:**
 
-1. **Cài đặt Extension** — Cài extension **G-Labs Automation - Auth Helper** từ Chrome Web Store (nút trong Cài đặt → Chế độ Xác thực)
+1. **Cài đặt Extension** — Cài extension [**G-Labs Automation - Auth Helper**](https://chromewebstore.google.com/detail/g-labs-automation-auth-he/clhcjdjbcldkogahjfmcgfipmlilmkpg) từ Chrome Web Store (hoặc dùng nút trong Cài đặt → Chế độ Xác thực)
 2. **Đăng nhập Google Labs** — Mở [labs.google/fx/tools/flow](https://labs.google/fx/tools/flow) trong Chrome và đăng nhập tài khoản Google
 3. **Bắt đầu tạo ảnh** — Quay lại G-Labs Automation, extension tự động kết nối và xử lý xác thực ở nền
 
