@@ -533,16 +533,21 @@ In addition to the default **Built-in** authentication (automatic Chromium brows
 
 **Comparison:**
 
-| | 🖥️ Built-in (Default) | 🧩 Chrome Extension |
+| | 🖥️ Built-in (Default) | 🧩 Chrome Extension (Recommended) |
 |---|---|---|
 | **Setup** | None required | Install extension from Chrome Web Store |
 | **Browser** | Automatic Chromium (hidden) | Your real Chrome browser |
-| **Advantage** | Fully automatic, no interaction needed | Uses real login session, more stable |
+| **Resource Usage** | High — launches hidden Chromium instances (RAM & CPU) | Very light — reuses your existing Chrome session |
+| **Speed** | Slower startup (browser launch overhead) | Faster — no browser launch needed, instant auth |
+| **Stability** | May encounter session issues | Smoother — uses real login session, fewer errors |
+| **Advantage** | Fully automatic, zero setup | Lightweight, fast, and stable |
 | **Requirement** | None | Keep Chrome open with Labs page |
+
+> 💡 **Recommendation:** If you already use Chrome, the **Extension mode** is strongly recommended — it's significantly lighter on system resources, faster to authenticate, and provides a smoother overall experience.
 
 **How to set up Chrome Extension:**
 
-1. **Install Extension** — Install **G-Labs Automation - Auth Helper** from Chrome Web Store (button in Settings → Authentication Mode)
+1. **Install Extension** — Install [**G-Labs Automation - Auth Helper**](https://chromewebstore.google.com/detail/g-labs-automation-auth-he/clhcjdjbcldkogahjfmcgfipmlilmkpg) from Chrome Web Store (or use the button in Settings → Authentication Mode)
 2. **Login to Google Labs** — Open [labs.google/fx/tools/flow](https://labs.google/fx/tools/flow) in Chrome and sign in with your Google account
 3. **Start Generating** — Return to G-Labs Automation, the extension will automatically connect and handle authentication in the background
 
