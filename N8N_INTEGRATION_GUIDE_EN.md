@@ -1,6 +1,6 @@
 <p align="center">
   <a href="N8N_INTEGRATION_GUIDE_EN.md"><img src="https://img.shields.io/badge/English-blue" alt="English"></a>
-  <a href="N8N_INTEGRATION_GUIDE.md"><img src="https://img.shields.io/badge/Tiếng%20Việt-green" alt="Tiếng Việt"></a>
+  <a href="N8N_INTEGRATION_GUIDE_VI.md"><img src="https://img.shields.io/badge/Tiếng%20Việt-green" alt="Tiếng Việt"></a>
 </p>
 
 # 🔗 G-Labs Webhook × n8n — Step-by-Step Integration Guide
@@ -510,7 +510,7 @@ pending → running → completed ✅
 
 ## 🔗 Related Documentation
 
-- 📖 [Webhook API Guide (full)](WEBHOOK_API_GUIDE.md)
+- 📖 [Webhook API Guide (full)](WEBHOOK_API_GUIDE_EN.md)
 - 📖 [G-Labs User Guide](USER_GUIDE_EN.md)
 - 🌐 [n8n Documentation](https://docs.n8n.io/)
 - 💬 [Discord Community](https://discord.gg/munMZEBMw5)
