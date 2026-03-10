@@ -136,6 +136,40 @@ Thư mục đã chọn sẽ xuất hiện trong danh sách Exclusions. Từ lúc
 
 > 📁 **File đầu ra** (ảnh, video) được lưu tại `~/Documents/G-Labs Automation/` theo mặc định.
 
+<details>
+<summary><b>🍎⚠️ Xử Lý Lỗi "Ứng dụng bị hỏng và không thể mở được" trên macOS ⚠️🍎</b></summary>
+
+#### Tại sao bị lỗi?
+
+Khi tải file `.dmg` từ internet (Chrome, Safari...), macOS tự động gắn **cờ cách ly** (quarantine) vào file. Nếu ứng dụng chưa được **chứng thực bởi Apple** (notarized), macOS Gatekeeper sẽ chặn và báo lỗi **"bị hỏng"** — dù ứng dụng hoàn toàn bình thường.
+
+Tương tự như trường hợp Windows Defender ở trên, chứng thực Apple yêu cầu **Apple Developer Account** ($99/năm), nên các ứng dụng cá nhân thường chưa có.
+
+#### Cách khắc phục
+
+**Cách 1: Nhấp chuột phải → Open (Khuyến nghị)**
+
+1. Mở thư mục **Applications** (Ứng dụng)
+2. **Nhấp chuột phải** (hoặc `Control + Click`) vào **G-Labs Automation**
+3. Chọn **Open** (Mở)
+4. Trong hộp thoại cảnh báo, nhấn **Open** (Mở) lần nữa
+5. Chỉ cần làm **một lần duy nhất**, các lần sau mở bình thường
+
+**Cách 2: Dùng Terminal (nếu Cách 1 không hiệu quả)**
+
+1. Mở ứng dụng **Terminal** (Tìm trong Applications → Utilities, hoặc `Cmd + Space` gõ "Terminal")
+2. Chạy lệnh sau:
+
+```bash
+xattr -cr /Applications/G-Labs\ Automation.app
+```
+
+3. Mở lại **G-Labs Automation** bình thường
+
+> 💡 Lệnh `xattr -cr` sẽ xóa cờ cách ly mà macOS gắn vào file khi tải từ internet. Thao tác này hoàn toàn an toàn.
+
+</details>
+
 
 ### 1.4 Khởi Chạy Lần Đầu
 
