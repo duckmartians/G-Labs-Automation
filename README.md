@@ -2,6 +2,10 @@
   <a href="https://github.com/duckmartians/G-Labs-Automation/releases/latest">
     <img src="https://img.shields.io/badge/Download%20for%20Windows-%F0%9F%92%BB-blue?style=for-the-badge" alt="Download for Windows">
   </a>
+  &nbsp;
+  <a href="https://github.com/duckmartians/G-Labs-Automation/releases/latest">
+    <img src="https://img.shields.io/badge/Download%20for%20macOS-%F0%9F%8D%8E-black?style=for-the-badge" alt="Download for macOS">
+  </a>
 </p>
 
 <p align="center">
@@ -38,7 +42,7 @@
 
 ### 1.1 Introduction
 
-**G-Labs Automation** is a Windows desktop application that automates AI image and video generation. It supports multiple AI models (Nano Banana, Imagen 4, Nano Banana Pro), batch processing, and advanced automation workflows.
+**G-Labs Automation** is a desktop application for **Windows** and **macOS** that automates AI image and video generation. It supports multiple AI models (Nano Banana, Imagen 4, Nano Banana Pro), batch processing, and advanced automation workflows.
 
 **Key features:**
 - **AI Image Creator**: 4 models, reference images, upscaling, batch processing
@@ -51,12 +55,14 @@
 
 | Requirement | Details |
 |-------------|---------|
-| **OS** | Windows 10/11 (64-bit) |
+| **OS** | Windows 10/11 (64-bit) or macOS 11+ (Apple Silicon / Intel) |
 | **RAM** | Minimum 4GB, recommended 8GB+ |
 | **Disk** | Minimum 500MB free (excluding output data) |
 | **Network** | Required |
 
 ### 1.3 Download & Installation
+
+#### 🪟 Windows
 
 1. Download **G-Labs-Automation-vX.Y.Z.zip** from the official source
 2. Extract to your preferred folder (e.g., `D:\G-Labs Automation\`)
@@ -118,6 +124,18 @@ The selected folder will appear in the Exclusions list. From now on, Windows Def
 > ℹ️ **Note:** This guide is only needed if you use **Windows Defender** (Windows' built-in firewall). If your computer uses a smarter antivirus such as **Kaspersky**, you typically **don't need** to add exclusions — Kaspersky is smart enough to recognize that the app is not a virus and allows it to run normally.
 
 </details>
+
+#### 🍎 macOS
+
+1. Download **G-Labs-Automation-vX.Y.Z-mac.dmg** from the official source
+2. Double-click the `.dmg` file to open it
+3. Drag **G-Labs Automation** into the **Applications** folder
+4. Open **Applications** and right-click → **Open** on **G-Labs Automation**
+
+> ⚠️ **First launch:** macOS may show a warning "App is from an unidentified developer". Right-click the app → **Open** → click **Open** in the dialog to bypass Gatekeeper. This only needs to be done once.
+
+> 📁 **Output files** (images, videos) are saved to `~/Documents/G-Labs Automation/` by default.
+
 
 ### 1.4 First Launch
 
