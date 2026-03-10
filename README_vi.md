@@ -2,6 +2,10 @@
   <a href="https://github.com/duckmartians/G-Labs-Automation/releases/latest">
     <img src="https://img.shields.io/badge/Tải%20Về%20cho%20Windows-%F0%9F%92%BB-blue?style=for-the-badge" alt="Tải về cho Windows">
   </a>
+  &nbsp;
+  <a href="https://github.com/duckmartians/G-Labs-Automation/releases/latest">
+    <img src="https://img.shields.io/badge/Tải%20Về%20cho%20macOS-%F0%9F%8D%8E-black?style=for-the-badge" alt="Tải về cho macOS">
+  </a>
 </p>
 
 <p align="center">
@@ -38,7 +42,7 @@
 
 ### 1.1 Giới Thiệu
 
-**G-Labs Automation** là ứng dụng desktop Windows tự động hóa việc tạo ảnh và video bằng AI. Ứng dụng hỗ trợ nhiều model AI (Nano Banana, Imagen 4, Nano Banana Pro), xử lý hàng loạt, và tích hợp luồng tự động hóa nâng cao.
+**G-Labs Automation** là ứng dụng desktop cho **Windows** và **macOS**, tự động hóa việc tạo ảnh và video bằng AI. Ứng dụng hỗ trợ nhiều model AI (Nano Banana, Imagen 4, Nano Banana Pro), xử lý hàng loạt, và tích hợp luồng tự động hóa nâng cao.
 
 **Tính năng chính:**
 - **Tạo Ảnh AI**: 4 model, hỗ trợ ảnh tham chiếu, nâng cấp độ phân giải, xử lý hàng loạt
@@ -51,12 +55,14 @@
 
 | Yêu cầu | Chi tiết |
 |----------|----------|
-| **Hệ điều hành** | Windows 10/11 (64-bit) |
+| **Hệ điều hành** | Windows 10/11 (64-bit) hoặc macOS 11+ (Apple Silicon / Intel) |
 | **RAM** | Tối thiểu 4GB, khuyến nghị 8GB+ |
 | **Ổ cứng** | Tối thiểu 500MB trống (chưa tính dữ liệu đầu ra) |
 | **Kết nối mạng** | Bắt buộc |
 
 ### 1.3 Tải Về & Cài Đặt
+
+#### 🪟 Windows
 
 1. Tải file **G-Labs-Automation-vX.Y.Z.zip** từ nguồn phân phối chính thức
 2. Giải nén vào thư mục mong muốn (ví dụ: `D:\G-Labs Automation\`)
@@ -118,6 +124,18 @@ Thư mục đã chọn sẽ xuất hiện trong danh sách Exclusions. Từ lúc
 > ℹ️ **Lưu ý:** Hướng dẫn trên chỉ cần thiết khi bạn sử dụng **Windows Defender** (tường lửa mặc định của Windows). Nếu máy tính của bạn sử dụng phần mềm diệt virus thông minh hơn như **Kaspersky** thì thường **không cần** thêm ngoại lệ — Kaspersky đủ thông minh để nhận diện ứng dụng không phải virus và cho phép hoạt động bình thường.
 
 </details>
+
+#### 🍎 macOS
+
+1. Tải file **G-Labs-Automation-vX.Y.Z-mac.dmg** từ nguồn phân phối chính thức
+2. Nhấp đúp vào file `.dmg` để mở
+3. Kéo biểu tượng **G-Labs Automation** vào thư mục **Applications** (Ứng dụng)
+4. Mở **Applications**, nhấp chuột phải vào **G-Labs Automation** → chọn **Open** (Mở)
+
+> ⚠️ **Lần mở đầu tiên:** macOS có thể hiện cảnh báo "Ứng dụng từ nhà phát triển không xác định". Nhấp chuột phải vào ứng dụng → **Open** (Mở) → nhấn **Open** trong hộp thoại để bỏ qua Gatekeeper. Chỉ cần làm một lần duy nhất.
+
+> 📁 **File đầu ra** (ảnh, video) được lưu tại `~/Documents/G-Labs Automation/` theo mặc định.
+
 
 ### 1.4 Khởi Chạy Lần Đầu
 
