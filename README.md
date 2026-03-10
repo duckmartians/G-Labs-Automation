@@ -136,6 +136,40 @@ The selected folder will appear in the Exclusions list. From now on, Windows Def
 
 > 📁 **Output files** (images, videos) are saved to `~/Documents/G-Labs Automation/` by default.
 
+<details>
+<summary><b>🍎⚠️ Fixing "App is damaged and can't be opened" Error on macOS ⚠️🍎</b></summary>
+
+#### Why does this happen?
+
+When downloading a `.dmg` file from the internet (Chrome, Safari...), macOS automatically adds a **quarantine flag** to the file. If the app is not **notarized by Apple**, macOS Gatekeeper will block it and show a **"damaged"** error — even though the app is perfectly fine.
+
+Similar to the Windows Defender situation above, Apple notarization requires an **Apple Developer Account** ($99/year), so personal applications are often not notarized.
+
+#### How to fix
+
+**Method 1: Right-click → Open (Recommended)**
+
+1. Open the **Applications** folder
+2. **Right-click** (or `Control + Click`) on **G-Labs Automation**
+3. Select **Open**
+4. In the warning dialog, click **Open** again
+5. This only needs to be done **once**, subsequent launches will work normally
+
+**Method 2: Using Terminal (if Method 1 doesn't work)**
+
+1. Open the **Terminal** app (Find in Applications → Utilities, or `Cmd + Space` and type "Terminal")
+2. Run the following command:
+
+```bash
+xattr -cr /Applications/G-Labs\ Automation.app
+```
+
+3. Open **G-Labs Automation** normally
+
+> 💡 The `xattr -cr` command removes the quarantine flag that macOS adds to files downloaded from the internet. This is completely safe.
+
+</details>
+
 
 ### 1.4 First Launch
 
