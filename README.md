@@ -540,14 +540,17 @@ Local REST API server for external tools (n8n, Make.com, Zapier, Python...).
 {
   "prompt": "image description",
   "model": "imagen4",
-  "aspect_ratio": "16:9"
+  "aspect_ratio": "16:9",
+  "upscale": ["2K"]
 }
 
 // POST /api/video/generate
 {
   "prompt": "video description",
   "model": "veo_31_fast",
-  "aspect_ratio": "16:9"
+  "mode": "text_to_video",
+  "aspect_ratio": "16:9",
+  "resolution": ["720p"]
 }
 ```
 
