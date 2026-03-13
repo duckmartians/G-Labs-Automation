@@ -1,0 +1,642 @@
+<p align="center">
+  <a href="https://github.com/duckmartians/G-Labs-Automation/releases/latest">
+    <img src="https://img.shields.io/badge/Tải%20Về%20cho%20Windows-%F0%9F%92%BB-blue?style=for-the-badge" alt="Tải về cho Windows">
+  </a>
+  &nbsp;
+  <a href="https://github.com/duckmartians/G-Labs-Automation/releases/latest">
+    <img src="https://img.shields.io/badge/Tải%20Về%20cho%20macOS-%F0%9F%8D%8E-black?style=for-the-badge" alt="Tải về cho macOS">
+  </a>
+</p>
+
+<p align="center">
+  <a href="README.md"><img src="https://img.shields.io/badge/English-blue" alt="English"></a>
+  <a href="README_vi.md"><img src="https://img.shields.io/badge/Tiếng%20Việt-green" alt="Tiếng Việt"></a>
+  <a href="https://discord.gg/munMZEBMw5"><img src="https://img.shields.io/badge/Discord-Cộng%20đồng-5865F2?logo=discord&logoColor=white" alt="Discord"></a>
+</p>
+
+---
+
+# 📖 G-Labs Automation — Hướng Dẫn Sử Dụng
+
+> Tài liệu hướng dẫn sử dụng chi tiết cho **G-Labs Automation** — ứng dụng tạo ảnh và video AI tự động.
+
+> 🎬 **Video hướng dẫn:** [Xem trên YouTube](https://www.youtube.com/playlist?list=PLGHIReR0l_N2TbhPADNwn0aRbJfLf5YSj)
+
+## Mục Lục
+
+| # | Nội dung | Mô tả |
+|---|---------|-------|
+| 1 | [Tổng Quan & Cài Đặt](#phan-1) | Giới thiệu, yêu cầu hệ thống, cài đặt |
+| 2 | [Quản Lý Tài Khoản](#phan-2) | Thêm, xóa, gia hạn tài khoản Google |
+| 3 | [Hệ Thống Bản Quyền](#phan-3) | 3 gói Basic/Plus/Max, thanh toán |
+| 4 | [Tạo Ảnh AI](#phan-4) | 4 model AI, cấu hình, xử lý hàng loạt |
+| 5 | [Tạo Video AI](#phan-5) | 3 tab: Văn bản/Ảnh, Thành phần, Khung hình |
+| 6 | [Biên Tập Quy Trình](#phan-6) | Trình soạn thảo trực quan dạng node |
+| 7 | [Tính Năng Bổ Sung](#phan-7) | Webhook API, Extension Auth, Cài đặt, Khôi phục lỗi |
+
+---
+
+<a name="phan-1"></a>
+<details>
+<summary><h2>📦 Phần 1: Tổng Quan & Cài Đặt Ban Đầu</h2></summary>
+
+### 1.1 Giới Thiệu
+
+**G-Labs Automation** là ứng dụng desktop cho **Windows** và **macOS**, tự động hóa việc tạo ảnh và video bằng AI. Ứng dụng hỗ trợ nhiều model AI (Nano Banana, Imagen 4, Nano Banana Pro), xử lý hàng loạt, và tích hợp luồng tự động hóa nâng cao.
+
+**Tính năng chính:**
+- **Tạo Ảnh AI**: 4 model, hỗ trợ ảnh tham chiếu, nâng cấp độ phân giải, xử lý hàng loạt
+- **Tạo Video AI**: Văn bản thành video, Chuỗi cảnh, Ghép ảnh thành phần
+- **Trình Soạn Luồng**: Biên tập trực quan dạng node cho quy trình tự động
+- **Webhook API**: Máy chủ API cục bộ để tích hợp với hệ thống bên ngoài
+- **Đa ngôn ngữ**: Tiếng Việt & English
+
+### 1.2 Yêu Cầu Hệ Thống
+
+| Yêu cầu | Chi tiết |
+|----------|----------|
+| **Hệ điều hành** | Windows 10/11 (64-bit) hoặc macOS 11+ (Apple Silicon / Intel) |
+| **RAM** | Tối thiểu 4GB, khuyến nghị 8GB+ |
+| **Ổ cứng** | Tối thiểu 500MB trống (chưa tính dữ liệu đầu ra) |
+| **Kết nối mạng** | Bắt buộc |
+
+### 1.3 Tải Về & Cài Đặt
+
+#### 🪟 Windows
+
+1. Tải file **G-Labs-Automation-vX.Y.Z.zip** từ nguồn phân phối chính thức
+2. Giải nén vào thư mục mong muốn (ví dụ: `D:\G-Labs Automation\`)
+3. Mở thư mục đã giải nén, chạy file **G-LabsAutomation.exe**
+
+> ⚠️ **Không** đặt thư mục ứng dụng trong `C:\Program Files` hoặc các thư mục hệ thống yêu cầu quyền quản trị.
+
+> 🚫 **Khuyến cáo:** Không nên giải nén hoặc đặt ứng dụng trên **ổ C:\** (ổ hệ thống). Windows có thể giới hạn quyền đọc/ghi/chạy file trên ổ này, gây ra lỗi hoặc không thể khởi động ứng dụng. Hãy sử dụng ổ **D:\**, **E:\** hoặc ổ dữ liệu khác.
+
+> 🛡️ **QUAN TRỌNG — Đọc trước khi cài đặt!** Hãy mở phần hướng dẫn bên dưới để thêm ứng dụng vào **ngoại lệ Windows Defender** trước khi giải nén, tránh bị xóa file!
+
+<details>
+<summary><b>🛡️⚠️ Thêm Ứng Dụng Vào Ngoại Lệ Windows Defender — BẮT BUỘC ĐỌC ⚠️🛡️</b></summary>
+
+#### Tại sao cần thêm vào ngoại lệ?
+
+Các ứng dụng cá nhân (như G-Labs Automation) khi được đóng gói thành file `.exe` sẽ **không có chữ ký số** (code signing certificate) — giống như một chiếc xe chạy trên đường mà **không gắn biển số**. 🚗💨
+
+Chiếc xe đó có thể hoạt động hoàn toàn bình thường, nhưng cảnh sát giao thông (Windows Defender) sẽ nghi ngờ và **chặn lại** để kiểm tra. Trong một số trường hợp, Defender thậm chí còn **"tịch thu"** — tức là xóa mất file `.exe` mà không hỏi bạn!
+
+Chữ ký số giống như tấm biển số xe: nó chứng minh danh tính của nhà phát triển. Tuy nhiên, chứng chỉ ký mã có giá **hàng trăm USD/năm**, vì vậy các ứng dụng cá nhân và mã nguồn mở thường không có.
+
+**Ảnh hưởng khi không thêm ngoại lệ:**
+- ❌ File `.exe` bị xóa ngay khi giải nén
+- ❌ Ứng dụng bị chặn không cho chạy
+- ❌ Tường lửa chặn kết nối mạng của ứng dụng
+
+#### Các bước thêm vào ngoại lệ
+
+**Bước 1: Mở Windows Security**
+1. Nhấn nút **Start** (hoặc phím `Win`)
+2. Gõ **Windows Security**
+3. Nhấn mở ứng dụng **Windows Security**
+
+**Bước 2: Mở phần bảo vệ virus**
+1. Trong cửa sổ Windows Security, chọn **Virus & threat protection** (Bảo vệ khỏi virus & mối đe dọa)
+
+**Bước 3: Vào phần cài đặt**
+1. Tìm mục **Virus & threat protection settings**
+2. Nhấn **Manage settings** (Quản lý thiết đặt)
+
+**Bước 4: Mở danh sách Exclusions**
+1. Cuộn xuống phía dưới cùng
+2. Tìm mục **Exclusions** (Loại trừ)
+3. Nhấn **Add or remove exclusions** (Thêm hoặc xóa mục loại trừ)
+
+**Bước 5: Thêm thư mục G-Labs Automation**
+1. Nhấn **Add an exclusion** (Thêm mục loại trừ)
+2. Chọn **Folder** (Thư mục)
+3. Tìm đến thư mục chứa G-Labs Automation (ví dụ: `D:\G-Labs Automation\`)
+4. Nhấn **Select Folder** (Chọn thư mục)
+
+#### ✅ Kết quả
+
+Thư mục đã chọn sẽ xuất hiện trong danh sách Exclusions. Từ lúc này, Windows Defender sẽ **không quét và không xóa** các file bên trong thư mục đó.
+
+> 💡 **Mẹo:** Nên thêm ngoại lệ **trước khi giải nén** file zip để tránh bị Defender xóa file trong quá trình giải nén.
+
+> ℹ️ **Lưu ý:** Hướng dẫn trên chỉ cần thiết khi bạn sử dụng **Windows Defender** (tường lửa mặc định của Windows). Nếu máy tính của bạn sử dụng phần mềm diệt virus thông minh hơn như **Kaspersky** thì thường **không cần** thêm ngoại lệ — Kaspersky đủ thông minh để nhận diện ứng dụng không phải virus và cho phép hoạt động bình thường.
+
+</details>
+
+#### 🍎 macOS
+
+1. Tải file **G-Labs-Automation-vX.Y.Z-mac.dmg** từ nguồn phân phối chính thức
+2. Nhấp đúp vào file `.dmg` để mở
+3. Kéo biểu tượng **G-Labs Automation** vào thư mục **Applications** (Ứng dụng)
+4. Mở **Applications**, nhấp chuột phải vào **G-Labs Automation** → chọn **Open** (Mở)
+
+> ⚠️ **Lần mở đầu tiên:** macOS có thể hiện cảnh báo "Ứng dụng từ nhà phát triển không xác định". Nhấp chuột phải vào ứng dụng → **Open** (Mở) → nhấn **Open** trong hộp thoại để bỏ qua Gatekeeper. Chỉ cần làm một lần duy nhất.
+
+> 📁 **File đầu ra** (ảnh, video) được lưu tại `~/Documents/G-Labs Automation/` theo mặc định.
+
+<details>
+<summary><b>🍎⚠️ Xử Lý Lỗi "Ứng dụng bị hỏng và không thể mở được" trên macOS ⚠️🍎</b></summary>
+
+#### Tại sao bị lỗi?
+
+Khi tải file `.dmg` từ internet (Chrome, Safari...), macOS tự động gắn **cờ cách ly** (quarantine) vào file. Nếu ứng dụng chưa được **chứng thực bởi Apple** (notarized), macOS Gatekeeper sẽ chặn và báo lỗi **"bị hỏng"** — dù ứng dụng hoàn toàn bình thường.
+
+Tương tự như trường hợp Windows Defender ở trên, chứng thực Apple yêu cầu **Apple Developer Account** ($99/năm), nên các ứng dụng cá nhân thường chưa có.
+
+#### Cách khắc phục
+
+**Cách 1: Nhấp chuột phải → Open (Khuyến nghị)**
+
+1. Mở thư mục **Applications** (Ứng dụng)
+2. **Nhấp chuột phải** (hoặc `Control + Click`) vào **G-Labs Automation**
+3. Chọn **Open** (Mở)
+4. Trong hộp thoại cảnh báo, nhấn **Open** (Mở) lần nữa
+5. Chỉ cần làm **một lần duy nhất**, các lần sau mở bình thường
+
+**Cách 2: Dùng Terminal (nếu Cách 1 không hiệu quả)**
+
+1. Mở ứng dụng **Terminal** (Tìm trong Applications → Utilities, hoặc `Cmd + Space` gõ "Terminal")
+2. Chạy lệnh sau:
+
+```bash
+xattr -cr /Applications/G-Labs\ Automation.app
+```
+
+3. Mở lại **G-Labs Automation** bình thường
+
+> 💡 Lệnh `xattr -cr` sẽ xóa cờ cách ly mà macOS gắn vào file khi tải từ internet. Thao tác này hoàn toàn an toàn.
+
+</details>
+
+
+### 1.4 Khởi Chạy Lần Đầu
+
+- **Màn hình khởi động**: Hiển thị tiến trình trong khi tải tài khoản, kiểm tra bản quyền
+- **Chọn ngôn ngữ**: Lần đầu mở sẽ hỏi Tiếng Việt / Tiếng Anh (thay đổi sau trong Cài đặt)
+
+### 1.5 Giao Diện Chính
+
+| Vùng | Mô tả |
+|------|--------|
+| **Thanh bên (trái)** | Điều hướng: Tạo Ảnh, Tạo Video, Workflow, Webhook + Cài đặt/Nhật ký/Cộng đồng |
+| **Vùng nội dung (phải)** | Nội dung trang được chọn |
+
+
+
+| Huy hiệu gói | Màu nền |
+|---------------|---------|
+| 🌱 BASIC | Xám |
+| 💎 PLUS | Xanh dương |
+| 👑 MAX | Tím |
+
+Hỗ trợ **chế độ Tối / Sáng** (nút ở cuối thanh bên), và **thanh thông báo** tin nhắn hệ thống + cập nhật tự động.
+
+</details>
+
+---
+
+<a name="phan-2"></a>
+<details>
+<summary><h2>👤 Phần 2: Quản Lý Tài Khoản</h2></summary>
+
+Quản lý tài khoản nằm trong **Cài đặt → tab Tài khoản**.
+
+> ⚠️ Cần ít nhất **một tài khoản Google hợp lệ** với phiên đăng nhập còn hạn để sử dụng tính năng tạo ảnh/video.
+
+### 2.1 Thêm Tài Khoản
+
+**Đăng nhập qua trình duyệt (khuyến nghị):**
+1. Nhấn **"Đăng nhập qua trình duyệt"**
+2. Đăng nhập Google trong cửa sổ Chromium
+3. Hệ thống tự động trích xuất dữ liệu phiên, email, hạng tài khoản, số dư
+
+**Nhập cookie thủ công:** Dán cookie từ trình duyệt vào ô nhập.
+
+### 2.2 Bảng Tài Khoản (9 cột)
+
+| Cột | Mô tả |
+|-----|--------|
+| Bật/Tắt | Kích hoạt hoặc vô hiệu tài khoản |
+| Email | Địa chỉ email |
+| Hạng | Free / Pro / Ultra |
+| Số dư | Credits còn lại |
+| Proxy | Proxy riêng |
+| Hạn cookie | Thời điểm hết hạn phiên |
+| Hạn token | Thời điểm hết hạn xác thực |
+| Trạng thái | ✅ Hợp lệ / ❌ Hết hạn / 🔄 Đang kiểm tra / ⚠️ Trùng |
+| Hành động | Gia hạn / Sửa / Xóa |
+
+### 2.3 Gia Hạn Phiên
+
+- **Bước 1**: Làm mới cookie (mở trình duyệt → đăng nhập lại)
+- **Bước 2**: Kiểm tra hạng (gọi API → lấy token mới + hạng + số dư)
+- Hỗ trợ **gia hạn hàng loạt** (tất cả tài khoản) và **tự động gia hạn** khi khởi động (Plus/Max)
+
+### 2.4 Sửa & Xóa
+
+- **Sửa**: Xem/chỉnh proxy cho từng tài khoản (`IP:Cổng` hoặc `IP:Cổng:Tên:Mật khẩu`)
+- **Xóa**: Xóa vĩnh viễn tài khoản + hồ sơ trình duyệt
+
+</details>
+
+---
+
+<a name="phan-3"></a>
+<details>
+<summary><h2>🔑 Phần 3: Hệ Thống Bản Quyền</h2></summary>
+
+Bản quyền nằm trong **Cài đặt → tab Bản quyền**.
+
+### 3.1 Bảng So Sánh
+
+| Tính năng | 🌱 Basic | 💎 Plus | 👑 Max |
+|-----------|---------|---------|--------|
+| **Số luồng** | 1 | 10 | ♾️ |
+| **Hàng đợi** | 1 tác vụ | 10 tác vụ | ♾️ |
+| **Ảnh/Prompt** | 1 | 4 | 4 |
+| **Video/Prompt** | 1 | 4 | 4 |
+| **Giới hạn prompt** | 10 dòng | ♾️ | ♾️ |
+| **Nhóm proxy** | ❌ | ✅ | ✅ |
+| **Nâng cấp ảnh** | ❌ | ✅ (2K+4K) | ✅ (2K+4K) |
+| **Nâng cấp video** | ❌ | ✅ | ✅ |
+| **Video đầy đủ** | Chỉ Đầu+Cuối | ✅ | ✅ |
+| **Luồng làm việc** | ❌ | ✅ | ✅ |
+| **Thử lại lỗi** | ❌ | ✅ | ✅ |
+| **Tự động gia hạn** | ❌ | ✅ | ✅ |
+| **Webhook API** | ❌ | ❌ | ✅ |
+
+### 3.2 Đăng Nhập
+
+1. Nhấn **"Đăng nhập Google"**
+2. Chọn tài khoản → xác thực → nhận gói, mã người dùng, ngày hết hạn
+3. Phiên lưu trên máy, không cần đăng nhập lại
+
+> ⚠️ Mỗi bản quyền chỉ hoạt động trên **một thiết bị**. Đăng nhập thiết bị khác sẽ đăng xuất thiết bị cũ.
+
+### 3.3 Thanh Toán
+
+<details>
+<summary>💳 Bảng giá & phương thức (nhấn để mở)</summary>
+
+**Gói PLUS 💎:**
+
+| Thời hạn | VND |
+|----------|-----|
+| 1 tháng | 79,000 |
+| 6 tháng | 399,000 |
+| 1 năm | 799,000 |
+
+**Gói MAX 👑:**
+
+| Thời hạn | VND |
+|----------|-----|
+| 1 tháng | 149,000 |
+| 6 tháng | 749,000 |
+| 1 năm | 1,499,000 |
+
+**Phương thức:**
+- 🇻🇳 **Chuyển khoản VietQR** (VPBank, tự động tạo mã QR)
+- 🌍 **Thẻ quốc tế** (Visa/MC/Apple Pay/Google Pay qua Polar)
+
+</details>
+
+### 3.4 Kiểm Tra Tự Động
+
+Hệ thống tự động kiểm tra trạng thái bản quyền định kỳ (im lặng, không hiện thông báo).
+
+</details>
+
+---
+
+<a name="phan-4"></a>
+<details>
+<summary><h2>🖼️ Phần 4: Tạo Ảnh AI ⭐</h2></summary>
+
+### 4.1 Giao Diện
+
+| Vùng | Mô tả |
+|------|--------|
+| **Bảng điều khiển trái** | Cấu hình + Nhập prompt + Nút điều khiển |
+| **Bảng điều khiển phải** | Bảng prompt 7 cột + Thanh công cụ |
+
+### 4.2 Bốn Model AI
+
+| Đặc điểm | 🍌 Nano Banana | 🖼️ Imagen 4 | 🍌 Nano Banana 2 | 🍌 Nano Banana Pro |
+|-----------|---------------|-------------|-------------------|-------------------|
+| **Chế độ tham chiếu** | Whisk — chia danh mục | Whisk — chia danh mục | Flow — không chia danh mục | Flow — không chia danh mục |
+| **Số ảnh tham chiếu** | 5 (Chủ thể ×3, Cảnh ×1, Phong cách ×1) | 5 (Chủ thể ×3, Cảnh ×1, Phong cách ×1) | 10 (ảnh chung, không phân loại) | 10 (ảnh chung, không phân loại) |
+| **Captcha** | ❌ | ❌ | ✅ Tự động | ✅ Tự động |
+| **Tỷ lệ** | 16:9, 9:16, 1:1 | 16:9, 9:16, 4:3, 3:4, 1:1 | 16:9, 9:16 | 16:9, 9:16 |
+
+### 4.3 Cấu Hình
+
+| Mục | Chi tiết |
+|-----|----------|
+| **Model** | Nano Banana (mặc định), Imagen 4, Nano Banana 2, Nano Banana Pro |
+| **Chất lượng** | 1K (gốc), 2K (Plus/Max), 4K (Plus/Max + tài khoản Ultra) |
+| **Tỷ lệ** | Tùy model (xem bảng trên) |
+| **Số ảnh/Prompt** | 1-4 (Basic: chỉ 1) |
+| **Số luồng** | Basic: 1 / Plus: 10 / Max: ♾️ |
+| **Độ trễ** | 2-3 giây mặc định, phạm vi 1-300 giây |
+| **Chế độ tham chiếu** | Mặc định, 1 cho tất cả (Plus/Max), Chạy tuần tự (Plus/Max) |
+| **Khóa Seed** | 6 chữ số, tái tạo kết quả |
+| **Nhập prompt** | TXT, Excel (.xlsx/.xls) |
+| **Chế độ lưu** | Không thư mục con / Theo tác vụ / Theo prompt |
+
+### 4.4 Tự Động Khớp Ảnh Tham Chiếu
+
+Tự động gán ảnh tham chiếu từ thư mục dựa trên **từ khóa trong tên file** khớp với prompt.
+
+- Tách từ khóa theo `_`, tối thiểu 3 ký tự
+- Ví dụ: `red_car.png` → từ khóa `red_car`, `red`, `car`
+
+### 4.5 Bảng Prompt (7 cột)
+
+| Cột | Mô tả |
+|-----|--------|
+| ☑️ Chọn | Đánh dấu dòng |
+| STT | Số thứ tự |
+| Tác vụ | Tên tác vụ hàng đợi |
+| Ảnh tham chiếu | Ảnh mẫu (nhấn để thêm/xóa) |
+| Prompt | Nội dung (chỉnh sửa trực tiếp) |
+| Kết quả | Ảnh đã tạo (hình thu nhỏ) |
+| Tiến trình | Trạng thái + nút Thử lại/Mở thư mục |
+
+**Thanh công cụ:** Thêm dòng, Thêm ảnh, Xóa, Xóa hết, Chạy lại lỗi, Chạy mục chọn, Load Session, Bộ lọc (Tất cả/Chờ/Đang chạy/Thành công/Lỗi)
+
+### 4.6 Quản Lý Hàng Đợi
+
+- **Thêm vào hàng đợi**: Lưu cấu hình hiện tại thành tác vụ
+- **Quản lý hàng đợi**: Đổi tên, Bỏ qua, Thử lại, Xóa, Chỉnh sửa tác vụ
+- **Giới hạn**: Basic 1 / Plus 10 / Max ♾️
+
+### 4.7 Phiên & Sao Lưu
+
+- Tự động sao lưu sau mỗi thay đổi (tối đa 10 file)
+- Tải phiên: phục hồi hoặc xuất ra Excel
+
+</details>
+
+---
+
+<a name="phan-5"></a>
+<details>
+<summary><h2>🎬 Phần 5: Tạo Video AI 🎬</h2></summary>
+
+### 5.1 Giao Diện
+
+| Vùng | Mô tả |
+|------|--------|
+| **Bảng điều khiển trái** | Cấu hình + Nút điều khiển |
+| **Bảng điều khiển phải** | 3 tab + Thanh công cụ |
+
+> ⚠️ Yêu cầu tài khoản Google hạng **PRO** hoặc **ULTRA**. Model Fast [0 Credit] chỉ hỗ trợ hạng **ULTRA**.
+
+### 5.2 Ba Model Video
+
+| Model | Credit | Mô tả |
+|-------|--------|-------|
+| **Fast [0 Credit]** | 0 | Nhanh, ưu tiên thấp (chỉ ULTRA) |
+| **Fast [10 Credit]** | 10 | Nhanh, ưu tiên bình thường (mặc định) |
+| **Quality [100 Credit]** | 100 | Chất lượng cao nhất (không hỗ trợ ghép 3 ảnh) |
+
+**Chế độ tạo:** Văn bản thành video, Ảnh đầu, Ảnh đầu+cuối, Ghép 3 ảnh thành phần
+
+### 5.3 Cấu Hình
+
+| Mục | Chi tiết |
+|-----|----------|
+| **Độ phân giải** | 720p (gốc), 1080p (Plus/Max), 4K (Plus/Max) |
+| **Tỷ lệ** | 16:9, 9:16 |
+| **Số video/Prompt** | 1-4 (Basic: chỉ 1) |
+| **Số luồng** | Basic: 1 / Plus: 10 / Max: ♾️ |
+| **Độ trễ** | 10-20 giây mặc định |
+
+### 5.4 Chế Độ Ghép Cặp (Tab 1: Tạo video từ văn bản - hình ảnh)
+
+| Chế độ | Mô tả |
+|--------|-------|
+| **Ảnh Đầu - Ảnh Cuối** | Ghép cặp 1:1 |
+| **1 Ảnh Đầu - Nhiều Ảnh Cuối** | 1 ảnh đầu → N ảnh cuối (Plus/Max) |
+| **Nhiều Ảnh Đầu - 1 Ảnh Cuối** | N ảnh đầu → 1 ảnh cuối (Plus/Max) |
+| **Ghép Nối Tiếp (1:2 -> 2:3...)** | Chuỗi: ảnh cuối N = ảnh đầu N+1 (Plus/Max) |
+
+### 5.5 Tab 2: Tạo video từ các thành phần ⭐ (Plus/Max)
+
+Kết hợp **3 ảnh thành phần** thành video. Hỗ trợ tự động khớp từ khóa từ thư mục.
+
+### 5.6 Tab 3: Xây Dựng Khung Hình 🎞️ (Plus/Max)
+
+Chuỗi video **liên tiếp** — khung hình cuối video N = ảnh đầu video N+1.
+
+| Đặc điểm | Chi tiết |
+|-----------|----------|
+| Độ phân giải | Chỉ 720p |
+| Số luồng | Chỉ 1 (tuần tự) |
+| Ảnh tham chiếu | Chỉ video đầu tiên |
+
+### 5.7 Phân Quyền Theo Gói
+
+| Tính năng | Basic | Plus | Max |
+|-----------|-------|------|-----|
+| Tab 1 (Tạo video từ văn bản - hình ảnh) | ✅ | ✅ | ✅ |
+| Tab 2 (Tạo video từ các thành phần) | ❌ | ✅ | ✅ |
+| Tab 3 (Xây Dựng Khung Hình) | ❌ | ✅ | ✅ |
+| Độ phân giải | 720p | +1080p+4K | +1080p+4K |
+
+</details>
+
+---
+
+<a name="phan-6"></a>
+<details>
+<summary><h2>🔗 Phần 6: Biên Tập Quy Trình (Workflow) 🔗</h2></summary>
+
+Trình soạn thảo trực quan dạng node — kết nối các bước xử lý thành luồng tự động.
+
+> ⚠️ Trình soạn luồng yêu cầu gói **Plus hoặc Max** để chạy.
+
+### 6.1 Giao Diện
+
+| Vùng | Mô tả |
+|------|--------|
+| **Thanh công cụ** | Lưu Flow, Mở Flow, Sắp xếp, Dừng, Chạy Flow |
+| **Vùng vẽ** | Khu vực đặt node + kết nối |
+| **Bản đồ thu nhỏ** | Tổng quan toàn bộ luồng |
+| **Bảng nhật ký** | Nhật ký thực thi |
+
+### 6.2 Thao Tác
+
+| Thao tác | Hành động |
+|----------|-----------|
+| Chuột phải | Menu thêm node |
+| Kéo thả | Di chuyển node |
+| Cuộn chuột | Phóng to/thu nhỏ |
+| Ctrl+Z/Y | Hoàn tác/Làm lại |
+| Ctrl+C/V | Sao chép/Dán |
+| Delete | Xóa node/kết nối |
+
+### 6.3 Các Loại Node
+
+| Node | Đầu vào | Đầu ra | Mô tả |
+|------|---------|--------|-------|
+| 📦 **Tải Ảnh Hàng Loạt** | — | Ảnh | Tải ảnh từ thư mục (sắp xếp: A-Z, mới/cũ, ngẫu nhiên, khớp prompt) |
+| 📝 **Tải Prompt Hàng Loạt** | — | Prompt | Danh sách prompt (tuần tự/ngẫu nhiên, giới hạn số lượng) |
+| 🖼 **Tạo Ảnh** | Tham chiếu, Prompt | Ảnh | Tạo ảnh (4 model, tỷ lệ, seed, độ phân giải) |
+| 📎 **Ảnh Tham Chiếu** | Ảnh | Tham chiếu | Dùng cho Nano Banana / Imagen 4 — chia danh mục (Chủ thể/Cảnh/Phong cách) |
+| 📎 **Ảnh Tham Chiếu (Pro)** | Ảnh | Tham chiếu | Dùng cho Nano Banana Pro — không phân danh mục |
+| 💾 **Lưu Ảnh** | Ảnh | — | Lưu ảnh (tiền tố + thư mục) |
+| 🔀 **Chuyển Hướng** | Bất kỳ | Bất kỳ | Định tuyến lại kết nối |
+
+### 6.4 Thực Thi
+
+Dùng thuật toán **sắp xếp topo** để xác định thứ tự chạy. Trạng thái node: 🟡 Đang chạy / 🟢 Thành công / 🔴 Lỗi / Tím = Bỏ qua / Xám = Vô hiệu.
+
+### 6.5 Lưu / Mở
+
+- Lưu và mở file **JSON**
+- Luồng mặc định tự động tải khi mở ứng dụng
+
+</details>
+
+---
+
+<a name="phan-7"></a>
+<details>
+<summary><h2>🔧 Phần 7: Tính Năng Bổ Sung 🔧</h2></summary>
+
+### 7.1 Máy Chủ Webhook API (chỉ gói Max)
+
+Máy chủ API cục bộ cho công cụ bên ngoài (n8n, Make.com, Zapier, Python...).
+
+> 📖 **Tài liệu tích hợp chi tiết:** [WEBHOOK_API_GUIDE_VI.md](WEBHOOK_API_GUIDE_VI.md) (bao gồm code mẫu Python, JavaScript, cURL)
+
+| Đường dẫn | Phương thức | Xác thực | Mô tả |
+|------------|-------------|----------|-------|
+| `/api/health` | GET | ❌ | Kiểm tra máy chủ |
+| `/api/image/generate` | POST | ✅ | Gửi yêu cầu tạo ảnh |
+| `/api/video/generate` | POST | ✅ | Gửi yêu cầu tạo video |
+| `/api/status/{task_id}` | GET | ✅ | Xem trạng thái |
+| `/api/result/{task_id}` | GET | ✅ | Lấy kết quả |
+| `/api/files/{filename}` | GET | ✅ | Tải file về |
+| `/api/tasks` | GET | ✅ | Danh sách tác vụ |
+
+**Xác thực:** Thêm header `X-API-Key: KHÓA_CỦA_BẠN` | **Cổng:** 1024-65535 (mặc định 8765)
+
+**Model ảnh:** `imagen4`, `nano_banana`, `nano_banana_2`, `nano_banana_pro`
+
+**Model video:**
+
+| Model | Tên hiển thị | Credit | Ghi chú |
+|---|---|---|---|
+| `veo_31_fast_relaxed` | Veo 3.1 Fast Relaxed | 0 | Mặc định, ưu tiên thấp (chỉ ULTRA) |
+| `veo_31_fast` | Veo 3.1 Fast | 10 | Ưu tiên bình thường |
+| `veo_31_quality` | Veo 3.1 Quality | 100 | Chất lượng cao nhất |
+
+```json
+// POST /api/image/generate
+{
+  "prompt": "mô tả ảnh",
+  "model": "imagen4",
+  "aspect_ratio": "16:9",
+  "upscale": ["2K"]
+}
+
+// POST /api/video/generate
+{
+  "prompt": "mô tả video",
+  "model": "veo_31_fast",
+  "mode": "text_to_video",
+  "aspect_ratio": "16:9",
+  "resolution": ["720p"]
+}
+```
+
+### 7.2 Cài Đặt (6 Tab)
+
+| Tab | Nội dung |
+|-----|----------|
+| **Tài khoản Google** | Thêm/xóa/gia hạn tài khoản Google |
+| **Proxy Pool** | Proxy tùy chỉnh (HTTP/SOCKS5) + WARP VPN + Tự động xoay IP |
+| **Bản quyền & Nâng cấp** | Đăng nhập/mua Plus/Max, tự động kiểm tra định kỳ |
+| **Chế độ Xác thực** | Chọn chế độ: Tích hợp sẵn hoặc Chrome Extension ([xem 7.5](#ext-auth)) |
+| **Cài đặt chung** | Ngôn ngữ (Tiếng Việt / English), giao diện sáng/tối, thông tin tác giả |
+| **Logs** | Nhật ký hoạt động chi tiết |
+
+### 7.3 Khôi Phục & Xử Lý Lỗi
+
+| Loại lỗi | Xử lý tự động |
+|-----------|-------|
+| 403 (Bị từ chối) | Làm mới phiên → xoay tài khoản |
+| Hết thời gian chờ | Thử lại tối đa 3 lần |
+| Captcha (Tích hợp) | Trình duyệt tự giải, 10 lượt/phiên, xoay profile |
+| Captcha (Extension) | Chrome Extension tự xử lý, yêu cầu giữ Chrome mở |
+| Mất kết nối | WARP tự kết nối lại |
+| Hết tài khoản | Dừng sau 5 lần liên tiếp không tìm được |
+
+### 7.4 Cập Nhật Tự Động
+
+Ứng dụng kiểm tra phiên bản từ máy chủ → thông báo → tải xuống → thay file → khởi động lại.
+
+<a name="ext-auth"></a>
+
+### 7.5 Chế Độ Xác Thực Chrome Extension 🧩
+
+Ngoài chế độ xác thực **Tích hợp sẵn** (tự động sử dụng trình duyệt Chromium nội bộ), ứng dụng hỗ trợ chế độ **Chrome Extension** — sử dụng phiên trình duyệt Chrome thật của bạn.
+
+**So sánh 2 chế độ:**
+
+| | 🖥️ Tích hợp sẵn (Mặc định) | 🧩 Chrome Extension (Khuyến nghị) |
+|---|---|---|
+| **Thiết lập** | Không cần | Cài extension từ Chrome Web Store |
+| **Trình duyệt** | Chromium tự động (ẩn) | Chrome thật của bạn |
+| **Tài nguyên** | Nặng — khởi chạy trình duyệt Chromium ẩn (tốn RAM & CPU) | Rất nhẹ — tận dụng Chrome đang mở sẵn |
+| **Tốc độ** | Chậm hơn (phải khởi động trình duyệt) | Nhanh hơn — không cần mở trình duyệt, xác thực tức thì |
+| **Độ ổn định** | Có thể gặp lỗi phiên | Mượt mà hơn — dùng phiên đăng nhập thật, ít lỗi hơn |
+| **Ưu điểm** | Hoàn toàn tự động, không cần thiết lập | Nhẹ, nhanh, ổn định |
+| **Yêu cầu** | Không | Giữ Chrome mở với trang Labs |
+
+> 💡 **Khuyến nghị:** Nếu bạn đã dùng Chrome, hãy chọn **chế độ Extension** — nhẹ hơn đáng kể về tài nguyên hệ thống, xác thực nhanh hơn, và trải nghiệm mượt mà hơn.
+
+**Cách thiết lập Chrome Extension:**
+
+1. **Cài đặt Extension** — Cài extension [**G-Labs Automation - Auth Helper**](https://chromewebstore.google.com/detail/g-labs-automation-auth-he/clhcjdjbcldkogahjfmcgfipmlilmkpg) từ Chrome Web Store (hoặc dùng nút trong Cài đặt → Chế độ Xác thực)
+2. **Đăng nhập Google Labs** — Mở [labs.google/fx/tools/flow](https://labs.google/fx/tools/flow) trong Chrome và đăng nhập tài khoản Google
+3. **Bắt đầu tạo ảnh** — Quay lại G-Labs Automation, extension tự động kết nối và xử lý xác thực ở nền
+
+> ⚠️ **Lưu ý:** Giữ Chrome mở cùng trang Labs trong khi tạo ảnh hoặc video. Nếu gặp lỗi, tải lại trang Labs trên Chrome.
+
+**Trạng thái kết nối:** Xem trong Cài đặt → Chế độ Xác thực:
+- 🟢 **Extension: Đã kết nối** — Sẵn sàng hoạt động
+- 🔴 **Extension: Chưa kết nối** — Kiểm tra Chrome đã mở trang Labs chưa
+
+### 7.6 Phần Mềm Xung Đột
+
+Các phần mềm sau có thể gây **xung đột** khi chạy đồng thời với G-Labs Automation, dẫn đến lỗi `Environment check failed — worker cannot start`.
+
+| # | Phần mềm | Loại |
+|---|---|---|
+| 1 | **Fiddler** / Fiddler Everywhere | HTTP Debugging Proxy |
+| 2 | **Charles Proxy** | HTTP Proxy / Monitor |
+| 3 | **mitmproxy** / mitmweb / mitmdump | Network Proxy Tool |
+| 4 | **Burp Suite** / Burp Loader | Web Testing Platform |
+| 5 | **Proxyman** | HTTP Debugging Proxy |
+| 6 | **HTTP Toolkit** | HTTP Debugging Tool |
+| 7 | **HTTP Debugger Pro** | Network Analyzer |
+| 8 | **Reqable** | API Debugging Tool |
+| 9 | **OWASP ZAP** (Zed Attack Proxy) | Web App Scanner |
+
+> ⚠️ **Khắc phục:** Tắt hoàn toàn phần mềm xung đột trước khi sử dụng, sau đó khởi động lại ứng dụng.
+
+
+</details>
+
+---
+
+<p align="center">
+  <b>G-Labs Automation</b> — Tạo ảnh & video AI hàng loạt<br><br>
+  🌐 <a href="https://duckmartians.info/">duckmartians.info</a> · 💬 <a href="https://discord.gg/munMZEBMw5">Discord Community</a><br>
+  <b>Tác giả: Đặng Minh Đức</b> · <a href="https://github.com/duckmartians">@duckmartians</a>
+</p>

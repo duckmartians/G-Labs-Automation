@@ -192,7 +192,9 @@ Nếu thấy phản hồi như dưới đây, server đã sẵn sàng:
   "prompt": "a beautiful sunset over the ocean, cinematic, 8k",
   "model": "imagen4",
   "count": 2,
-  "aspect_ratio": "16:9"
+  "aspect_ratio": "16:9",
+  "upscale": ["2K"],
+  "reference_images": []
 }
 ```
 
@@ -316,7 +318,9 @@ Tạo workflow `G-Labs Tạo Video AI`, hoặc sao chép workflow ảnh rồi ch
 {
   "prompt": "a golden retriever running on the beach, slow motion, cinematic",
   "model": "veo_31_fast",
-  "aspect_ratio": "16:9"
+  "mode": "text_to_video",
+  "aspect_ratio": "16:9",
+  "resolution": ["720p", "1080p"]
 }
 ```
 

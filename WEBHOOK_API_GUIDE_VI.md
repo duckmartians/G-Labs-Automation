@@ -61,9 +61,11 @@ X-API-Key: YOUR_API_KEY
 | Trường | Kiểu | Bắt buộc | Mặc định | Mô tả |
 |---|---|---|---|---|
 | `prompt` | string | ✅ | — | Mô tả ảnh cần tạo |
-| `model` | string | — | `imagen4` | Model: `imagen4`, `nano_banana`, `nano_banana_2`, `nano_banana_pro` |
+| `model` | string | — | `imagen4` | `imagen4`, `nano_banana`, `nano_banana_2`, `nano_banana_pro` |
 | `count` | integer | — | `1` | Số lượng ảnh (1–8) |
-| `aspect_ratio` | string | — | `1:1` | Tỉ lệ: `1:1`, `16:9`, `9:16`, `4:3`, `3:4` |
+| `aspect_ratio` | string | — | `1:1` | `1:1`, `16:9`, `9:16`, `4:3`, `3:4` |
+| `reference_images` | array | — | `[]` | Danh sách ảnh base64 hoặc object (xem dưới) |
+| `upscale` | array | — | `[]` | Danh sách định dạng: `["2K"]`, `["4K"]`, hoặc `["2K", "4K"]` |
 
 **Ví dụ:**
 ```bash
@@ -76,6 +78,20 @@ curl -X POST http://127.0.0.1:8765/api/image/generate \
     "count": 2,
     "aspect_ratio": "1:1"
   }'
+```
+
+**Định dạng Ảnh tham chiếu:**
+```json
+"reference_images": [
+  "data:image/png;base64,...", 
+  {"data": "base64...", "category": "subject"}
+]
+```
+Các hạng mục (chỉ Whisk): `subject`, `scene`, `style`.
+
+**Định dạng Upscale:**
+```json
+"upscale": ["2K", "4K"]
 ```
 
 **Phản hồi `202` (Đã nhận):**
@@ -103,8 +119,11 @@ X-API-Key: YOUR_API_KEY
 | Trường | Kiểu | Bắt buộc | Mặc định | Mô tả |
 |---|---|---|---|---|
 | `prompt` | string | ✅ | — | Mô tả video cần tạo |
-| `model` | string | — | `veo_31_fast_relaxed` | Model: `veo_31_fast_relaxed`, `veo_31_fast`, `veo_31_quality` |
-| `aspect_ratio` | string | — | `16:9` | Tỉ lệ: `16:9`, `9:16` |
+| `model` | string | — | `veo_31_fast_relaxed` | `veo_31_fast_relaxed`, `veo_31_fast`, `veo_31_quality` |
+| `mode` | string | — | `text_to_video` | `text_to_video`, `start_image`, `start_end_image`, `components` |
+| `aspect_ratio` | string | — | `16:9` | `16:9`, `9:16` |
+| `resolution` | array | — | `["720p"]` | Danh sách: `["720p"]`, `["1080p"]`, `["4K"]` |
+| `reference_images` | array | — | `[]` | Ảnh base64. Bắt buộc cho các mode không phải text. |
 
 **Các model video khả dụng:**
 

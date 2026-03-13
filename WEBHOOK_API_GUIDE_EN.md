@@ -61,9 +61,11 @@ X-API-Key: YOUR_API_KEY
 | Field | Type | Required | Default | Description |
 |---|---|---|---|---|
 | `prompt` | string | ✅ | — | Image description |
-| `model` | string | — | `imagen4` | Model: `imagen4`, `nano_banana`, `nano_banana_2`, `nano_banana_pro` |
+| `model` | string | — | `imagen4` | `imagen4`, `nano_banana`, `nano_banana_2`, `nano_banana_pro` |
 | `count` | integer | — | `1` | Number of images (1–8) |
-| `aspect_ratio` | string | — | `1:1` | Ratio: `1:1`, `16:9`, `9:16`, `4:3`, `3:4` |
+| `aspect_ratio` | string | — | `1:1` | `1:1`, `16:9`, `9:16`, `4:3`, `3:4` |
+| `reference_images` | array | — | `[]` | List of base64 images or objects (see below) |
+| `upscale` | array | — | `[]` | List of formats: `["2K"]`, `["4K"]`, or `["2K", "4K"]` |
 
 **Example:**
 ```bash
@@ -76,6 +78,20 @@ curl -X POST http://127.0.0.1:8765/api/image/generate \
     "count": 2,
     "aspect_ratio": "1:1"
   }'
+```
+
+**Reference Image Format:**
+```json
+"reference_images": [
+  "data:image/png;base64,...", 
+  {"data": "base64...", "category": "subject"}
+]
+```
+Categories (Whisk only): `subject`, `scene`, `style`.
+
+**Upscale Format:**
+```json
+"upscale": ["2K", "4K"]
 ```
 
 **Response `202`:**
@@ -103,8 +119,11 @@ X-API-Key: YOUR_API_KEY
 | Field | Type | Required | Default | Description |
 |---|---|---|---|---|
 | `prompt` | string | ✅ | — | Video description |
-| `model` | string | — | `veo_31_fast_relaxed` | Model: `veo_31_fast_relaxed`, `veo_31_fast`, `veo_31_quality` |
-| `aspect_ratio` | string | — | `16:9` | Ratio: `16:9`, `9:16` |
+| `model` | string | — | `veo_31_fast_relaxed` | `veo_31_fast_relaxed`, `veo_31_fast`, `veo_31_quality` |
+| `mode` | string | — | `text_to_video` | `text_to_video`, `start_image`, `start_end_image`, `components` |
+| `aspect_ratio` | string | — | `16:9` | `16:9`, `9:16` |
+| `resolution` | array | — | `["720p"]` | List: `["720p"]`, `["1080p"]`, `["4K"]` |
+| `reference_images` | array | — | `[]` | Base64 images. Required for non-text modes. |
 
 **Available video models:**
 
