@@ -207,18 +207,18 @@ Quản lý tài khoản nằm trong **Cài đặt → tab Tài khoản**.
 
 ### 2.1 Thêm Tài Khoản
 
-**Đăng nhập qua trình duyệt (khuyến nghị):**
+**Đăng nhập qua trình duyệt:**
 1. Nhấn **"Đăng nhập qua trình duyệt"**
 2. Đăng nhập Google trong cửa sổ Chromium
 3. Hệ thống tự động trích xuất dữ liệu phiên, email, hạng tài khoản, số dư
 
-**Nhập cookie thủ công:** Dán cookie từ trình duyệt vào ô nhập.
-
-### 2.2 Bảng Tài Khoản (9 cột)
+### 2.2 Bảng Tài Khoản (11 cột)
 
 | Cột | Mô tả |
 |-----|--------|
 | Bật/Tắt | Kích hoạt hoặc vô hiệu tài khoản |
+| Ảnh | ☑️ Cho phép tài khoản này tạo ảnh |
+| Video | ☑️ Cho phép tài khoản này tạo video |
 | Email | Địa chỉ email |
 | Hạng | Free / Pro / Ultra |
 | Số dư | Credits còn lại |
@@ -559,7 +559,7 @@ Máy chủ API cục bộ cho công cụ bên ngoài (n8n, Make.com, Zapier, Pyt
 | Tab | Nội dung |
 |-----|----------|
 | **Tài khoản Google** | Thêm/xóa/gia hạn tài khoản Google |
-| **Proxy Pool** | Proxy tùy chỉnh (HTTP/SOCKS5) + WARP VPN + Tự động xoay IP |
+| **Proxy Pool** | Proxy tùy chỉnh (HTTP/SOCKS5/SOCKS4) + Round-Robin + Tự động xoay IP khi lỗi 403 |
 | **Bản quyền & Nâng cấp** | Đăng nhập/mua Plus/Max, tự động kiểm tra định kỳ |
 | **Chế độ Xác thực** | Chọn chế độ: Tích hợp sẵn hoặc Chrome Extension ([xem 7.5](#ext-auth)) |
 | **Cài đặt chung** | Ngôn ngữ (Tiếng Việt / English), giao diện sáng/tối, thông tin tác giả |
@@ -570,10 +570,9 @@ Máy chủ API cục bộ cho công cụ bên ngoài (n8n, Make.com, Zapier, Pyt
 | Loại lỗi | Xử lý tự động |
 |-----------|-------|
 | 403 (Bị từ chối) | Làm mới phiên → xoay tài khoản |
-| Hết thời gian chờ | Thử lại tối đa 3 lần |
-| Captcha (Tích hợp) | Trình duyệt tự giải, 10 lượt/phiên, xoay profile |
+| Hết thời gian chờ | Thử lại tối đa 5 lần |
+| Captcha (Tích hợp) | Trình duyệt tự giải, 5 lượt/phiên, xoay profile |
 | Captcha (Extension) | Chrome Extension tự xử lý, yêu cầu giữ Chrome mở |
-| Mất kết nối | WARP tự kết nối lại |
 | Hết tài khoản | Dừng sau 5 lần liên tiếp không tìm được |
 
 ### 7.4 Cập Nhật Tự Động

@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="README.md"><img src="https://img.shields.io/badge/English-blue" alt="English"></a>
-  <a href="README_VI.md"><img src="https://img.shields.io/badge/Tiếng%20Việt-green" alt="Tiếng Việt"></a>
+  <a href="README_vi.md"><img src="https://img.shields.io/badge/Tiếng%20Việt-green" alt="Tiếng Việt"></a>
   <a href="https://discord.gg/munMZEBMw5"><img src="https://img.shields.io/badge/Discord-Community-5865F2?logo=discord&logoColor=white" alt="Discord"></a>
 </p>
 
@@ -207,18 +207,18 @@ Account management is in **Settings → Accounts tab**.
 
 ### 2.1 Adding Accounts
 
-**Browser Login (recommended):**
+**Browser Login:**
 1. Click **"Login via browser"**
 2. Sign in to Google in the Chromium window
 3. The system automatically extracts session data, email, account tier, and credits
 
-**Manual cookie import:** Paste cookies from your browser into the input field.
-
-### 2.2 Account Table (9 columns)
+### 2.2 Account Table (11 columns)
 
 | Column | Description |
 |--------|-------------|
 | Toggle | Enable/disable account |
+| Image | ☑️ Allow this account for image generation |
+| Video | ☑️ Allow this account for video generation |
 | Email | Email address |
 | Tier | Free / Pro / Ultra |
 | Credits | Remaining credits |
@@ -559,7 +559,7 @@ Local REST API server for external tools (n8n, Make.com, Zapier, Python...).
 | Tab | Content |
 |-----|---------|
 | **Google Accounts** | Add/remove/renew Google accounts |
-| **Proxy Pool** | Custom proxies (HTTP/SOCKS5) + WARP VPN + Auto-Rotate |
+| **Proxy Pool** | Custom proxies (HTTP/SOCKS5/SOCKS4) + Round-Robin + Auto-Rotate on 403 |
 | **License & Upgrade** | Login/purchase Plus/Max, periodic auto-check |
 | **Authentication Mode** | Choose mode: Built-in (automatic) or Chrome Extension ([see 7.5](#ext-auth)) |
 | **General Settings** | Language (Vietnamese / English), dark/light theme, author info |
@@ -570,10 +570,9 @@ Local REST API server for external tools (n8n, Make.com, Zapier, Python...).
 | Error Type | Auto-Recovery |
 |------------|---------------|
 | 403 Forbidden | Refresh session → rotate account |
-| Timeout | Retry up to 3 times |
-| Captcha (Built-in) | Browser auto-solves, 10 tokens/session, profile rotation |
+| Timeout | Retry up to 5 times |
+| Captcha (Built-in) | Browser auto-solves, 5 tokens/session, profile rotation |
 | Captcha (Extension) | Chrome Extension handles it, requires Chrome to stay open |
-| Connection lost | WARP auto-reconnects |
 | No accounts available | Stops after 5 consecutive failures |
 
 ### 7.4 Auto-Update
@@ -640,4 +639,3 @@ The following software may **conflict** when running alongside G-Labs Automation
   🌐 <a href="https://duckmartins.info/">duckmartians.info</a> · 💬 <a href="https://discord.gg/munMZEBMw5">Discord Community</a><br>
   <b>Author: Đặng Minh Đức</b> · <a href="https://github.com/duckmartians">@duckmartians</a>
 </p>
-
