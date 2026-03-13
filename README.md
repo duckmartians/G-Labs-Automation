@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="README.md"><img src="https://img.shields.io/badge/English-blue" alt="English"></a>
-  <a href="README_vi.md"><img src="https://img.shields.io/badge/Tiếng%20Việt-green" alt="Tiếng Việt"></a>
+  <a href="README_VI.md"><img src="https://img.shields.io/badge/Tiếng%20Việt-green" alt="Tiếng Việt"></a>
   <a href="https://discord.gg/munMZEBMw5"><img src="https://img.shields.io/badge/Discord-Community-5865F2?logo=discord&logoColor=white" alt="Discord"></a>
 </p>
 
@@ -640,3 +640,4 @@ The following software may **conflict** when running alongside G-Labs Automation
   🌐 <a href="https://duckmartins.info/">duckmartians.info</a> · 💬 <a href="https://discord.gg/munMZEBMw5">Discord Community</a><br>
   <b>Author: Đặng Minh Đức</b> · <a href="https://github.com/duckmartians">@duckmartians</a>
 </p>
+
