@@ -1,12 +1,12 @@
 """
 G-Labs Automation Webhook Test Sample (FULL Version - Shareable Demo)
-Covers all endpoints: Image (Flow), Video (Veo modes + resolution), Grok Media (t2v / i2v / i2i).
+Covers all endpoints: Image (Flow), Video (Veo modes + resolution), Grok Media (t2i / i2i / t2v / i2v).
 API Key and sample image data (base64) are pre-embedded — just run.
 
 Endpoints used:
     POST /api/image/generate    — Image generation (imagen4 / nano_banana_pro / nano_banana_2)
     POST /api/video/generate    — Veo video (text_to_video, start_image, start_end_image, components)
-    POST /api/grok/generate     — Grok Media (mode: t2v / i2v / i2i)
+    POST /api/grok/generate     — Grok Media (mode: t2i / i2i / t2v / i2v)
     GET  /api/status/{task_id}  — Poll task status until completed/failed
 """
 import requests
@@ -182,31 +182,56 @@ def run_full_demo():
 
     # ------------------------------------------------------------------
     # GROK MEDIA  —  POST /api/grok/generate
-    # Mode: t2v (text→video) | i2v (image→video) | i2i (image→image)
+    # Mode: t2i (text→image) | i2i (image→image) | t2v (text→video) | i2v (image→video)
     # i2v / i2i REQUIRE at least 1 reference image.
     # Video modes (t2v / i2v) support `video_length` (6 or 10) + `resolution`
-    # (480p / 720p). i2i ignores those two fields.
+    # (480p / 720p). t2i / i2i ignore those two fields.
     # ------------------------------------------------------------------
 
-    # TEST 7: Grok text-to-video
+    # TEST 7: Grok text-to-image
     print("\n" + "="*60)
-    print("7. TEST Grok Text-to-Video (mode: t2v)")
+    print("7. TEST Grok Text-to-Image (mode: t2i)")
     print("="*60)
     c7, d7 = post_api("/api/grok/generate", {
+        "prompt": "a girl swimming in a pool at sunset, cinematic lighting",
+        "mode": "t2i",
+        "aspect_ratio": "16:9",
+    })
+    if c7 == 202: tasks.append((d7["task_id"], "Grok — t2i"))
+
+    # TEST 8: Grok image-to-image (requires 1 reference)
+    # Returns 1 image (the first generated candidate).
+    print("\n" + "="*60)
+    print("8. TEST Grok Image-to-Image (mode: i2i)")
+    print("Payload: 'mode': 'i2i' + 1 reference image (required)")
+    print("="*60)
+    c8, d8 = post_api("/api/grok/generate", {
+        "prompt": "same character, sunset lighting, oil-painting style",
+        "mode": "i2i",
+        "aspect_ratio": "1:1",
+        "reference_images": [IMG_BASE64_1],
+    })
+    if c8 == 202: tasks.append((d8["task_id"], "Grok — i2i"))
+
+    # TEST 9: Grok text-to-video
+    print("\n" + "="*60)
+    print("9. TEST Grok Text-to-Video (mode: t2v)")
+    print("="*60)
+    c9, d9 = post_api("/api/grok/generate", {
         "prompt": "a neon city skyline at dusk, drone fly-over",
         "mode": "t2v",
         "aspect_ratio": "9:16",
         "video_length": 6,
         "resolution": "480p",
     })
-    if c7 == 202: tasks.append((d7["task_id"], "Grok — t2v"))
+    if c9 == 202: tasks.append((d9["task_id"], "Grok — t2v"))
 
-    # TEST 8: Grok image-to-video (requires 1 reference)
+    # TEST 10: Grok image-to-video (requires 1 reference)
     print("\n" + "="*60)
-    print("8. TEST Grok Image-to-Video (mode: i2v)")
+    print("10. TEST Grok Image-to-Video (mode: i2v)")
     print("Payload: 'mode': 'i2v' + 1 reference image (required)")
     print("="*60)
-    c8, d8 = post_api("/api/grok/generate", {
+    c10, d10 = post_api("/api/grok/generate", {
         "prompt": "make it rain with cinematic lighting",
         "mode": "i2v",
         "aspect_ratio": "16:9",
@@ -214,21 +239,7 @@ def run_full_demo():
         "resolution": "720p",
         "reference_images": [IMG_BASE64_1],
     })
-    if c8 == 202: tasks.append((d8["task_id"], "Grok — i2v"))
-
-    # TEST 9: Grok image-to-image (requires 1 reference)
-    # Returns 1 image (the first generated candidate).
-    print("\n" + "="*60)
-    print("9. TEST Grok Image-to-Image (mode: i2i)")
-    print("Payload: 'mode': 'i2i' + 1 reference image (required)")
-    print("="*60)
-    c9, d9 = post_api("/api/grok/generate", {
-        "prompt": "same character, sunset lighting, oil-painting style",
-        "mode": "i2i",
-        "aspect_ratio": "1:1",
-        "reference_images": [IMG_BASE64_1],
-    })
-    if c9 == 202: tasks.append((d9["task_id"], "Grok — i2i"))
+    if c10 == 202: tasks.append((d10["task_id"], "Grok — i2v"))
 
     if not tasks:
         print("\n❌ Error: Could not send any requests. Please check the server at:", BASE_URL)

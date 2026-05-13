@@ -1,12 +1,12 @@
 """
 File mẫu test Webhook G-Labs Automation (Bản FULL — Chia sẻ cho người dùng)
-Bao quát tất cả endpoint: Image (Flow), Video (Veo các chế độ + độ phân giải), Grok Media (t2v / i2v / i2i).
+Bao quát tất cả endpoint: Image (Flow), Video (Veo các chế độ + độ phân giải), Grok Media (t2i / i2i / t2v / i2v).
 API Key và dữ liệu ảnh mẫu (base64) đã nhúng sẵn — chạy là dùng được luôn.
 
 Các endpoint sử dụng:
     POST /api/image/generate    — Tạo ảnh (imagen4 / nano_banana_pro / nano_banana_2)
     POST /api/video/generate    — Veo video (text_to_video, start_image, start_end_image, components)
-    POST /api/grok/generate     — Grok Media (mode: t2v / i2v / i2i)
+    POST /api/grok/generate     — Grok Media (mode: t2i / i2i / t2v / i2v)
     GET  /api/status/{task_id}  — Kiểm tra trạng thái task cho tới khi xong/lỗi
 """
 import requests
@@ -182,31 +182,56 @@ def run_full_demo():
 
     # ------------------------------------------------------------------
     # GROK MEDIA  —  POST /api/grok/generate
-    # Mode: t2v (text→video) | i2v (image→video) | i2i (image→image)
+    # Mode: t2i (text→image) | i2i (image→image) | t2v (text→video) | i2v (image→video)
     # i2v / i2i BẮT BUỘC phải có ít nhất 1 ảnh tham chiếu.
     # Mode video (t2v / i2v) hỗ trợ `video_length` (6 hoặc 10) và `resolution`
-    # (480p / 720p). Mode i2i bỏ qua hai trường này.
+    # (480p / 720p). Mode t2i / i2i bỏ qua hai trường này.
     # ------------------------------------------------------------------
 
-    # TEST 7: Grok text-to-video
+    # TEST 7: Grok text-to-image
     print("\n" + "="*60)
-    print("7. TEST Grok Text-to-Video (mode: t2v)")
+    print("7. TEST Grok Text-to-Image (mode: t2i)")
     print("="*60)
     c7, d7 = post_api("/api/grok/generate", {
+        "prompt": "tạo một bức ảnh cô gái đang bơi trong bể bơi, ánh sáng hoàng hôn",
+        "mode": "t2i",
+        "aspect_ratio": "16:9",
+    })
+    if c7 == 202: tasks.append((d7["task_id"], "Grok — t2i"))
+
+    # TEST 8: Grok image-to-image (cần 1 ảnh tham chiếu)
+    # Trả về 1 ảnh (ảnh đầu tiên trong các ảnh Grok sinh ra).
+    print("\n" + "="*60)
+    print("8. TEST Grok Image-to-Image (mode: i2i)")
+    print("Payload: 'mode': 'i2i' + 1 ảnh tham chiếu (bắt buộc)")
+    print("="*60)
+    c8, d8 = post_api("/api/grok/generate", {
+        "prompt": "cùng nhân vật, ánh sáng hoàng hôn, phong cách tranh sơn dầu",
+        "mode": "i2i",
+        "aspect_ratio": "1:1",
+        "reference_images": [IMG_BASE64_1],
+    })
+    if c8 == 202: tasks.append((d8["task_id"], "Grok — i2i"))
+
+    # TEST 9: Grok text-to-video
+    print("\n" + "="*60)
+    print("9. TEST Grok Text-to-Video (mode: t2v)")
+    print("="*60)
+    c9, d9 = post_api("/api/grok/generate", {
         "prompt": "đường chân trời thành phố neon lúc hoàng hôn, drone bay qua",
         "mode": "t2v",
         "aspect_ratio": "9:16",
         "video_length": 6,
         "resolution": "480p",
     })
-    if c7 == 202: tasks.append((d7["task_id"], "Grok — t2v"))
+    if c9 == 202: tasks.append((d9["task_id"], "Grok — t2v"))
 
-    # TEST 8: Grok image-to-video (cần 1 ảnh tham chiếu)
+    # TEST 10: Grok image-to-video (cần 1 ảnh tham chiếu)
     print("\n" + "="*60)
-    print("8. TEST Grok Image-to-Video (mode: i2v)")
+    print("10. TEST Grok Image-to-Video (mode: i2v)")
     print("Payload: 'mode': 'i2v' + 1 ảnh tham chiếu (bắt buộc)")
     print("="*60)
-    c8, d8 = post_api("/api/grok/generate", {
+    c10, d10 = post_api("/api/grok/generate", {
         "prompt": "thêm mưa và ánh sáng phong cách điện ảnh",
         "mode": "i2v",
         "aspect_ratio": "16:9",
@@ -214,21 +239,7 @@ def run_full_demo():
         "resolution": "720p",
         "reference_images": [IMG_BASE64_1],
     })
-    if c8 == 202: tasks.append((d8["task_id"], "Grok — i2v"))
-
-    # TEST 9: Grok image-to-image (cần 1 ảnh tham chiếu)
-    # Trả về 1 ảnh (ảnh đầu tiên trong các ảnh Grok sinh ra).
-    print("\n" + "="*60)
-    print("9. TEST Grok Image-to-Image (mode: i2i)")
-    print("Payload: 'mode': 'i2i' + 1 ảnh tham chiếu (bắt buộc)")
-    print("="*60)
-    c9, d9 = post_api("/api/grok/generate", {
-        "prompt": "cùng nhân vật, ánh sáng hoàng hôn, phong cách tranh sơn dầu",
-        "mode": "i2i",
-        "aspect_ratio": "1:1",
-        "reference_images": [IMG_BASE64_1],
-    })
-    if c9 == 202: tasks.append((d9["task_id"], "Grok — i2i"))
+    if c10 == 202: tasks.append((d10["task_id"], "Grok — i2v"))
 
     if not tasks:
         print("\n❌ Lỗi: Không gửi được request nào. Kiểm tra lại server tại:", BASE_URL)
