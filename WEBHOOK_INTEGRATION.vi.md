@@ -1,0 +1,516 @@
+# G-Labs Automation — Hướng dẫn tích hợp Webhook API
+
+> Đối tượng đọc: lập trình viên, người tích hợp kỹ thuật, và AI agent.
+> Mục tiêu: cung cấp đầy đủ mọi thứ cần để tích hợp đúng Webhook REST API nội bộ —
+> danh sách endpoint, xác thực, schema request/response, model, tham số, xử lý lỗi,
+> và quy trình bất đồng bộ (gửi yêu cầu → hỏi trạng thái → tải kết quả).
+
+Tài liệu này mô tả API do tab **Webhook** của ứng dụng desktop G-Labs Automation
+(v5.0.8+) cung cấp. Nó cho phép các công cụ bên ngoài (n8n, Make.com, script tự
+viết, AI agent) điều khiển việc tạo ảnh / video / Grok qua REST API đơn giản.
+
+---
+
+## 1. Tổng quan & khái niệm chính
+
+- **Máy chủ chạy nội bộ.** API chạy ở `http://127.0.0.1:<port>` (loopback). Nó chỉ
+  bind vào `127.0.0.1` — **không** truy cập được từ máy khác trừ khi bạn tự dựng
+  tunnel/reverse proxy. Tích hợp của bạn phải chạy **trên cùng máy**, hoặc bạn tự
+  expose ra ngoài.
+- **Port mặc định:** `8765` (đổi được trong tab Webhook).
+- **Bạn phải bật máy chủ.** Mở app → tab **Webhook** → **Start**. Tab này cũng hiển
+  thị **API key** và cho phép đổi port / tạo lại key.
+- **Bất đồng bộ theo thiết kế.** Việc tạo nội dung tốn thời gian, nên API theo mô
+  hình **gửi → hỏi trạng thái → tải về**:
+  1. `POST` yêu cầu tạo → nhận `task_id` ngay lập tức (HTTP `202`).
+  2. `GET /api/status/{task_id}` lặp lại cho đến khi `status` là `completed` hoặc `failed`.
+  3. Khi `completed`, tải file từ các URL trong `results`.
+- **Đồng thời.** Máy chủ nhận nhiều request cùng lúc nhưng xử lý tối đa **10 task
+  song song** (các task dư sẽ chờ tới lượt).
+- **Tạo nội dung dùng tài khoản đã đăng nhập trong app.** Ảnh/Video dùng tài khoản
+  Google (Flow/Veo) cấu hình trong app; Grok dùng phiên Super Grok đã kết nối. Nếu
+  không có tài khoản hợp lệ, task sẽ thất bại (xem bảng lỗi). App phải đang chạy với
+  các tài khoản đó đã đăng nhập & đang bật.
+
+---
+
+## 2. Xác thực
+
+Tất cả endpoint **trừ** `GET /api/health` và `GET /api/files/{filename}` đều yêu cầu
+API key, gửi qua HTTP header:
+
+```
+X-API-Key: <api-key-của-bạn>
+```
+
+- Key do app sinh ra (token URL-safe 32 byte) và hiển thị trong tab **Webhook**.
+  Bạn có thể tạo lại key ở đó.
+- Thiếu/sai key → `401 {"error": "Invalid or missing API key"}`.
+
+CORS đã bật (`Access-Control-Allow-Origin: *`) và có xử lý preflight `OPTIONS`, nên
+client trên trình duyệt cũng dùng được.
+
+---
+
+## 3. Danh sách Endpoint
+
+| Method | Path | Auth | Mục đích |
+|--------|------|:----:|----------|
+| `GET`  | `/api/health` | ❌ | Tình trạng máy chủ / uptime / số task trong hàng đợi |
+| `POST` | `/api/image/generate` | ✅ | Đưa task tạo **ảnh** vào hàng đợi |
+| `POST` | `/api/video/generate` | ✅ | Đưa task tạo **video** vào hàng đợi |
+| `POST` | `/api/grok/generate`  | ✅ | Đưa task **Grok** (ảnh/video) vào hàng đợi |
+| `GET`  | `/api/status/{task_id}` | ✅ | Hỏi trạng thái task; trả kết quả hoặc lỗi |
+| `GET`  | `/api/result/{task_id}` | ✅ | Lấy kết quả (chỉ khi đã `completed`) |
+| `GET`  | `/api/files/{filename}` | ❌ | Tải file kết quả đã tạo |
+| `GET`  | `/api/tasks` | ✅ | Liệt kê 50 task gần nhất |
+
+Dấu `/` ở cuối được chấp nhận (vd `/api/health/`).
+
+---
+
+## 4. Quy trình bất đồng bộ (từng bước)
+
+### Bước 1 — Gửi yêu cầu
+
+`POST` tới một trong ba endpoint generate kèm JSON body (xem schema ở §5). Phản hồi
+là **HTTP 202**:
+
+```json
+{
+  "task_id": "abc12345",
+  "status": "pending",
+  "message": "Image task queued for processing",
+  "poll_url": "/api/status/abc12345"
+}
+```
+
+> `task_id` là chuỗi hex 8 ký tự. Giữ lại để hỏi trạng thái và lấy kết quả.
+
+### Bước 2 — Hỏi trạng thái
+
+`GET /api/status/{task_id}` (kèm header `X-API-Key`). Các giá trị `status` có thể là:
+`pending` → `running` → `completed` | `failed`.
+
+**Đang chạy:**
+```json
+{ "task_id": "abc12345", "type": "image", "status": "running", "prompt": "a cat ...", "created_at": 1707782400.0 }
+```
+
+**Hoàn thành:**
+```json
+{
+  "task_id": "abc12345",
+  "type": "image",
+  "status": "completed",
+  "prompt": "a cat ...",
+  "created_at": 1707782400.0,
+  "results": ["http://127.0.0.1:8765/api/files/image_001.png"],
+  "completed_at": 1707782460.0
+}
+```
+
+**Thất bại:**
+```json
+{
+  "task_id": "abc12345",
+  "type": "image",
+  "status": "failed",
+  "prompt": "a cat ...",
+  "created_at": 1707782400.0,
+  "error_code": 429,
+  "error": "Đã hết giới hạn tạo ảnh trong ngày (user@gmail.com)",
+  "error_detail": "429: Đã hết giới hạn tạo ảnh trong ngày (user@gmail.com)"
+}
+```
+
+> Khoảng thời gian hỏi đề xuất: mỗi 3–5 giây. Ảnh thường xong trong vài giây tới vài
+> phút; video có thể mất vài phút (dịch vụ phía trên có thể xếp hàng). Máy chủ có cơ
+> chế watchdog để báo thất bại cho task bị treo quá lâu không có kết quả.
+
+### Bước 3 — Tải kết quả
+
+`results` là mảng URL dạng `http://127.0.0.1:<port>/api/files/<tên-đã-url-encode>`.
+`GET` từng URL (không cần API key) để tải dữ liệu thô. `Content-Type` được đặt theo
+phần mở rộng file (`image/png`, `image/jpeg`, `video/mp4`, …). File lưu nội bộ trên
+máy đang chạy app.
+
+**Trả về bao nhiêu file (và ở độ phân giải nào):**
+
+- **Ảnh, không `upscale`** → 1 file (ảnh gốc).
+- **Ảnh có `upscale`** → một file **cho mỗi độ phân giải upscale yêu cầu**, theo thứ
+  tự tăng dần — vd `["2K"]` → `[2K]`, `["2K","4K"]` → `[2K, 4K]`. Ảnh gốc
+  (không upscale) **không** được kèm khi đã yêu cầu `upscale`.
+- **Video** → một file **cho mỗi độ phân giải tạo được** — vd `["720p","1080p"]` →
+  tối đa 2 file.
+- **Grok** → luôn đúng 1 file.
+
+(Nên `len(results)` và thứ tự khớp với các độ phân giải bạn yêu cầu.)
+
+---
+
+## 5. Schema body của request
+
+Mọi body đều là JSON. `prompt` là **bắt buộc** cho mọi endpoint; prompt rỗng/thiếu sẽ
+làm task thất bại với lỗi `Missing required field: prompt`.
+
+### 5.1 Ảnh — `POST /api/image/generate`
+
+| Trường | Kiểu | Bắt buộc | Mặc định | Ghi chú |
+|--------|------|:--------:|----------|---------|
+| `prompt` | string | ✅ | — | Mô tả ảnh. |
+| `model` | string | ❌ | `imagen4` | Một trong `imagen4`, `nano_banana_pro`, `nano_banana_2`. Không hợp lệ → `imagen4`. |
+| `aspect_ratio` | string | ❌ | `1:1` | Một trong `1:1`, `3:4`, `4:3`, `9:16`, `16:9`. Không hợp lệ → `1:1`. |
+| `reference_images` | array | ❌ | `[]` | Tối đa **10** ảnh base64 (xem §6). |
+| `upscale` | array | ❌ | `[]` | Bất kỳ `"2K"`, `"4K"`. **4K cần tài khoản ULTRA** và model hỗ trợ upscale. Giá trị sai bị bỏ. |
+
+```json
+{
+  "prompt": "a modern minimalist house, golden hour",
+  "model": "nano_banana_pro",
+  "aspect_ratio": "16:9",
+  "reference_images": ["data:image/png;base64,iVBORw0KGgo..."],
+  "upscale": ["4K"]
+}
+```
+
+> Nếu yêu cầu `upscale` mà không tạo được độ phân giải đó (vd 4K hết quota), task sẽ
+> báo **failed** kèm lý do — **không** âm thầm trả về ảnh gốc độ phân giải thấp hơn.
+
+### 5.2 Video — `POST /api/video/generate`
+
+| Trường | Kiểu | Bắt buộc | Mặc định | Ghi chú |
+|--------|------|:--------:|----------|---------|
+| `prompt` | string | ✅ | — | Mô tả chuyển động / khung cảnh. |
+| `model` | string | ❌ | `veo_31_fast` | Một trong `veo_31_fast`, `veo_31_lite`, `veo_31_quality`, `veo_31_lite_relaxed`. Không hợp lệ → `veo_31_fast`. `veo_31_lite_relaxed` cần tài khoản **ULTRA**. |
+| `aspect_ratio` | string | ❌ | `16:9` | `16:9` hoặc `9:16`. |
+| `mode` | string | ❌ | `text_to_video` | `text_to_video` (0 ảnh) · `start_image` (1 ảnh) · `start_end_image` (2 ảnh) · `components` (tối đa 3 ảnh, hỗ trợ `voice`). |
+| `reference_images` | array | ❌ | `[]` | Tối đa **3** ảnh base64. **Bắt buộc khi `mode != text_to_video`.** |
+| `resolution` | array | ❌ | `["720p"]` | Bất kỳ `"720p"`, `"1080p"`, `"4K"`. `1080p`/`4K` tạo bằng upscale; **chỉ `4K` cần tài khoản ULTRA** (`1080p` không cần ULTRA). Giá trị sai → `720p`. Mỗi độ phân giải tạo ra một file. |
+| `voice` | string | ❌ | `""` | Tên giọng (chữ thường). Chỉ dùng ở mode `components`. |
+
+```json
+{
+  "prompt": "water flowing over rocks, cinematic",
+  "model": "veo_31_fast",
+  "aspect_ratio": "16:9",
+  "mode": "start_image",
+  "reference_images": ["data:image/png;base64,iVBORw0KGgo..."],
+  "resolution": ["720p", "1080p"]
+}
+```
+
+> **Thứ tự ảnh tham chiếu:** với `start_end_image`, `reference_images[0]` là khung
+> đầu, `reference_images[1]` là khung cuối. Với `start_image`, chỉ dùng
+> `reference_images[0]`.
+> **`mode` không được kiểm tra chặt:** mode không hợp lệ sẽ hoạt động như
+> `text_to_video` (bỏ qua ảnh tham chiếu). Chỉ `components` đọc trường `voice` và
+> dùng tối đa 3 ảnh tham chiếu.
+> Webhook video API chỉ dùng các model **Veo** (không có Omni Flash ở đây).
+> `resolution` có thể liệt kê nhiều giá trị; mỗi giá trị được tạo nếu hạng tài khoản
+> cho phép.
+
+### 5.3 Grok — `POST /api/grok/generate`
+
+| Trường | Kiểu | Bắt buộc | Mặc định | Ghi chú |
+|--------|------|:--------:|----------|---------|
+| `prompt` | string | ✅ | — | Prompt. |
+| `mode` | string | ❌ | `t2v` | `t2i` (văn bản→ảnh) · `i2i` (ảnh→ảnh) · `t2v` (văn bản→video) · `i2v` (ảnh→video). Mode sai → task thất bại. |
+| `aspect_ratio` | string | ❌ | `9:16` | Một trong `9:16`, `16:9`, `1:1`, `2:3`, `3:2`. Không hợp lệ → `9:16`. |
+| `reference_images` | array | ❌ | `[]` | Tối đa **5** ảnh base64. **Bắt buộc cho `i2i` và `i2v`** (≥1, không có thì task thất bại). Bị bỏ qua với `t2i` / `t2v`. |
+| `video_length` | int | ❌ | `6` | `6` hoặc `10` (giây). **Chỉ mode video** (`t2v`/`i2v`). Giá trị khác → `6`. |
+| `resolution` | string | ❌ | `480p` | `480p` hoặc `720p`. **Chỉ mode video.** Mode ảnh (`t2i`/`i2i`) luôn xuất **1K**. |
+
+```json
+{
+  "prompt": "make it rain over the city",
+  "mode": "i2v",
+  "aspect_ratio": "16:9",
+  "video_length": 6,
+  "resolution": "720p",
+  "reference_images": ["data:image/png;base64,iVBORw0KGgo..."]
+}
+```
+
+> Grok luôn tạo **một** ảnh/video mỗi request và trả về kết quả đầu tiên. Không có
+> tham số `image_generation_count`.
+
+### 5.4 Bảng tham chiếu Model
+
+| Giá trị API (`model` / `mode`) | Tên hiển thị | Đầu ra / Tỉ lệ |
+|------|--------------|--------|
+| `imagen4` | Imagen 4 | `1:1, 3:4, 4:3, 9:16, 16:9` |
+| `nano_banana_pro` | Nano Banana Pro | `1:1, 3:4, 4:3, 9:16, 16:9` |
+| `nano_banana_2` | Nano Banana 2 | `1:1, 3:4, 4:3, 9:16, 16:9` |
+| `veo_31_fast` | Veo 3.1 Fast | `16:9, 9:16` |
+| `veo_31_lite` | Veo 3.1 Lite | `16:9, 9:16` |
+| `veo_31_quality` | Veo 3.1 Quality | `16:9, 9:16` |
+| `veo_31_lite_relaxed` | Veo 3.1 Lite Relaxed (chỉ ULTRA) | `16:9, 9:16` |
+| Grok `mode=t2i` | Text → Image (1K) | `9:16, 16:9, 1:1, 2:3, 3:2` |
+| Grok `mode=i2i` | Image → Image (1K) | `9:16, 16:9, 1:1, 2:3, 3:2` |
+| Grok `mode=t2v` | Text → Video (480p/720p) | `9:16, 16:9, 1:1, 2:3, 3:2` |
+| Grok `mode=i2v` | Image → Video (480p/720p) | `9:16, 16:9, 1:1, 2:3, 3:2` |
+
+---
+
+## 6. Định dạng ảnh tham chiếu
+
+Mỗi phần tử trong `reference_images` là một trong hai dạng:
+
+1. **Chuỗi base64** — data URI hoặc base64 thô:
+   - `"data:image/png;base64,iVBORw0KGgo..."`
+   - `"data:image/jpeg;base64,/9j/4AAQ..."`
+   - base64 thô `"iVBORw0KGgo..."` (được coi là PNG)
+2. **Object**: `{"data": "data:image/...;base64,...", "category": "subject"}`
+   - `category` không bắt buộc: `subject` | `scene` | `style`. Được chấp nhận nhưng
+     **bị bỏ qua với model ảnh Flow** (chúng dùng một ô tham chiếu chung).
+
+Ràng buộc:
+- Kiểu giải mã hỗ trợ: PNG, JPG/JPEG, WEBP (nhận diện qua header data-URI; mặc định
+  PNG khi không có header).
+- Dữ liệu giải mã dưới ~100 byte sẽ bị bỏ (coi là không hợp lệ).
+- Số lượng tối đa theo endpoint: **ảnh = 10**, **grok = 5**, **video = 3**. Phần dư
+  vượt quá mức tối đa sẽ bị bỏ qua.
+
+---
+
+## 7. Tham chiếu Response & trạng thái
+
+### POST generate → `202`
+```json
+{ "task_id": "abc12345", "status": "pending", "message": "...", "poll_url": "/api/status/abc12345" }
+```
+
+### GET `/api/status/{task_id}` → `200`
+- `pending` / `running`: `{ task_id, type, status, prompt, created_at }`
+- `completed`: thêm `results` (mảng URL file) và `completed_at` (unix giây).
+- `failed`: thêm `error_code` (int), `error` (string), `error_detail` (string).
+- task_id không tồn tại → `404 {"error": "Task <id> not found"}`.
+
+### GET `/api/result/{task_id}` → `200`
+- Nếu chưa xong: `{ task_id, status, message: "Task not yet completed" }`.
+- Nếu đã xong: `{ task_id, status: "completed", results: [...], completed_at }`.
+
+### GET `/api/health` → `200`
+```json
+{ "status": "ok", "server": "G-Labs Webhook", "uptime": 123, "tasks_pending": 0, "tasks_running": 1 }
+```
+
+### GET `/api/tasks` → `200`
+```json
+{ "tasks": [ { "task_id": "...", "type": "image", "status": "completed", "prompt": "50 ký tự đầu...", "created_at": 1707782400.0 } ] }
+```
+(Mới nhất trước, tối đa 50.)
+
+### Các response lỗi
+| HTTP | Body | Khi nào |
+|------|------|---------|
+| `400` | `{"error": "Empty body"}` | POST không có body |
+| `401` | `{"error": "Invalid or missing API key"}` | Thiếu/sai `X-API-Key` |
+| `404` | `{"error": "Not found"}` | Route không tồn tại |
+| `404` | `{"error": "Task <id> not found"}` | task không tồn tại ở status/result |
+| `404` | `{"error": "File not found: <name>"}` | File không tồn tại/đã hết hạn |
+
+---
+
+## 8. Mã lỗi (`error_code` / `error` / `error_detail`)
+
+Khi task thất bại, response trạng thái mang ba trường:
+
+- **`error_code`** — số nguyên. Với lỗi từ API phía trên, nó phản ánh mã kiểu HTTP
+  (`400`, `403`, `429`, `500`, …). **`429` nghĩa là hết quota / giới hạn tần suất**
+  (vd hết giới hạn tạo trong ngày). Bằng `0` khi không có mã số phù hợp (vd lỗi
+  validate, "không có tài khoản").
+- **`error`** — thông điệp dễ đọc. Với các status đã biết từ phía trên, đây là status
+  tiếng Anh ổn định (vd `PERMISSION_DENIED`, `RESOURCE_EXHAUSTED`). Với các thông điệp
+  thân thiện (quota, upscale thất bại, timeout), phần chữ **theo ngôn ngữ giao diện
+  của app** (vd tiếng Việt nếu app đang để tiếng Việt).
+- **`error_detail`** — chuỗi lỗi gốc đầy đủ (vd `"429: Đã hết giới hạn tạo ảnh trong ngày (user@gmail.com)"`).
+
+Các trường hợp phổ biến:
+
+| `error_code` | Ý nghĩa | `error` điển hình |
+|:---:|---------|-------------------|
+| `429` | Hết quota trong ngày / bị giới hạn tần suất | thông điệp quota (kèm email tài khoản) |
+| `403` | Bị từ chối quyền / lỗi phiên | `PERMISSION_DENIED` |
+| `400` | Request không hợp lệ / vi phạm chính sách prompt | `INVALID_ARGUMENT`, thông điệp vi phạm |
+| `500` | Lỗi máy chủ phía trên | `INTERNAL` / `HTTP_500` |
+| `0` | Lỗi validate / môi trường | `No active accounts available`, `Missing required field: prompt`, `Invalid mode '...'`, thông điệp upscale thất bại, `Timeout: no result generated` |
+
+> Mẹo xử lý bằng code: rẽ nhánh theo `error_code` (không phụ thuộc ngôn ngữ). Dùng
+> `error` / `error_detail` cho log hiển thị cho người. `error_code == 429` là tín hiệu
+> để giãn nhịp / xoay tài khoản / thử lại sau.
+
+Lưu ý riêng của app này:
+- **Video** yêu cầu độ phân giải không tạo được (vd `4K` mà không có tài khoản ULTRA)
+  → `failed`.
+- **Ảnh** yêu cầu `upscale` (`2K`/`4K`) không tạo được → `failed` kèm lý do upscale
+  (không trả về ảnh gốc nhỏ hơn).
+
+---
+
+## 9. Ràng buộc, hạng tài khoản & lưu ý
+
+- **Chỉ localhost.** Chạy tích hợp trên cùng máy, hoặc tự tunnel `127.0.0.1:<port>`.
+- **Tài khoản & hạng:**
+  - Ảnh/Video cần tài khoản Google đã đăng nhập và **đang bật** trong app.
+  - Upscale ảnh `4K`, video **`4K`**, và `veo_31_lite_relaxed` cần tài khoản
+    **ULTRA** (video `1080p` không cần ULTRA). Không có tài khoản hợp lệ thì task `failed`.
+  - Tài khoản đã **TẮT** trong app sẽ không được dùng.
+- **Grok** cần phiên Super Grok đang kết nối trong app.
+- **Mỗi request Grok trả 1 kết quả** (ảnh/video đầu tiên được tạo).
+- **Task lưu trong bộ nhớ.** Trạng thái task và ánh xạ `task_id` → kết quả nằm trong
+  app đang chạy; sẽ mất nếu app khởi động lại. Hãy gửi, hỏi trạng thái và tải về
+  trong cùng một phiên chạy app.
+- **File lưu nội bộ** và có thể bị dọn theo thời gian; hãy tải ngay sau khi `completed`.
+- **Tính tái lập:** cùng một `prompt` không đảm bảo cho ra kết quả giống hệt.
+
+---
+
+## 10. Ví dụ đầu-cuối
+
+### 10.1 cURL
+
+```bash
+# --- Ảnh (cơ bản) ---
+curl -X POST http://127.0.0.1:8765/api/image/generate \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"prompt": "a cat wearing sunglasses", "model": "imagen4"}'
+# → {"task_id":"abc12345","status":"pending","poll_url":"/api/status/abc12345"}
+
+# --- Hỏi trạng thái tới khi xong ---
+curl http://127.0.0.1:8765/api/status/abc12345 -H "X-API-Key: YOUR_API_KEY"
+
+# --- Ảnh + tham chiếu + upscale 4K (cần ULTRA) ---
+curl -X POST http://127.0.0.1:8765/api/image/generate \
+  -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"prompt":"modern house","model":"nano_banana_pro","reference_images":["data:image/png;base64,..."],"upscale":["4K"]}'
+
+# --- Video (ảnh đầu) ---
+curl -X POST http://127.0.0.1:8765/api/video/generate \
+  -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"prompt":"flowing water","mode":"start_image","reference_images":["data:image/png;base64,..."],"resolution":["1080p"]}'
+
+# --- Video (mode components + voice) ---
+curl -X POST http://127.0.0.1:8765/api/video/generate \
+  -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"prompt":"she says hello","mode":"components","reference_images":["data:image/png;base64,..."],"voice":"aoede"}'
+
+# --- Grok: văn bản → ảnh ---
+curl -X POST http://127.0.0.1:8765/api/grok/generate \
+  -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"prompt":"a girl swimming in a pool","mode":"t2i","aspect_ratio":"16:9"}'
+
+# --- Grok: ảnh → video ---
+curl -X POST http://127.0.0.1:8765/api/grok/generate \
+  -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"prompt":"make it rain","mode":"i2v","aspect_ratio":"16:9","resolution":"720p","reference_images":["data:image/png;base64,..."]}'
+
+# --- Tải file kết quả ---
+curl -o out.png "http://127.0.0.1:8765/api/files/image_001.png"
+
+# --- Liệt kê task gần đây ---
+curl http://127.0.0.1:8765/api/tasks -H "X-API-Key: YOUR_API_KEY"
+```
+
+### 10.2 Python (gửi → hỏi → tải)
+
+```python
+import base64, time, requests
+
+BASE = "http://127.0.0.1:8765"
+KEY  = "YOUR_API_KEY"
+H    = {"X-API-Key": KEY, "Content-Type": "application/json"}
+
+def b64(path):
+    ext = "png" if path.lower().endswith(".png") else "jpeg"
+    with open(path, "rb") as f:
+        return f"data:image/{ext};base64," + base64.b64encode(f.read()).decode()
+
+def generate(endpoint, body, poll=4, timeout=900):
+    r = requests.post(f"{BASE}/api/{endpoint}/generate", json=body, headers=H, timeout=30)
+    r.raise_for_status()
+    task_id = r.json()["task_id"]
+
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        s = requests.get(f"{BASE}/api/status/{task_id}", headers=H, timeout=30).json()
+        status = s.get("status")
+        if status == "completed":
+            return s["results"]                      # danh sách URL file
+        if status == "failed":
+            raise RuntimeError(f"[{s.get('error_code')}] {s.get('error')}")
+        time.sleep(poll)
+    raise TimeoutError(f"task {task_id} chưa xong trong {timeout}s")
+
+# Ảnh
+urls = generate("image", {
+    "prompt": "a modern minimalist house, golden hour",
+    "model": "nano_banana_pro",
+    "aspect_ratio": "16:9",
+    "upscale": ["2K"],
+})
+
+# Tải về
+for i, u in enumerate(urls):
+    data = requests.get(u, timeout=120).content   # /api/files không cần key
+    open(f"out_{i}{u[u.rfind('.'):]}" if '.' in u else f"out_{i}.bin", "wb").write(data)
+
+# Ảnh→Ảnh qua Grok
+grok_urls = generate("grok", {
+    "prompt": "same character, sunset lighting",
+    "mode": "i2i",
+    "aspect_ratio": "1:1",
+    "reference_images": [b64("char.png")],
+})
+```
+
+### 10.3 JavaScript (Node, fetch)
+
+```js
+const BASE = "http://127.0.0.1:8765";
+const KEY  = "YOUR_API_KEY";
+const H = { "X-API-Key": KEY, "Content-Type": "application/json" };
+
+async function generate(endpoint, body, { poll = 4000, timeout = 900000 } = {}) {
+  const r = await fetch(`${BASE}/api/${endpoint}/generate`, {
+    method: "POST", headers: H, body: JSON.stringify(body),
+  });
+  if (!r.ok) throw new Error(`submit ${r.status}`);
+  const { task_id } = await r.json();
+
+  const end = Date.now() + timeout;
+  while (Date.now() < end) {
+    const s = await (await fetch(`${BASE}/api/status/${task_id}`, { headers: H })).json();
+    if (s.status === "completed") return s.results;          // URL file
+    if (s.status === "failed") throw new Error(`[${s.error_code}] ${s.error}`);
+    await new Promise(r => setTimeout(r, poll));
+  }
+  throw new Error(`task ${task_id} hết thời gian chờ`);
+}
+
+// Video, văn bản→video
+const urls = await generate("video", {
+  prompt: "neon city at night, drone shot",
+  model: "veo_31_fast",
+  aspect_ratio: "16:9",
+  resolution: ["720p"],
+});
+console.log(urls);
+```
+
+---
+
+## 11. Checklist nhanh cho người tích hợp / AI agent
+
+1. Bật máy chủ Webhook trong app; sao chép **port** và **API key**.
+2. Luôn gửi `X-API-Key` ở các call generate/status/result/tasks.
+3. `POST /api/{image|video|grok}/generate` với body hợp lệ (`prompt` bắt buộc).
+4. Đọc `task_id` từ response `202`.
+5. Hỏi `GET /api/status/{task_id}` mỗi 3–5 giây tới khi `completed` hoặc `failed`.
+6. Khi `completed`: `GET` từng URL trong `results` để tải file.
+7. Khi `failed`: xem `error_code` (vd `429` = hết quota) và `error` / `error_detail`.
+8. Tôn trọng tỉ lệ theo từng model, số ảnh tham chiếu theo từng mode, và các tính
+   năng chỉ dành cho ULTRA.
+```
