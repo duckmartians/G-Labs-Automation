@@ -161,7 +161,7 @@ làm task thất bại với lỗi `Missing required field: prompt`.
 | `prompt` | string | ✅ | — | Mô tả ảnh. |
 | `model` | string | ❌ | `imagen4` | Một trong `imagen4`, `nano_banana_pro`, `nano_banana_2`. Không hợp lệ → `imagen4`. |
 | `aspect_ratio` | string | ❌ | `1:1` | Một trong `1:1`, `3:4`, `4:3`, `9:16`, `16:9`. Không hợp lệ → `1:1`. |
-| `reference_images` | array | ❌ | `[]` | Tối đa **10** ảnh base64 (xem §6). |
+| `reference_images` | array | ❌ | `[]` | Tối đa **10** ảnh base64 (xem §6). Mỗi ảnh có thể kèm `name` để gắn theo `@tên` trong prompt (§6.1). |
 | `upscale` | array | ❌ | `[]` | Bất kỳ `"2K"`, `"4K"`. **4K cần tài khoản ULTRA** và model hỗ trợ upscale. Giá trị sai bị bỏ. |
 
 ```json
@@ -185,9 +185,10 @@ làm task thất bại với lỗi `Missing required field: prompt`.
 | `model` | string | ❌ | `veo_31_fast` | Một trong `veo_31_fast`, `veo_31_lite`, `veo_31_quality`, `veo_31_lite_relaxed`, `omni_flash`. Không hợp lệ → `veo_31_fast`. `veo_31_lite_relaxed` cần tài khoản **ULTRA**. **`omni_flash`**: xem ghi chú `mode`. |
 | `aspect_ratio` | string | ❌ | `16:9` | `16:9` hoặc `9:16`. |
 | `mode` | string | ❌ | `text_to_video` | `text_to_video` (0 ảnh) · `start_image` (1 ảnh) · `start_end_image` (2 ảnh) · `components` (Veo tối đa 3 ảnh, Omni Flash tối đa 7; hỗ trợ `voice`). **Omni Flash KHÔNG hỗ trợ `start_end_image`** (chưa có khung cuối) — gửi sẽ bị từ chối; các mode còn lại đều dùng được. |
-| `reference_images` | array | ❌ | `[]` | Tối đa **3** ảnh base64 (Veo); **Omni Flash `components` tối đa 7**. **Bắt buộc khi `mode != text_to_video`.** |
+| `reference_images` | array | ❌ | `[]` | Tối đa **3** ảnh base64 (Veo); **Omni Flash `components` tối đa 7**. **Bắt buộc khi `mode != text_to_video`.** Mỗi ảnh có thể kèm `name` để gắn theo `@tên` trong prompt — Veo (§6.1). |
 | `resolution` | array | ❌ | `["720p"]` | Bất kỳ `"720p"`, `"1080p"`, `"4K"`. `1080p`/`4K` tạo bằng upscale; **chỉ `4K` cần tài khoản ULTRA** (`1080p` không cần ULTRA). Giá trị sai → `720p`. Mỗi độ phân giải tạo ra một file. |
 | `voice` | string | ❌ | `""` | Tên giọng (chữ thường). Chỉ dùng ở mode `components`. |
+| `video_length` | int | ❌ | (mặc định model) | Độ dài clip (giây). Veo: `4`/`6`/`8`; Omni Flash: `4`/`6`/`8`/`10`. Giá trị không hỗ trợ → dùng mặc định (8s). **Veo `4`/`6` cần tài khoản ULTRA** (Omni Flash không cần). |
 
 ```json
 {
@@ -196,7 +197,8 @@ làm task thất bại với lỗi `Missing required field: prompt`.
   "aspect_ratio": "16:9",
   "mode": "start_image",
   "reference_images": ["data:image/png;base64,iVBORw0KGgo..."],
-  "resolution": ["720p", "1080p"]
+  "resolution": ["720p", "1080p"],
+  "video_length": 8
 }
 ```
 

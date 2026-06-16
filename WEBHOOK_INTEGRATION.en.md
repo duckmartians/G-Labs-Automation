@@ -162,7 +162,7 @@ prompt fails the task with `Missing required field: prompt`.
 | `prompt` | string | ✅ | — | Image description. |
 | `model` | string | ❌ | `imagen4` | One of `imagen4`, `nano_banana_pro`, `nano_banana_2`. Unknown → `imagen4`. |
 | `aspect_ratio` | string | ❌ | `1:1` | One of `1:1`, `3:4`, `4:3`, `9:16`, `16:9`. Unknown → `1:1`. |
-| `reference_images` | array | ❌ | `[]` | Up to **10** base64 images (see §6). |
+| `reference_images` | array | ❌ | `[]` | Up to **10** base64 images (see §6). Each image may include a `name` to bind it via `@name` in the prompt (§6.1). |
 | `upscale` | array | ❌ | `[]` | Any of `"2K"`, `"4K"`. **4K requires an ULTRA account** and a model that supports upscaling. Invalid values are dropped. |
 
 ```json
@@ -187,9 +187,10 @@ prompt fails the task with `Missing required field: prompt`.
 | `model` | string | ❌ | `veo_31_fast` | One of `veo_31_fast`, `veo_31_lite`, `veo_31_quality`, `veo_31_lite_relaxed`, `omni_flash`. Unknown → `veo_31_fast`. `veo_31_lite_relaxed` requires **ULTRA** accounts. **`omni_flash`**: see the `mode` note. |
 | `aspect_ratio` | string | ❌ | `16:9` | `16:9` or `9:16`. |
 | `mode` | string | ❌ | `text_to_video` | `text_to_video` (0 refs) · `start_image` (1 ref) · `start_end_image` (2 refs) · `components` (Veo up to 3 refs, Omni Flash up to 7; supports `voice`). **Omni Flash does NOT support `start_end_image`** (no end frame yet) — such requests are rejected; all other modes work. |
-| `reference_images` | array | ❌ | `[]` | Up to **3** base64 images (Veo); **Omni Flash `components` up to 7**. **Required when `mode != text_to_video`.** |
+| `reference_images` | array | ❌ | `[]` | Up to **3** base64 images (Veo); **Omni Flash `components` up to 7**. **Required when `mode != text_to_video`.** Each image may include a `name` to bind it via `@name` in the prompt — Veo (§6.1). |
 | `resolution` | array | ❌ | `["720p"]` | Any of `"720p"`, `"1080p"`, `"4K"`. `1080p`/`4K` are produced by upscaling; **only `4K` requires an ULTRA account** (`1080p` works without ULTRA). Invalid values → `720p`. One output file per produced resolution. |
 | `voice` | string | ❌ | `""` | Lowercase voice name. Only used in `components` mode. |
+| `video_length` | int | ❌ | (model default) | Clip length in seconds. Veo: `4`/`6`/`8`; Omni Flash: `4`/`6`/`8`/`10`. Unsupported values → default (8s). **Veo `4`/`6` require an ULTRA account** (Omni Flash doesn't). |
 
 ```json
 {
@@ -198,7 +199,8 @@ prompt fails the task with `Missing required field: prompt`.
   "aspect_ratio": "16:9",
   "mode": "start_image",
   "reference_images": ["data:image/png;base64,iVBORw0KGgo..."],
-  "resolution": ["720p", "1080p"]
+  "resolution": ["720p", "1080p"],
+  "video_length": 8
 }
 ```
 
