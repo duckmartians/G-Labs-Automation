@@ -184,10 +184,10 @@ prompt fails the task with `Missing required field: prompt`.
 | Field | Type | Required | Default | Notes |
 |-------|------|:--------:|---------|-------|
 | `prompt` | string | ✅ | — | Motion / scene description. |
-| `model` | string | ❌ | `veo_31_fast` | One of `veo_31_fast`, `veo_31_lite`, `veo_31_quality`, `veo_31_lite_relaxed`. Unknown → `veo_31_fast`. `veo_31_lite_relaxed` requires **ULTRA** accounts. |
+| `model` | string | ❌ | `veo_31_fast` | One of `veo_31_fast`, `veo_31_lite`, `veo_31_quality`, `veo_31_lite_relaxed`, `omni_flash`. Unknown → `veo_31_fast`. `veo_31_lite_relaxed` requires **ULTRA** accounts. **`omni_flash`**: see the `mode` note. |
 | `aspect_ratio` | string | ❌ | `16:9` | `16:9` or `9:16`. |
-| `mode` | string | ❌ | `text_to_video` | `text_to_video` (0 refs) · `start_image` (1 ref) · `start_end_image` (2 refs) · `components` (up to 3 refs, supports `voice`). |
-| `reference_images` | array | ❌ | `[]` | Up to **3** base64 images. **Required when `mode != text_to_video`.** |
+| `mode` | string | ❌ | `text_to_video` | `text_to_video` (0 refs) · `start_image` (1 ref) · `start_end_image` (2 refs) · `components` (Veo up to 3 refs, Omni Flash up to 7; supports `voice`). **Omni Flash does NOT support `start_end_image`** (no end frame yet) — such requests are rejected; all other modes work. |
+| `reference_images` | array | ❌ | `[]` | Up to **3** base64 images (Veo); **Omni Flash `components` up to 7**. **Required when `mode != text_to_video`.** |
 | `resolution` | array | ❌ | `["720p"]` | Any of `"720p"`, `"1080p"`, `"4K"`. `1080p`/`4K` are produced by upscaling; **only `4K` requires an ULTRA account** (`1080p` works without ULTRA). Invalid values → `720p`. One output file per produced resolution. |
 | `voice` | string | ❌ | `""` | Lowercase voice name. Only used in `components` mode. |
 
@@ -263,9 +263,11 @@ Each entry of `reference_images` is either:
    - `"data:image/png;base64,iVBORw0KGgo..."`
    - `"data:image/jpeg;base64,/9j/4AAQ..."`
    - raw `"iVBORw0KGgo..."` (treated as PNG)
-2. **An object**: `{"data": "data:image/...;base64,...", "category": "subject"}`
+2. **An object**: `{"data": "data:image/...;base64,...", "category": "subject", "name": "red_car.png"}`
    - `category` is optional: `subject` | `scene` | `style`. It is accepted but
      **ignored for Flow image** models (they use a single generic reference slot).
+   - `name` (or `filename`) is optional: the image's original filename. When present,
+     you can bind this image to a position in the prompt via `@<keyword>` (see §6.1).
 
 Constraints:
 - Supported decoded types: PNG, JPG/JPEG, WEBP (detected from the data-URI header;
@@ -273,6 +275,49 @@ Constraints:
 - Decoded data under ~100 bytes is skipped (treated as invalid).
 - Per-endpoint maximum count: **image = 10**, **grok = 5**, **video = 3**.
   Extra entries beyond the max are ignored.
+
+### 6.1 Binding images by name with `@tag`
+
+When a reference image has a `name` (or `filename`), you can point at it **inside the
+prompt** with `@<keyword>` — the **same mechanism** as the Image / Veo pages in the app
+(the webhook signal flows through those very functions, so the payload sent to the Flow
+API matches what you'd get creating directly in the app).
+
+- **Matching**: `<keyword>` is a case-insensitive **substring** of the filename (without
+  extension). E.g. `name: "red_car.png"` → `@red_car`, `@car`, `@red` all hit; the first
+  image in `reference_images` order wins.
+- **Effect**: binds that specific image to that noun's position in the sentence (Flow
+  "Mode-2" structured prompt) instead of passing all images as anonymous generic refs.
+- **Scope**: works for **image (Flow)** and **video (Veo)**; **Grok does not** support `@tag`.
+- Filenames are sanitized (directory components and illegal characters stripped) first.
+- **Unmatched tags** stay as literal text — they never cause an error.
+- **No `name`**: the image is still used as a positional reference as before (backward compatible).
+
+**Image (Flow):**
+```json
+{
+  "prompt": "a @red_car parked next to a @house at night",
+  "reference_images": [
+    {"data": "data:image/png;base64,...", "name": "red_car.png"},
+    {"data": "data:image/jpeg;base64,...", "name": "house.jpg"}
+  ]
+}
+```
+
+**Video (Veo) — `components` mode** (combine named "ingredients"; also works for
+`start_image` / `start_end_image`):
+```json
+{
+  "prompt": "the @character walks through the @forest at dawn",
+  "model": "veo_31_fast",
+  "mode": "components",
+  "aspect_ratio": "16:9",
+  "reference_images": [
+    {"data": "data:image/png;base64,...", "name": "character.png"},
+    {"data": "data:image/jpeg;base64,...", "name": "forest.jpg"}
+  ]
+}
+```
 
 ---
 

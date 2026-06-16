@@ -182,10 +182,10 @@ làm task thất bại với lỗi `Missing required field: prompt`.
 | Trường | Kiểu | Bắt buộc | Mặc định | Ghi chú |
 |--------|------|:--------:|----------|---------|
 | `prompt` | string | ✅ | — | Mô tả chuyển động / khung cảnh. |
-| `model` | string | ❌ | `veo_31_fast` | Một trong `veo_31_fast`, `veo_31_lite`, `veo_31_quality`, `veo_31_lite_relaxed`. Không hợp lệ → `veo_31_fast`. `veo_31_lite_relaxed` cần tài khoản **ULTRA**. |
+| `model` | string | ❌ | `veo_31_fast` | Một trong `veo_31_fast`, `veo_31_lite`, `veo_31_quality`, `veo_31_lite_relaxed`, `omni_flash`. Không hợp lệ → `veo_31_fast`. `veo_31_lite_relaxed` cần tài khoản **ULTRA**. **`omni_flash`**: xem ghi chú `mode`. |
 | `aspect_ratio` | string | ❌ | `16:9` | `16:9` hoặc `9:16`. |
-| `mode` | string | ❌ | `text_to_video` | `text_to_video` (0 ảnh) · `start_image` (1 ảnh) · `start_end_image` (2 ảnh) · `components` (tối đa 3 ảnh, hỗ trợ `voice`). |
-| `reference_images` | array | ❌ | `[]` | Tối đa **3** ảnh base64. **Bắt buộc khi `mode != text_to_video`.** |
+| `mode` | string | ❌ | `text_to_video` | `text_to_video` (0 ảnh) · `start_image` (1 ảnh) · `start_end_image` (2 ảnh) · `components` (Veo tối đa 3 ảnh, Omni Flash tối đa 7; hỗ trợ `voice`). **Omni Flash KHÔNG hỗ trợ `start_end_image`** (chưa có khung cuối) — gửi sẽ bị từ chối; các mode còn lại đều dùng được. |
+| `reference_images` | array | ❌ | `[]` | Tối đa **3** ảnh base64 (Veo); **Omni Flash `components` tối đa 7**. **Bắt buộc khi `mode != text_to_video`.** |
 | `resolution` | array | ❌ | `["720p"]` | Bất kỳ `"720p"`, `"1080p"`, `"4K"`. `1080p`/`4K` tạo bằng upscale; **chỉ `4K` cần tài khoản ULTRA** (`1080p` không cần ULTRA). Giá trị sai → `720p`. Mỗi độ phân giải tạo ra một file. |
 | `voice` | string | ❌ | `""` | Tên giọng (chữ thường). Chỉ dùng ở mode `components`. |
 
@@ -261,9 +261,11 @@ Mỗi phần tử trong `reference_images` là một trong hai dạng:
    - `"data:image/png;base64,iVBORw0KGgo..."`
    - `"data:image/jpeg;base64,/9j/4AAQ..."`
    - base64 thô `"iVBORw0KGgo..."` (được coi là PNG)
-2. **Object**: `{"data": "data:image/...;base64,...", "category": "subject"}`
+2. **Object**: `{"data": "data:image/...;base64,...", "category": "subject", "name": "red_car.png"}`
    - `category` không bắt buộc: `subject` | `scene` | `style`. Được chấp nhận nhưng
      **bị bỏ qua với model ảnh Flow** (chúng dùng một ô tham chiếu chung).
+   - `name` (hoặc `filename`) không bắt buộc: tên file gốc của ảnh. Khi có, bạn có thể
+     gắn ảnh này vào đúng vị trí trong prompt bằng `@<từ_khoá>` (xem §6.1).
 
 Ràng buộc:
 - Kiểu giải mã hỗ trợ: PNG, JPG/JPEG, WEBP (nhận diện qua header data-URI; mặc định
@@ -271,6 +273,48 @@ Ràng buộc:
 - Dữ liệu giải mã dưới ~100 byte sẽ bị bỏ (coi là không hợp lệ).
 - Số lượng tối đa theo endpoint: **ảnh = 10**, **grok = 5**, **video = 3**. Phần dư
   vượt quá mức tối đa sẽ bị bỏ qua.
+
+### 6.1 Gắn ảnh theo tên bằng `@tag`
+
+Khi một ảnh tham chiếu có `name` (hoặc `filename`), bạn có thể trỏ tới nó **ngay trong
+prompt** bằng `@<từ_khoá>` — **đúng cùng cơ chế** ở trang Image / Veo trong app (tín hiệu
+webhook đi qua chính các hàm xử lý đó nên payload gửi Flow API khớp y như tạo trực tiếp).
+
+- **Khớp**: `<từ_khoá>` là **chuỗi con** không phân biệt hoa thường của tên file (đã bỏ
+  đuôi). Vd `name: "red_car.png"` → `@red_car`, `@car`, `@red` đều trúng; ảnh đầu tiên theo
+  thứ tự trong `reference_images` thắng.
+- **Tác dụng**: gắn đúng ảnh đó vào đúng vị trí danh từ trong câu (Flow structured prompt
+  "Mode-2"), thay vì truyền tất cả ảnh như tham chiếu chung vô danh.
+- **Phạm vi**: dùng cho **image (Flow)** và **video (Veo)**; **Grok không hỗ trợ** `@tag`.
+- Tên file được làm sạch (bỏ thành phần thư mục và ký tự không hợp lệ) trước khi dùng.
+- **Tag không khớp** được giữ nguyên là văn bản — không gây lỗi.
+- **Không gửi `name`**: ảnh vẫn dùng như tham chiếu theo vị trí như trước (tương thích ngược).
+
+**Image (Flow):**
+```json
+{
+  "prompt": "a @red_car parked next to a @house at night",
+  "reference_images": [
+    {"data": "data:image/png;base64,...", "name": "red_car.png"},
+    {"data": "data:image/jpeg;base64,...", "name": "house.jpg"}
+  ]
+}
+```
+
+**Video (Veo) — mode `components`** (ghép nhiều "nguyên liệu" theo tên; cũng áp dụng cho
+`start_image` / `start_end_image`):
+```json
+{
+  "prompt": "the @character walks through the @forest at dawn",
+  "model": "veo_31_fast",
+  "mode": "components",
+  "aspect_ratio": "16:9",
+  "reference_images": [
+    {"data": "data:image/png;base64,...", "name": "character.png"},
+    {"data": "data:image/jpeg;base64,...", "name": "forest.jpg"}
+  ]
+}
+```
 
 ---
 
@@ -513,4 +557,3 @@ console.log(urls);
 7. Khi `failed`: xem `error_code` (vd `429` = hết quota) và `error` / `error_detail`.
 8. Tôn trọng tỉ lệ theo từng model, số ảnh tham chiếu theo từng mode, và các tính
    năng chỉ dành cho ULTRA.
-```
