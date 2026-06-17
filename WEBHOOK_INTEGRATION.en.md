@@ -160,7 +160,7 @@ prompt fails the task with `Missing required field: prompt`.
 | Field | Type | Required | Default | Notes |
 |-------|------|:--------:|---------|-------|
 | `prompt` | string | ✅ | — | Image description. |
-| `model` | string | ❌ | `imagen4` | One of `imagen4`, `nano_banana_pro`, `nano_banana_2`. Unknown → `imagen4`. |
+| `model` | string | ❌ | `nano_banana_2` | One of `nano_banana_pro`, `nano_banana_2`. Unknown → `nano_banana_2`. |
 | `aspect_ratio` | string | ❌ | `1:1` | One of `1:1`, `3:4`, `4:3`, `9:16`, `16:9`. Unknown → `1:1`. |
 | `reference_images` | array | ❌ | `[]` | Up to **10** base64 images (see §6). Each image may include a `name` to bind it via `@name` in the prompt (§6.1). |
 | `upscale` | array | ❌ | `[]` | Any of `"2K"`, `"4K"`. **4K requires an ULTRA account** and a model that supports upscaling. Invalid values are dropped. |
@@ -243,7 +243,6 @@ prompt fails the task with `Missing required field: prompt`.
 
 | API value (`model` / `mode`) | Display | Output / Ratios |
 |------|---------|--------|
-| `imagen4` | Imagen 4 | `1:1, 3:4, 4:3, 9:16, 16:9` |
 | `nano_banana_pro` | Nano Banana Pro | `1:1, 3:4, 4:3, 9:16, 16:9` |
 | `nano_banana_2` | Nano Banana 2 | `1:1, 3:4, 4:3, 9:16, 16:9` |
 | `veo_31_fast` | Veo 3.1 Fast | `16:9, 9:16` |
@@ -428,7 +427,7 @@ Notes specific to this app:
 curl -X POST http://127.0.0.1:8765/api/image/generate \
   -H "Content-Type: application/json" \
   -H "X-API-Key: YOUR_API_KEY" \
-  -d '{"prompt": "a cat wearing sunglasses", "model": "imagen4"}'
+  -d '{"prompt": "a cat wearing sunglasses", "model": "nano_banana_2"}'
 # → {"task_id":"abc12345","status":"pending","poll_url":"/api/status/abc12345"}
 
 # --- Poll until done ---

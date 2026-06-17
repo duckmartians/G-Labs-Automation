@@ -159,7 +159,7 @@ làm task thất bại với lỗi `Missing required field: prompt`.
 | Trường | Kiểu | Bắt buộc | Mặc định | Ghi chú |
 |--------|------|:--------:|----------|---------|
 | `prompt` | string | ✅ | — | Mô tả ảnh. |
-| `model` | string | ❌ | `imagen4` | Một trong `imagen4`, `nano_banana_pro`, `nano_banana_2`. Không hợp lệ → `imagen4`. |
+| `model` | string | ❌ | `nano_banana_2` | Một trong `nano_banana_pro`, `nano_banana_2`. Không hợp lệ → `nano_banana_2`. |
 | `aspect_ratio` | string | ❌ | `1:1` | Một trong `1:1`, `3:4`, `4:3`, `9:16`, `16:9`. Không hợp lệ → `1:1`. |
 | `reference_images` | array | ❌ | `[]` | Tối đa **10** ảnh base64 (xem §6). Mỗi ảnh có thể kèm `name` để gắn theo `@tên` trong prompt (§6.1). |
 | `upscale` | array | ❌ | `[]` | Bất kỳ `"2K"`, `"4K"`. **4K cần tài khoản ULTRA** và model hỗ trợ upscale. Giá trị sai bị bỏ. |
@@ -241,7 +241,6 @@ làm task thất bại với lỗi `Missing required field: prompt`.
 
 | Giá trị API (`model` / `mode`) | Tên hiển thị | Đầu ra / Tỉ lệ |
 |------|--------------|--------|
-| `imagen4` | Imagen 4 | `1:1, 3:4, 4:3, 9:16, 16:9` |
 | `nano_banana_pro` | Nano Banana Pro | `1:1, 3:4, 4:3, 9:16, 16:9` |
 | `nano_banana_2` | Nano Banana 2 | `1:1, 3:4, 4:3, 9:16, 16:9` |
 | `veo_31_fast` | Veo 3.1 Fast | `16:9, 9:16` |
@@ -422,7 +421,7 @@ Lưu ý riêng của app này:
 curl -X POST http://127.0.0.1:8765/api/image/generate \
   -H "Content-Type: application/json" \
   -H "X-API-Key: YOUR_API_KEY" \
-  -d '{"prompt": "a cat wearing sunglasses", "model": "imagen4"}'
+  -d '{"prompt": "a cat wearing sunglasses", "model": "nano_banana_2"}'
 # → {"task_id":"abc12345","status":"pending","poll_url":"/api/status/abc12345"}
 
 # --- Hỏi trạng thái tới khi xong ---
