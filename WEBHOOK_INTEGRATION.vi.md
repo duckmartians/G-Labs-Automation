@@ -7,7 +7,7 @@
 
 Tài liệu này mô tả API do tab **Webhook** của ứng dụng desktop G-Labs Automation
 (v5.0.8+) cung cấp. Nó cho phép các công cụ bên ngoài (n8n, Make.com, script tự
-viết, AI agent) điều khiển việc tạo ảnh / video / Grok qua REST API đơn giản.
+viết, AI agent) điều khiển việc tạo ảnh / video / Grok / Meta AI qua REST API đơn giản.
 
 ---
 
@@ -28,9 +28,10 @@ viết, AI agent) điều khiển việc tạo ảnh / video / Grok qua REST API
 - **Đồng thời.** Máy chủ nhận nhiều request cùng lúc nhưng xử lý tối đa **10 task
   song song** (các task dư sẽ chờ tới lượt).
 - **Tạo nội dung dùng tài khoản đã đăng nhập trong app.** Ảnh/Video dùng tài khoản
-  Google (Flow/Veo) cấu hình trong app; Grok dùng phiên Super Grok đã kết nối. Nếu
-  không có tài khoản hợp lệ, task sẽ thất bại (xem bảng lỗi). App phải đang chạy với
-  các tài khoản đó đã đăng nhập & đang bật.
+  Google (Flow/Veo) cấu hình trong app; Grok dùng phiên Super Grok đã kết nối;
+  **Meta AI** dùng tài khoản Meta (vibes.ai) đã đăng nhập. Nếu không có tài khoản
+  hợp lệ, task sẽ thất bại (xem bảng lỗi). App phải đang chạy với các tài khoản đó
+  đã đăng nhập & đang bật.
 
 ---
 
@@ -60,6 +61,7 @@ client trên trình duyệt cũng dùng được.
 | `POST` | `/api/image/generate` | ✅ | Đưa task tạo **ảnh** vào hàng đợi |
 | `POST` | `/api/video/generate` | ✅ | Đưa task tạo **video** vào hàng đợi |
 | `POST` | `/api/grok/generate`  | ✅ | Đưa task **Grok** (ảnh/video) vào hàng đợi |
+| `POST` | `/api/meta/generate`  | ✅ | Đưa task **Meta AI** (ảnh/video) vào hàng đợi |
 | `GET`  | `/api/status/{task_id}` | ✅ | Hỏi trạng thái task; trả kết quả hoặc lỗi |
 | `GET`  | `/api/result/{task_id}` | ✅ | Lấy kết quả (chỉ khi đã `completed`) |
 | `GET`  | `/api/files/{filename}` | ❌ | Tải file kết quả đã tạo |
@@ -144,6 +146,7 @@ máy đang chạy app.
 - **Video** → một file **cho mỗi độ phân giải tạo được** — vd `["720p","1080p"]` →
   tối đa 2 file.
 - **Grok** → luôn đúng 1 file.
+- **Meta AI** → `count` file (1–4): `count` ảnh (một lô) hoặc `count` clip video.
 
 (Nên `len(results)` và thứ tự khớp với các độ phân giải bạn yêu cầu.)
 
@@ -159,7 +162,7 @@ làm task thất bại với lỗi `Missing required field: prompt`.
 | Trường | Kiểu | Bắt buộc | Mặc định | Ghi chú |
 |--------|------|:--------:|----------|---------|
 | `prompt` | string | ✅ | — | Mô tả ảnh. |
-| `model` | string | ❌ | `nano_banana_2` | Một trong `nano_banana_pro`, `nano_banana_2`. Không hợp lệ → `nano_banana_2`. |
+| `model` | string | ❌ | `nano_banana_2` | Một trong `nano_banana_pro`, `nano_banana_2`, `nano_banana_2_lite`. Không hợp lệ → `nano_banana_2`. |
 | `aspect_ratio` | string | ❌ | `1:1` | Một trong `1:1`, `3:4`, `4:3`, `9:16`, `16:9`. Không hợp lệ → `1:1`. |
 | `reference_images` | array | ❌ | `[]` | Tối đa **10** ảnh base64 (xem §6). Mỗi ảnh có thể kèm `name` để gắn theo `@tên` trong prompt (§6.1). |
 | `upscale` | array | ❌ | `[]` | Bất kỳ `"2K"`, `"4K"`. **4K cần tài khoản ULTRA** và model hỗ trợ upscale. Giá trị sai bị bỏ. |
@@ -220,7 +223,7 @@ làm task thất bại với lỗi `Missing required field: prompt`.
 | `mode` | string | ❌ | `t2v` | `t2i` (văn bản→ảnh) · `i2i` (ảnh→ảnh) · `t2v` (văn bản→video) · `i2v` (ảnh→video). Mode sai → task thất bại. |
 | `aspect_ratio` | string | ❌ | `9:16` | Một trong `9:16`, `16:9`, `1:1`, `2:3`, `3:2`. Không hợp lệ → `9:16`. |
 | `reference_images` | array | ❌ | `[]` | Tối đa **5** ảnh base64. **Bắt buộc cho `i2i` và `i2v`** (≥1, không có thì task thất bại). Bị bỏ qua với `t2i` / `t2v`. |
-| `video_length` | int | ❌ | `6` | `6` hoặc `10` (giây). **Chỉ mode video** (`t2v`/`i2v`). Giá trị khác → `6`. |
+| `video_length` | int | ❌ | `6` | `6`, `10` hoặc `15` (giây). **Chỉ mode video** (`t2v`/`i2v`). Giá trị khác → `6`. |
 | `resolution` | string | ❌ | `480p` | `480p` hoặc `720p`. **Chỉ mode video.** Mode ảnh (`t2i`/`i2i`) luôn xuất **1K**. |
 
 ```json
@@ -237,12 +240,66 @@ làm task thất bại với lỗi `Missing required field: prompt`.
 > Grok luôn tạo **một** ảnh/video mỗi request và trả về kết quả đầu tiên. Không có
 > tham số `image_generation_count`.
 
-### 5.4 Bảng tham chiếu Model
+### 5.4 Meta AI — `POST /api/meta/generate`
+
+Tạo nội dung trên **Meta AI (vibes.ai)** bằng tài khoản Meta đã đăng nhập. Khác với
+các endpoint kia, ảnh tham chiếu được truyền qua **trường có tên** (không phải mảng
+`reference_images`) — xem §6.2.
+
+| Trường | Kiểu | Bắt buộc | Mặc định | Ghi chú |
+|--------|------|:--------:|----------|---------|
+| `prompt` | string | ✅ | — | Prompt. |
+| `mode` | string | ❌ | `t2i` | `t2i` (văn bản→ảnh) · `t2v` (văn bản→video) · `i2i` (ảnh→ảnh, thành phần) · `i2v` (ảnh→video). Mode sai → task thất bại. |
+| `aspect_ratio` | string | ❌ | `9:16` | Một trong `9:16`, `16:9`, `1:1`. Không hợp lệ → `9:16`. |
+| `resolution` | string | ❌ | `720p` | `480p` hoặc `720p`. **Chỉ mode video** (`t2v`/`i2v`). Ảnh tự suy theo site: `1:1` → 1280p, còn lại → 720p. |
+| `count` | int | ❌ | `1` | Số đầu ra mỗi prompt, **1–4** (kẹp về khoảng này). Ảnh: `count` ảnh trong một lô; video: `count` clip. |
+| `character_image` | base64 | i2i¹ | — | Thành phần nhân vật/chủ thể (§6.2). Cũng chấp nhận `subject_image`. |
+| `scene_image` | base64 | i2i¹ | — | Thành phần bối cảnh. |
+| `style_image` | base64 | i2i¹ | — | Thành phần phong cách. |
+| `start_image` | base64 | i2v | — | **Bắt buộc cho `i2v`** — khung đầu. |
+| `end_image` | base64 | ❌ | — | Khung cuối tùy chọn cho `i2v` (nội suy đầu→cuối). |
+
+¹ **i2i** cần **ít nhất một** trong `character_image` / `scene_image` / `style_image`.
+**i2v** cần `start_image`. Mode văn bản (`t2i` / `t2v`) bỏ qua mọi ảnh gửi kèm.
+
+```json
+{
+  "prompt": "a cat astronaut floating in space",
+  "mode": "t2i",
+  "aspect_ratio": "1:1",
+  "count": 1
+}
+```
+```json
+{
+  "prompt": "same character in a forest at dawn",
+  "mode": "i2i",
+  "aspect_ratio": "16:9",
+  "character_image": "data:image/png;base64,iVBORw0KGgo...",
+  "scene_image": "data:image/jpeg;base64,/9j/4AAQ..."
+}
+```
+```json
+{
+  "prompt": "slow pan across the scene",
+  "mode": "i2v",
+  "aspect_ratio": "16:9",
+  "resolution": "720p",
+  "start_image": "data:image/png;base64,iVBORw0KGgo...",
+  "end_image": "data:image/png;base64,iVBORw0KGgo..."
+}
+```
+
+> Meta AI **không có `@tag`** gắn theo tên (cái đó chỉ có ở Flow/Veo); thành phần
+> được gắn bằng các trường có tên ở trên.
+
+### 5.5 Bảng tham chiếu Model
 
 | Giá trị API (`model` / `mode`) | Tên hiển thị | Đầu ra / Tỉ lệ |
 |------|--------------|--------|
 | `nano_banana_pro` | Nano Banana Pro | `1:1, 3:4, 4:3, 9:16, 16:9` |
 | `nano_banana_2` | Nano Banana 2 | `1:1, 3:4, 4:3, 9:16, 16:9` |
+| `nano_banana_2_lite` | Nano Banana 2 Lite | `1:1, 3:4, 4:3, 9:16, 16:9` |
 | `veo_31_fast` | Veo 3.1 Fast | `16:9, 9:16` |
 | `veo_31_lite` | Veo 3.1 Lite | `16:9, 9:16` |
 | `veo_31_quality` | Veo 3.1 Quality | `16:9, 9:16` |
@@ -251,6 +308,10 @@ làm task thất bại với lỗi `Missing required field: prompt`.
 | Grok `mode=i2i` | Image → Image (1K) | `9:16, 16:9, 1:1, 2:3, 3:2` |
 | Grok `mode=t2v` | Text → Video (480p/720p) | `9:16, 16:9, 1:1, 2:3, 3:2` |
 | Grok `mode=i2v` | Image → Video (480p/720p) | `9:16, 16:9, 1:1, 2:3, 3:2` |
+| Meta `mode=t2i` | Meta AI Văn bản → Ảnh | `9:16, 16:9, 1:1` |
+| Meta `mode=t2v` | Meta AI Văn bản → Video (480p/720p) | `9:16, 16:9, 1:1` |
+| Meta `mode=i2i` | Meta AI Ảnh → Ảnh (thành phần) | `9:16, 16:9, 1:1` |
+| Meta `mode=i2v` | Meta AI Ảnh → Video (đầu/cuối) | `9:16, 16:9, 1:1` |
 
 ---
 
@@ -316,6 +377,26 @@ webhook đi qua chính các hàm xử lý đó nên payload gửi Flow API khớ
   ]
 }
 ```
+
+### 6.2 Trường ảnh tham chiếu có tên của Meta AI
+
+**Meta AI (`/api/meta/generate`) KHÔNG dùng mảng `reference_images`.** Nó có các
+trường riêng có tên, mỗi trường là một ảnh base64 theo đúng định dạng ở §6 (data URI
+hoặc base64 thô; PNG/JPG/WEBP; dưới ~100 byte bị bỏ):
+
+| Trường | Mode | Vai trò |
+|--------|------|---------|
+| `character_image` (hoặc `subject_image`) | `i2i` | Thành phần nhân vật / chủ thể |
+| `scene_image` | `i2i` | Thành phần bối cảnh |
+| `style_image` | `i2i` | Thành phần phong cách |
+| `start_image` | `i2v` | Khung đầu (**bắt buộc** cho i2v) |
+| `end_image` | `i2v` | Khung cuối (tùy chọn; bật nội suy đầu→cuối) |
+
+- **i2i** dùng tổ hợp bất kỳ của `character_image` / `scene_image` / `style_image`
+  (ít nhất một).
+- **i2v** dùng `start_image` (và tùy chọn `end_image`).
+- `t2i` / `t2v` **không** nhận ảnh — ảnh gửi kèm sẽ bị bỏ qua.
+- Meta AI **không có `@tag`**; tên trường quyết định vai trò.
 
 ---
 
@@ -391,6 +472,10 @@ Lưu ý riêng của app này:
   → `failed`.
 - **Ảnh** yêu cầu `upscale` (`2K`/`4K`) không tạo được → `failed` kèm lý do upscale
   (không trả về ảnh gốc nhỏ hơn).
+- **Meta AI**: cookie tài khoản hết hạn → `failed` `401` (`Meta cookie expired`);
+  hết quota → `429` (`Meta quota exhausted`); không có tài khoản Meta đang bật cho
+  loại yêu cầu → `error_code 0` (`No enabled Meta account for image/video`); không
+  tạo ra gì → `Meta produced no output`.
 
 ---
 
@@ -404,6 +489,10 @@ Lưu ý riêng của app này:
   - Tài khoản đã **TẮT** trong app sẽ không được dùng.
 - **Grok** cần phiên Super Grok đang kết nối trong app.
 - **Mỗi request Grok trả 1 kết quả** (ảnh/video đầu tiên được tạo).
+- **Meta AI** cần tài khoản Meta (vibes.ai) đã đăng nhập và **đang bật** trong app
+  (tab Meta AI) — `image_enabled` cho `t2i`/`i2i`, `video_enabled` cho `t2v`/`i2v`.
+  Dùng tài khoản hợp lệ đầu tiên (không xoay vòng); tài khoản đầu hết hạn sẽ làm task
+  thất bại.
 - **Task lưu trong bộ nhớ.** Trạng thái task và ánh xạ `task_id` → kết quả nằm trong
   app đang chạy; sẽ mất nếu app khởi động lại. Hãy gửi, hỏi trạng thái và tải về
   trong cùng một phiên chạy app.
@@ -451,6 +540,26 @@ curl -X POST http://127.0.0.1:8765/api/grok/generate \
 curl -X POST http://127.0.0.1:8765/api/grok/generate \
   -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
   -d '{"prompt":"make it rain","mode":"i2v","aspect_ratio":"16:9","resolution":"720p","reference_images":["data:image/png;base64,..."]}'
+
+# --- Meta AI: văn bản → ảnh ---
+curl -X POST http://127.0.0.1:8765/api/meta/generate \
+  -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"prompt":"a cat astronaut","mode":"t2i","aspect_ratio":"1:1","count":1}'
+
+# --- Meta AI: văn bản → video ---
+curl -X POST http://127.0.0.1:8765/api/meta/generate \
+  -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"prompt":"waves on a beach at dawn","mode":"t2v","aspect_ratio":"9:16","resolution":"720p"}'
+
+# --- Meta AI: ảnh → ảnh (thành phần) ---
+curl -X POST http://127.0.0.1:8765/api/meta/generate \
+  -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"prompt":"same character in a forest","mode":"i2i","aspect_ratio":"16:9","character_image":"data:image/png;base64,...","scene_image":"data:image/png;base64,..."}'
+
+# --- Meta AI: ảnh → video (đầu + cuối tùy chọn) ---
+curl -X POST http://127.0.0.1:8765/api/meta/generate \
+  -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"prompt":"pan across the scene","mode":"i2v","aspect_ratio":"16:9","resolution":"720p","start_image":"data:image/png;base64,...","end_image":"data:image/png;base64,..."}'
 
 # --- Tải file kết quả ---
 curl -o out.png "http://127.0.0.1:8765/api/files/image_001.png"

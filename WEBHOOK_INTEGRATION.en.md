@@ -7,7 +7,8 @@
 
 This document describes the API exposed by the **Webhook** tab of the G-Labs
 Automation desktop app (v5.0.8+). It lets external tools (n8n, Make.com, custom
-scripts, AI agents) drive image / video / Grok generation over a simple REST API.
+scripts, AI agents) drive image / video / Grok / Meta AI generation over a simple
+REST API.
 
 ---
 
@@ -29,8 +30,9 @@ scripts, AI agents) drive image / video / Grok generation over a simple REST API
   **10 tasks concurrently** (extra tasks wait their turn).
 - **Generation runs on the app's logged-in accounts.** Image/Video use the
   Google (Flow/Veo) accounts configured in the app; Grok uses the connected
-  Super Grok session. If no eligible account is available, the task fails (see
-  error table). The app must be running with those accounts logged in & enabled.
+  Super Grok session; **Meta AI** uses a logged-in Meta (vibes.ai) account. If no
+  eligible account is available, the task fails (see error table). The app must be
+  running with those accounts logged in & enabled.
 
 ---
 
@@ -60,6 +62,7 @@ handled, so browser-based clients work.
 | `POST` | `/api/image/generate` | ✅ | Queue an **image** generation task |
 | `POST` | `/api/video/generate` | ✅ | Queue a **video** generation task |
 | `POST` | `/api/grok/generate`  | ✅ | Queue a **Grok** image/video task |
+| `POST` | `/api/meta/generate`  | ✅ | Queue a **Meta AI** image/video task |
 | `GET`  | `/api/status/{task_id}` | ✅ | Poll task status; returns result or error |
 | `GET`  | `/api/result/{task_id}` | ✅ | Get result (only once `completed`) |
 | `GET`  | `/api/files/{filename}` | ❌ | Download a generated output file |
@@ -145,6 +148,7 @@ stored locally on the machine running the app.
 - **Video** → one file **per produced resolution** — e.g. `["720p","1080p"]` →
   up to 2 files.
 - **Grok** → always exactly 1 file.
+- **Meta AI** → `count` files (1–4): `count` images (one batch) or `count` video clips.
 
 (So `len(results)` and their order match the resolutions you asked for.)
 
@@ -160,7 +164,7 @@ prompt fails the task with `Missing required field: prompt`.
 | Field | Type | Required | Default | Notes |
 |-------|------|:--------:|---------|-------|
 | `prompt` | string | ✅ | — | Image description. |
-| `model` | string | ❌ | `nano_banana_2` | One of `nano_banana_pro`, `nano_banana_2`. Unknown → `nano_banana_2`. |
+| `model` | string | ❌ | `nano_banana_2` | One of `nano_banana_pro`, `nano_banana_2`, `nano_banana_2_lite`. Unknown → `nano_banana_2`. |
 | `aspect_ratio` | string | ❌ | `1:1` | One of `1:1`, `3:4`, `4:3`, `9:16`, `16:9`. Unknown → `1:1`. |
 | `reference_images` | array | ❌ | `[]` | Up to **10** base64 images (see §6). Each image may include a `name` to bind it via `@name` in the prompt (§6.1). |
 | `upscale` | array | ❌ | `[]` | Any of `"2K"`, `"4K"`. **4K requires an ULTRA account** and a model that supports upscaling. Invalid values are dropped. |
@@ -222,7 +226,7 @@ prompt fails the task with `Missing required field: prompt`.
 | `mode` | string | ❌ | `t2v` | `t2i` (text→image) · `i2i` (image→image) · `t2v` (text→video) · `i2v` (image→video). Invalid mode → task fails. |
 | `aspect_ratio` | string | ❌ | `9:16` | One of `9:16`, `16:9`, `1:1`, `2:3`, `3:2`. Unknown → `9:16`. |
 | `reference_images` | array | ❌ | `[]` | Up to **5** base64 images. **Required for `i2i` and `i2v`** (≥1, else the task fails). Ignored for `t2i` / `t2v`. |
-| `video_length` | int | ❌ | `6` | `6` or `10` (seconds). **Video modes only** (`t2v`/`i2v`). Other values → `6`. |
+| `video_length` | int | ❌ | `6` | `6`, `10` or `15` (seconds). **Video modes only** (`t2v`/`i2v`). Other values → `6`. |
 | `resolution` | string | ❌ | `480p` | `480p` or `720p`. **Video modes only.** Image modes (`t2i`/`i2i`) always output **1K**. |
 
 ```json
@@ -239,12 +243,66 @@ prompt fails the task with `Missing required field: prompt`.
 > Grok always generates **one** image/video per request and returns the first
 > result. There is no `image_generation_count` parameter.
 
-### 5.4 Model reference table
+### 5.4 Meta AI — `POST /api/meta/generate`
+
+Generates on **Meta AI (vibes.ai)** with a logged-in Meta account. Unlike the
+other endpoints, reference images are passed as **named fields** (not a
+`reference_images` list) — see §6.2.
+
+| Field | Type | Required | Default | Notes |
+|-------|------|:--------:|---------|-------|
+| `prompt` | string | ✅ | — | Prompt. |
+| `mode` | string | ❌ | `t2i` | `t2i` (text→image) · `t2v` (text→video) · `i2i` (image→image, components) · `i2v` (image→video). Invalid mode → task fails. |
+| `aspect_ratio` | string | ❌ | `9:16` | One of `9:16`, `16:9`, `1:1`. Unknown → `9:16`. |
+| `resolution` | string | ❌ | `720p` | `480p` or `720p`. **Video modes only** (`t2v`/`i2v`). Images are site-derived: `1:1` → 1280p, else 720p. |
+| `count` | int | ❌ | `1` | Outputs per prompt, **1–4** (clamped). Images: `count` in one batch; video: `count` clips. |
+| `character_image` | base64 | i2i¹ | — | Subject/character component (§6.2). Also accepts `subject_image`. |
+| `scene_image` | base64 | i2i¹ | — | Scene component. |
+| `style_image` | base64 | i2i¹ | — | Style component. |
+| `start_image` | base64 | i2v | — | **Required for `i2v`** — the start frame. |
+| `end_image` | base64 | ❌ | — | Optional end frame for `i2v` (start→end interpolation). |
+
+¹ **i2i** requires **at least one** of `character_image` / `scene_image` / `style_image`.
+**i2v** requires `start_image`. Text modes (`t2i` / `t2v`) ignore any images sent.
+
+```json
+{
+  "prompt": "a cat astronaut floating in space",
+  "mode": "t2i",
+  "aspect_ratio": "1:1",
+  "count": 1
+}
+```
+```json
+{
+  "prompt": "same character in a forest at dawn",
+  "mode": "i2i",
+  "aspect_ratio": "16:9",
+  "character_image": "data:image/png;base64,iVBORw0KGgo...",
+  "scene_image": "data:image/jpeg;base64,/9j/4AAQ..."
+}
+```
+```json
+{
+  "prompt": "slow pan across the scene",
+  "mode": "i2v",
+  "aspect_ratio": "16:9",
+  "resolution": "720p",
+  "start_image": "data:image/png;base64,iVBORw0KGgo...",
+  "end_image": "data:image/png;base64,iVBORw0KGgo..."
+}
+```
+
+> Meta AI has **no `@tag` name-binding** (that is Flow/Veo only); components are
+> bound by the named fields above.
+
+### 5.5 Model reference table
 
 | API value (`model` / `mode`) | Display | Output / Ratios |
 |------|---------|--------|
 | `nano_banana_pro` | Nano Banana Pro | `1:1, 3:4, 4:3, 9:16, 16:9` |
 | `nano_banana_2` | Nano Banana 2 | `1:1, 3:4, 4:3, 9:16, 16:9` |
+| `nano_banana_2_lite` | Nano Banana 2 Lite | `1:1, 3:4, 4:3, 9:16, 16:9` |
 | `veo_31_fast` | Veo 3.1 Fast | `16:9, 9:16` |
 | `veo_31_lite` | Veo 3.1 Lite | `16:9, 9:16` |
 | `veo_31_quality` | Veo 3.1 Quality | `16:9, 9:16` |
@@ -253,6 +311,10 @@ prompt fails the task with `Missing required field: prompt`.
 | Grok `mode=i2i` | Image → Image (1K) | `9:16, 16:9, 1:1, 2:3, 3:2` |
 | Grok `mode=t2v` | Text → Video (480p/720p) | `9:16, 16:9, 1:1, 2:3, 3:2` |
 | Grok `mode=i2v` | Image → Video (480p/720p) | `9:16, 16:9, 1:1, 2:3, 3:2` |
+| Meta `mode=t2i` | Meta AI Text → Image | `9:16, 16:9, 1:1` |
+| Meta `mode=t2v` | Meta AI Text → Video (480p/720p) | `9:16, 16:9, 1:1` |
+| Meta `mode=i2i` | Meta AI Image → Image (components) | `9:16, 16:9, 1:1` |
+| Meta `mode=i2v` | Meta AI Image → Video (start/end) | `9:16, 16:9, 1:1` |
 
 ---
 
@@ -319,6 +381,26 @@ API matches what you'd get creating directly in the app).
   ]
 }
 ```
+
+### 6.2 Meta AI named reference fields
+
+**Meta AI (`/api/meta/generate`) does NOT use the `reference_images` list.** It has
+dedicated named fields, each a base64 image in the same forms as §6 (data URI or
+raw base64; PNG/JPG/WEBP; <~100 bytes skipped):
+
+| Field | Mode | Role |
+|-------|------|------|
+| `character_image` (or `subject_image`) | `i2i` | Character / subject component |
+| `scene_image` | `i2i` | Scene component |
+| `style_image` | `i2i` | Style component |
+| `start_image` | `i2v` | Start frame (**required** for i2v) |
+| `end_image` | `i2v` | End frame (optional; enables start→end interpolation) |
+
+- **i2i** uses any combination of `character_image` / `scene_image` / `style_image`
+  (at least one).
+- **i2v** uses `start_image` (and optionally `end_image`).
+- `t2i` / `t2v` take **no** images — any sent are ignored.
+- There is **no `@tag`** binding for Meta AI; the field name determines the role.
 
 ---
 
@@ -394,6 +476,10 @@ Notes specific to this app:
   ULTRA account) → `failed`.
 - **Image** that requests `upscale` (`2K`/`4K`) that cannot be produced → `failed`
   with the upscale reason (it does not return the smaller base image).
+- **Meta AI**: an expired account cookie → `failed` `401` (`Meta cookie expired`);
+  quota reached → `429` (`Meta quota exhausted`); no enabled Meta account for the
+  requested kind → `error_code 0` (`No enabled Meta account for image/video`);
+  nothing produced → `Meta produced no output`.
 
 ---
 
@@ -409,6 +495,10 @@ Notes specific to this app:
   - Accounts toggled **OFF** in the app are not used.
 - **Grok** modes need an active Super Grok connection in the app.
 - **One result per Grok request** (the first generated image/video).
+- **Meta AI** needs a logged-in, **enabled** Meta (vibes.ai) account in the app
+  (Meta AI tab) — `image_enabled` for `t2i`/`i2i`, `video_enabled` for `t2v`/`i2v`.
+  The first eligible account is used (no rotation); an expired first account fails
+  the task.
 - **Tasks are in-memory.** Task state and the `task_id` → result mapping live in
   the running app; they are lost if the app restarts. Submit, poll, and download
   within the same app session.
@@ -457,6 +547,26 @@ curl -X POST http://127.0.0.1:8765/api/grok/generate \
 curl -X POST http://127.0.0.1:8765/api/grok/generate \
   -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
   -d '{"prompt":"make it rain","mode":"i2v","aspect_ratio":"16:9","resolution":"720p","reference_images":["data:image/png;base64,..."]}'
+
+# --- Meta AI: text → image ---
+curl -X POST http://127.0.0.1:8765/api/meta/generate \
+  -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"prompt":"a cat astronaut","mode":"t2i","aspect_ratio":"1:1","count":1}'
+
+# --- Meta AI: text → video ---
+curl -X POST http://127.0.0.1:8765/api/meta/generate \
+  -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"prompt":"waves on a beach at dawn","mode":"t2v","aspect_ratio":"9:16","resolution":"720p"}'
+
+# --- Meta AI: image → image (components) ---
+curl -X POST http://127.0.0.1:8765/api/meta/generate \
+  -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"prompt":"same character in a forest","mode":"i2i","aspect_ratio":"16:9","character_image":"data:image/png;base64,...","scene_image":"data:image/png;base64,..."}'
+
+# --- Meta AI: image → video (start + optional end) ---
+curl -X POST http://127.0.0.1:8765/api/meta/generate \
+  -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"prompt":"pan across the scene","mode":"i2v","aspect_ratio":"16:9","resolution":"720p","start_image":"data:image/png;base64,...","end_image":"data:image/png;base64,..."}'
 
 # --- Download the result file ---
 curl -o out.png "http://127.0.0.1:8765/api/files/image_001.png"
@@ -557,7 +667,7 @@ console.log(urls);
 
 1. Start the Webhook server in the app; copy the **port** and **API key**.
 2. Always send `X-API-Key` on generate/status/result/tasks calls.
-3. `POST /api/{image|video|grok}/generate` with a valid body (`prompt` required).
+3. `POST /api/{image|video|grok|meta}/generate` with a valid body (`prompt` required).
 4. Read `task_id` from the `202` response.
 5. Poll `GET /api/status/{task_id}` every 3–5 s until `completed` or `failed`.
 6. On `completed`: `GET` each URL in `results` to download the files.
