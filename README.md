@@ -26,6 +26,6 @@
 
 <p align="center">
   <a href="https://duckmartians.info/g-labs">
-    <img width="900" src="https://github.com/user-attachments/assets/d25fe5b0-f992-4ea6-b1e8-9b884b398b04" />
+    <img width="2380" height="4578" alt="duckmartians info_g-labs_ (2)" src="https://github.com/user-attachments/assets/f63986e3-468b-48cf-8a1b-a23ce7a22010" />
   </a>
 </p>
