@@ -13,13 +13,17 @@ viết, AI agent) điều khiển việc tạo ảnh / video / Grok / Meta AI qu
 
 ## 1. Tổng quan & khái niệm chính
 
-- **Máy chủ chạy nội bộ.** API chạy ở `http://127.0.0.1:<port>` (loopback). Nó chỉ
-  bind vào `127.0.0.1` — **không** truy cập được từ máy khác trừ khi bạn tự dựng
-  tunnel/reverse proxy. Tích hợp của bạn phải chạy **trên cùng máy**, hoặc bạn tự
-  expose ra ngoài.
+- **Yêu cầu gói MAX.** Máy chủ Webhook chỉ bật được với license **MAX**.
+- **Địa chỉ bind (mặc định loopback).** API chạy ở `http://<host>:<port>`. Mặc định
+  `host` là `127.0.0.1` (chỉ máy này). Bạn đổi được trong tab Webhook: đặt `0.0.0.0`
+  (mọi interface) hoặc một **IP LAN** cụ thể để máy khác trong mạng truy cập được.
+  **Đừng dùng `127.0.0.0`** — đó là địa chỉ *network* của loopback, không client nào
+  connect tới được. Muốn truy cập qua internet thì vẫn phải tự dựng tunnel/reverse
+  proxy. Cho truy cập LAN, nhớ mở cổng trên tường lửa hệ điều hành.
 - **Port mặc định:** `8765` (đổi được trong tab Webhook).
 - **Bạn phải bật máy chủ.** Mở app → tab **Webhook** → **Start**. Tab này cũng hiển
-  thị **API key** và cho phép đổi port / tạo lại key.
+  thị **API key**, cho đổi host / port / tạo lại key, và có tùy chọn **Tự động bật**
+  máy chủ khi mở app.
 - **Bất đồng bộ theo thiết kế.** Việc tạo nội dung tốn thời gian, nên API theo mô
   hình **gửi → hỏi trạng thái → tải về**:
   1. `POST` yêu cầu tạo → nhận `task_id` ngay lập tức (HTTP `202`).
@@ -132,10 +136,11 @@ là **HTTP 202**:
 
 ### Bước 3 — Tải kết quả
 
-`results` là mảng URL dạng `http://127.0.0.1:<port>/api/files/<tên-đã-url-encode>`.
-`GET` từng URL (không cần API key) để tải dữ liệu thô. `Content-Type` được đặt theo
-phần mở rộng file (`image/png`, `image/jpeg`, `video/mp4`, …). File lưu nội bộ trên
-máy đang chạy app.
+`results` là mảng URL dạng `http://<host>:<port>/api/files/<tên-đã-url-encode>`.
+`<host>` khớp với địa chỉ đã bind của máy chủ, nên client vào bằng IP LAN sẽ nhận link
+tải trên đúng IP đó (khi bind `0.0.0.0`, máy chủ tự quảng bá IP LAN chính). `GET` từng
+URL (không cần API key) để tải dữ liệu thô. `Content-Type` được đặt theo phần mở rộng
+file (`image/png`, `image/jpeg`, `video/mp4`, …). File lưu nội bộ trên máy đang chạy app.
 
 **Trả về bao nhiêu file (và ở độ phân giải nào):**
 
@@ -209,9 +214,12 @@ làm task thất bại với lỗi `Missing required field: prompt`.
 > đầu, `reference_images[1]` là khung cuối. Với `start_image`, chỉ dùng
 > `reference_images[0]`.
 > **`mode` không được kiểm tra chặt:** mode không hợp lệ sẽ hoạt động như
-> `text_to_video` (bỏ qua ảnh tham chiếu). Chỉ `components` đọc trường `voice` và
-> dùng tối đa 3 ảnh tham chiếu.
-> Webhook video API chỉ dùng các model **Veo** (không có Omni Flash ở đây).
+> `text_to_video` (bỏ qua ảnh tham chiếu). Chỉ `components` đọc trường `voice`
+> (Veo tối đa 3 ảnh tham chiếu, Omni Flash tối đa 7).
+> **Dùng được cả Veo lẫn Omni Flash.** Omni Flash (`model: "omni_flash"`) hỗ trợ
+> `text_to_video`, `start_image`, và `components` — **không** hỗ trợ
+> `start_end_image` (chưa có khung cuối). Nó không cần tài khoản ULTRA và có thêm
+> mốc `video_length` **10s**.
 > `resolution` có thể liệt kê nhiều giá trị; mỗi giá trị được tạo nếu hạng tài khoản
 > cho phép.
 
@@ -304,6 +312,7 @@ các endpoint kia, ảnh tham chiếu được truyền qua **trường có tên
 | `veo_31_lite` | Veo 3.1 Lite | `16:9, 9:16` |
 | `veo_31_quality` | Veo 3.1 Quality | `16:9, 9:16` |
 | `veo_31_lite_relaxed` | Veo 3.1 Lite Relaxed (chỉ ULTRA) | `16:9, 9:16` |
+| `omni_flash` | Omni Flash (video; 4/6/8/10s; tối đa 7 ảnh ref; không cần ULTRA) | `16:9, 9:16` |
 | Grok `mode=t2i` | Text → Image (1K) | `9:16, 16:9, 1:1, 2:3, 3:2` |
 | Grok `mode=i2i` | Image → Image (1K) | `9:16, 16:9, 1:1, 2:3, 3:2` |
 | Grok `mode=t2v` | Text → Video (480p/720p) | `9:16, 16:9, 1:1, 2:3, 3:2` |
@@ -481,7 +490,11 @@ Lưu ý riêng của app này:
 
 ## 9. Ràng buộc, hạng tài khoản & lưu ý
 
-- **Chỉ localhost.** Chạy tích hợp trên cùng máy, hoặc tự tunnel `127.0.0.1:<port>`.
+- **Yêu cầu gói MAX** để bật máy chủ Webhook.
+- **Địa chỉ bind.** Mặc định `127.0.0.1` (chỉ cùng máy). Đặt host thành `0.0.0.0`
+  hoặc IP LAN trong tab Webhook để máy khác trong mạng vào được (nhớ mở cổng trên
+  tường lửa); URL file kết quả khi đó dùng đúng host này. `127.0.0.0` không phải địa
+  chỉ bind/connect hợp lệ. Muốn qua internet thì tự dựng tunnel.
 - **Tài khoản & hạng:**
   - Ảnh/Video cần tài khoản Google đã đăng nhập và **đang bật** trong app.
   - Upscale ảnh `4K`, video **`4K`**, và `veo_31_lite_relaxed` cần tài khoản

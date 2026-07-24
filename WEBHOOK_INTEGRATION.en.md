@@ -14,13 +14,18 @@ REST API.
 
 ## 1. Overview & key concepts
 
-- **Local-only server.** The API runs on `http://127.0.0.1:<port>` (loopback). It
-  binds to `127.0.0.1` only — it is **not** reachable from other machines unless
-  you add your own tunnel/reverse proxy. Your integration must run on the same
-  machine, or you must expose it yourself.
+- **MAX plan required.** The Webhook server only starts on a **MAX**-tier license.
+- **Bind address (default loopback).** The API runs on `http://<host>:<port>`. By
+  default `host` is `127.0.0.1` (this machine only). You can change it in the
+  Webhook tab: set `0.0.0.0` (all interfaces) or a specific **LAN IP** so other
+  machines on your network can reach it. Do **not** use `127.0.0.0` — that is the
+  loopback *network* address and nothing can connect to it. For access over the
+  internet you still need your own tunnel/reverse proxy. For LAN access, also allow
+  the port through the OS firewall.
 - **Default port:** `8765` (configurable in the Webhook tab).
 - **You must start the server.** Open the app → **Webhook** tab → **Start**. The
-  tab also shows the **API key** and lets you change the port / regenerate the key.
+  tab also shows the **API key**, lets you change the host / port / regenerate the
+  key, and has an **Auto-start** option to launch the server when the app opens.
 - **Asynchronous by design.** Generation takes time, so the API is
   **submit → poll → download**:
   1. `POST` a generate request → get a `task_id` immediately (HTTP `202`).
@@ -134,10 +139,12 @@ values: `pending` → `running` → `completed` | `failed`.
 
 ### Step 3 — Download results
 
-`results` is an array of URLs like `http://127.0.0.1:<port>/api/files/<urlencoded-name>`.
-`GET` each URL (no API key needed) to download the raw bytes. `Content-Type` is
-set by file extension (`image/png`, `image/jpeg`, `video/mp4`, …). The files are
-stored locally on the machine running the app.
+`results` is an array of URLs like `http://<host>:<port>/api/files/<urlencoded-name>`.
+The `<host>` matches the server's bind address, so a client that reached the server
+on a LAN IP gets download links on that same IP (when bound to `0.0.0.0`, the server
+advertises its primary LAN IP). `GET` each URL (no API key needed) to download the
+raw bytes. `Content-Type` is set by file extension (`image/png`, `image/jpeg`,
+`video/mp4`, …). The files are stored locally on the machine running the app.
 
 **How many files come back (and at which resolution):**
 
@@ -213,10 +220,12 @@ prompt fails the task with `Missing required field: prompt`.
 > `reference_images[0]` is used.
 > **Mode is not strictly validated:** an unrecognized `mode` behaves like
 > `text_to_video` (references are ignored). Only `components` reads the `voice`
-> field and uses up to 3 references.
-> The Webhook video API uses the **Veo** models only (Omni Flash is not exposed
-> here). `resolution` may list multiple values; each is produced if the account
-> tier allows it.
+> field (Veo up to 3 reference images, Omni Flash up to 7).
+> **Both Veo and Omni Flash are available.** Omni Flash (`model: "omni_flash"`)
+> supports `text_to_video`, `start_image`, and `components` — **not**
+> `start_end_image` (no end frame yet). It needs no ULTRA account and adds a **10s**
+> `video_length` option.
+> `resolution` may list multiple values; each is produced if the account tier allows it.
 
 ### 5.3 Grok — `POST /api/grok/generate`
 
@@ -307,6 +316,7 @@ other endpoints, reference images are passed as **named fields** (not a
 | `veo_31_lite` | Veo 3.1 Lite | `16:9, 9:16` |
 | `veo_31_quality` | Veo 3.1 Quality | `16:9, 9:16` |
 | `veo_31_lite_relaxed` | Veo 3.1 Lite Relaxed (ULTRA only) | `16:9, 9:16` |
+| `omni_flash` | Omni Flash (video; 4/6/8/10s; up to 7 refs; no ULTRA) | `16:9, 9:16` |
 | Grok `mode=t2i` | Text → Image (1K) | `9:16, 16:9, 1:1, 2:3, 3:2` |
 | Grok `mode=i2i` | Image → Image (1K) | `9:16, 16:9, 1:1, 2:3, 3:2` |
 | Grok `mode=t2v` | Text → Video (480p/720p) | `9:16, 16:9, 1:1, 2:3, 3:2` |
@@ -485,8 +495,11 @@ Notes specific to this app:
 
 ## 9. Constraints, tiers, and gotchas
 
-- **Localhost only.** Run your integration on the same machine, or tunnel
-  `127.0.0.1:<port>` yourself.
+- **MAX plan required** to run the Webhook server.
+- **Bind address.** Default `127.0.0.1` (same machine only). Set the host to
+  `0.0.0.0` or a LAN IP in the Webhook tab for other machines on the network (also
+  open the port in the OS firewall); result-file URLs then use that host. `127.0.0.0`
+  is not a valid bind/connect address. For internet access, tunnel it yourself.
 - **Accounts & tiers:**
   - Image/Video need logged-in, **enabled** Google accounts in the app.
   - `4K` image upscale, **`4K` video**, and `veo_31_lite_relaxed` require
