@@ -1,6 +1,6 @@
 <h1 align="center">G-Labs Automation</h1>
 <p align="center"><b>AI image & video generation automation for creators</b><br>
-Batch-generate with Google Flow (Veo 3.1, Nano Banana Pro), Grok Imagine, Meta AI and ChatGPT GPT Image 2 — from one desktop app.</p>
+Batch-generate with Google Flow (Veo 3.1, Omni Flash, Nano Banana Pro), Grok Imagine, Meta AI and ChatGPT GPT Image 2 — from one desktop app.</p>
 
 <p align="center">
   <a href="https://github.com/duckmartians/G-Labs-Automation/releases/latest">
