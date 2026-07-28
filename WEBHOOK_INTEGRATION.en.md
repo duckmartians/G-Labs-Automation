@@ -35,7 +35,8 @@ REST API.
   **10 tasks concurrently** (extra tasks wait their turn).
 - **Generation runs on the app's logged-in accounts.** Image/Video use the
   Google (Flow/Veo) accounts configured in the app; Grok uses the connected
-  Super Grok session; **Meta AI** uses a logged-in Meta (vibes.ai) account. If no
+  Super Grok session; **Meta AI** uses a logged-in Meta (vibes.ai) account;
+  **OpenAI (GPT Image 2)** uses a logged-in ChatGPT/OpenAI account. If no
   eligible account is available, the task fails (see error table). The app must be
   running with those accounts logged in & enabled.
 
@@ -68,6 +69,7 @@ handled, so browser-based clients work.
 | `POST` | `/api/video/generate` | ✅ | Queue a **video** generation task |
 | `POST` | `/api/grok/generate`  | ✅ | Queue a **Grok** image/video task |
 | `POST` | `/api/meta/generate`  | ✅ | Queue a **Meta AI** image/video task |
+| `POST` | `/api/openai/generate` | ✅ | Queue an **OpenAI GPT Image 2** task |
 | `GET`  | `/api/status/{task_id}` | ✅ | Poll task status; returns result or error |
 | `GET`  | `/api/result/{task_id}` | ✅ | Get result (only once `completed`) |
 | `GET`  | `/api/files/{filename}` | ❌ | Download a generated output file |
@@ -81,8 +83,8 @@ Trailing slashes are tolerated (e.g. `/api/health/`).
 
 ### Step 1 — Submit
 
-`POST` to one of the three generate endpoints with a JSON body (see schemas in
-§5). Response is **HTTP 202**:
+`POST` to one of the generate endpoints (image / video / grok / meta / openai) with
+a JSON body (see schemas in §5). Response is **HTTP 202**:
 
 ```json
 {
@@ -156,6 +158,7 @@ raw bytes. `Content-Type` is set by file extension (`image/png`, `image/jpeg`,
   up to 2 files.
 - **Grok** → always exactly 1 file.
 - **Meta AI** → `count` files (1–4): `count` images (one batch) or `count` video clips.
+- **OpenAI (GPT Image 2)** → always exactly 1 file.
 
 (So `len(results)` and their order match the resolutions you asked for.)
 
@@ -305,7 +308,41 @@ other endpoints, reference images are passed as **named fields** (not a
 > Meta AI has **no `@tag` name-binding** (that is Flow/Veo only); components are
 > bound by the named fields above.
 
-### 5.5 Model reference table
+### 5.5 OpenAI (GPT Image 2) — `POST /api/openai/generate`
+
+Generates on **OpenAI GPT Image 2** using a logged-in ChatGPT/OpenAI account.
+Always produces **exactly one image** per request (like Grok/Meta return the first
+result). Reference images are **positional** (no `@tag`).
+
+| Field | Type | Required | Default | Notes |
+|-------|------|:--------:|---------|-------|
+| `prompt` | string | ✅ | — | Image description. |
+| `aspect_ratio` | string | ❌ | `1:1` | One of `1:1`, `3:2`, `4:3`, `16:9`, `2:3`, `3:4`, `9:16`. Unknown → `1:1`. |
+| `quality` | string | ❌ | `high` | One of `low`, `medium`, `high`. Unknown → `high`. |
+| `prompt_mode` | string | ❌ | `auto` | `auto` (model refines the prompt) or `direct` (use the prompt verbatim). Unknown → `auto`. |
+| `reasoning` | string | ❌ | `none` | Reasoning effort: `none`, `low`, `medium`, `high`, `xhigh`, `max`. Unknown → `none`. |
+| `web_search` | bool | ❌ | `false` | Allow web-search grounding before generating. |
+| `reference_images` | array | ❌ | `[]` | Up to **5** base64 images (see §6). Passed **positionally** — GPT Image 2 does **not** support `@tag` name-binding. |
+
+```json
+{
+  "prompt": "a modern minimalist house, golden hour",
+  "aspect_ratio": "16:9",
+  "quality": "high",
+  "prompt_mode": "auto",
+  "reasoning": "none",
+  "web_search": false,
+  "reference_images": ["data:image/png;base64,iVBORw0KGgo..."]
+}
+```
+
+> **No `model` field needed** — the endpoint has a single model (GPT Image 2). A
+> `model` value, if sent, is ignored.
+> **Native resolution is capped ~1.57 MP** by the OpenAI backend (aspect ratio is
+> honored, absolute 2K/4K pixel sizes are not). There is no `upscale` option on this
+> endpoint. See §9.
+
+### 5.6 Model reference table
 
 | API value (`model` / `mode`) | Display | Output / Ratios |
 |------|---------|--------|
@@ -325,6 +362,7 @@ other endpoints, reference images are passed as **named fields** (not a
 | Meta `mode=t2v` | Meta AI Text → Video (480p/720p) | `9:16, 16:9, 1:1` |
 | Meta `mode=i2i` | Meta AI Image → Image (components) | `9:16, 16:9, 1:1` |
 | Meta `mode=i2v` | Meta AI Image → Video (start/end) | `9:16, 16:9, 1:1` |
+| OpenAI `GPT_IMAGE` | GPT Image 2 (~1.57 MP, no upscale) | `1:1, 3:2, 4:3, 16:9, 2:3, 3:4, 9:16` |
 
 ---
 
@@ -346,8 +384,8 @@ Constraints:
 - Supported decoded types: PNG, JPG/JPEG, WEBP (detected from the data-URI header;
   defaults to PNG when no header).
 - Decoded data under ~100 bytes is skipped (treated as invalid).
-- Per-endpoint maximum count: **image = 10**, **grok = 5**, **video = 3**.
-  Extra entries beyond the max are ignored.
+- Per-endpoint maximum count: **image = 10**, **grok = 5**, **openai = 5**,
+  **video = 3**. Extra entries beyond the max are ignored.
 
 ### 6.1 Binding images by name with `@tag`
 
@@ -361,7 +399,7 @@ API matches what you'd get creating directly in the app).
   image in `reference_images` order wins.
 - **Effect**: binds that specific image to that noun's position in the sentence (Flow
   "Mode-2" structured prompt) instead of passing all images as anonymous generic refs.
-- **Scope**: works for **image (Flow)** and **video (Veo)**; **Grok does not** support `@tag`.
+- **Scope**: works for **image (Flow)** and **video (Veo)**; **Grok** and **OpenAI (GPT Image 2)** do **not** support `@tag` (their refs are positional).
 - Filenames are sanitized (directory components and illegal characters stripped) first.
 - **Unmatched tags** stay as literal text — they never cause an error.
 - **No `name`**: the image is still used as a positional reference as before (backward compatible).
@@ -512,6 +550,12 @@ Notes specific to this app:
   (Meta AI tab) — `image_enabled` for `t2i`/`i2i`, `video_enabled` for `t2v`/`i2v`.
   The first eligible account is used (no rotation); an expired first account fails
   the task.
+- **OpenAI (GPT Image 2)** needs a logged-in, **enabled** ChatGPT/OpenAI account in
+  the app (GPT Image 2 → ChatGPT Account). Accounts are used **round-robin** with
+  failover to the next account on an account-level error (auth/quota/5xx). Access
+  tokens are refreshed automatically before each run. Concurrency is capped at
+  **5 threads per account** (enabled accounts × 5), same as Flow/Meta. Output is
+  capped at ~1.57 MP (no 2K/4K, no upscale).
 - **Tasks are in-memory.** Task state and the `task_id` → result mapping live in
   the running app; they are lost if the app restarts. Submit, poll, and download
   within the same app session.
@@ -580,6 +624,16 @@ curl -X POST http://127.0.0.1:8765/api/meta/generate \
 curl -X POST http://127.0.0.1:8765/api/meta/generate \
   -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
   -d '{"prompt":"pan across the scene","mode":"i2v","aspect_ratio":"16:9","resolution":"720p","start_image":"data:image/png;base64,...","end_image":"data:image/png;base64,..."}'
+
+# --- OpenAI GPT Image 2: text → image ---
+curl -X POST http://127.0.0.1:8765/api/openai/generate \
+  -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"prompt":"a modern minimalist house, golden hour","aspect_ratio":"16:9","quality":"high"}'
+
+# --- OpenAI GPT Image 2: with reference images (positional, no @tag) ---
+curl -X POST http://127.0.0.1:8765/api/openai/generate \
+  -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"prompt":"same subject on a beach","aspect_ratio":"1:1","reference_images":["data:image/png;base64,..."]}'
 
 # --- Download the result file ---
 curl -o out.png "http://127.0.0.1:8765/api/files/image_001.png"
@@ -680,7 +734,7 @@ console.log(urls);
 
 1. Start the Webhook server in the app; copy the **port** and **API key**.
 2. Always send `X-API-Key` on generate/status/result/tasks calls.
-3. `POST /api/{image|video|grok|meta}/generate` with a valid body (`prompt` required).
+3. `POST /api/{image|video|grok|meta|openai}/generate` with a valid body (`prompt` required).
 4. Read `task_id` from the `202` response.
 5. Poll `GET /api/status/{task_id}` every 3–5 s until `completed` or `failed`.
 6. On `completed`: `GET` each URL in `results` to download the files.

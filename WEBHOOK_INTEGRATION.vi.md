@@ -33,9 +33,9 @@ viết, AI agent) điều khiển việc tạo ảnh / video / Grok / Meta AI qu
   song song** (các task dư sẽ chờ tới lượt).
 - **Tạo nội dung dùng tài khoản đã đăng nhập trong app.** Ảnh/Video dùng tài khoản
   Google (Flow/Veo) cấu hình trong app; Grok dùng phiên Super Grok đã kết nối;
-  **Meta AI** dùng tài khoản Meta (vibes.ai) đã đăng nhập. Nếu không có tài khoản
-  hợp lệ, task sẽ thất bại (xem bảng lỗi). App phải đang chạy với các tài khoản đó
-  đã đăng nhập & đang bật.
+  **Meta AI** dùng tài khoản Meta (vibes.ai) đã đăng nhập; **OpenAI (GPT Image 2)**
+  dùng tài khoản ChatGPT/OpenAI đã đăng nhập. Nếu không có tài khoản hợp lệ, task sẽ
+  thất bại (xem bảng lỗi). App phải đang chạy với các tài khoản đó đã đăng nhập & đang bật.
 
 ---
 
@@ -66,6 +66,7 @@ client trên trình duyệt cũng dùng được.
 | `POST` | `/api/video/generate` | ✅ | Đưa task tạo **video** vào hàng đợi |
 | `POST` | `/api/grok/generate`  | ✅ | Đưa task **Grok** (ảnh/video) vào hàng đợi |
 | `POST` | `/api/meta/generate`  | ✅ | Đưa task **Meta AI** (ảnh/video) vào hàng đợi |
+| `POST` | `/api/openai/generate` | ✅ | Đưa task **OpenAI GPT Image 2** vào hàng đợi |
 | `GET`  | `/api/status/{task_id}` | ✅ | Hỏi trạng thái task; trả kết quả hoặc lỗi |
 | `GET`  | `/api/result/{task_id}` | ✅ | Lấy kết quả (chỉ khi đã `completed`) |
 | `GET`  | `/api/files/{filename}` | ❌ | Tải file kết quả đã tạo |
@@ -79,8 +80,8 @@ Dấu `/` ở cuối được chấp nhận (vd `/api/health/`).
 
 ### Bước 1 — Gửi yêu cầu
 
-`POST` tới một trong ba endpoint generate kèm JSON body (xem schema ở §5). Phản hồi
-là **HTTP 202**:
+`POST` tới một trong các endpoint generate (image / video / grok / meta / openai)
+kèm JSON body (xem schema ở §5). Phản hồi là **HTTP 202**:
 
 ```json
 {
@@ -152,6 +153,7 @@ file (`image/png`, `image/jpeg`, `video/mp4`, …). File lưu nội bộ trên m
   tối đa 2 file.
 - **Grok** → luôn đúng 1 file.
 - **Meta AI** → `count` file (1–4): `count` ảnh (một lô) hoặc `count` clip video.
+- **OpenAI (GPT Image 2)** → luôn đúng 1 file.
 
 (Nên `len(results)` và thứ tự khớp với các độ phân giải bạn yêu cầu.)
 
@@ -301,7 +303,40 @@ các endpoint kia, ảnh tham chiếu được truyền qua **trường có tên
 > Meta AI **không có `@tag`** gắn theo tên (cái đó chỉ có ở Flow/Veo); thành phần
 > được gắn bằng các trường có tên ở trên.
 
-### 5.5 Bảng tham chiếu Model
+### 5.5 OpenAI (GPT Image 2) — `POST /api/openai/generate`
+
+Tạo ảnh trên **OpenAI GPT Image 2** bằng tài khoản ChatGPT/OpenAI đã đăng nhập. Luôn
+ra **đúng một ảnh** mỗi request (như Grok/Meta trả kết quả đầu). Ảnh tham chiếu đi
+theo **VỊ TRÍ** (không có `@tag`).
+
+| Trường | Kiểu | Bắt buộc | Mặc định | Ghi chú |
+|--------|------|:--------:|----------|---------|
+| `prompt` | string | ✅ | — | Mô tả ảnh. |
+| `aspect_ratio` | string | ❌ | `1:1` | Một trong `1:1`, `3:2`, `4:3`, `16:9`, `2:3`, `3:4`, `9:16`. Không hợp lệ → `1:1`. |
+| `quality` | string | ❌ | `high` | Một trong `low`, `medium`, `high`. Không hợp lệ → `high`. |
+| `prompt_mode` | string | ❌ | `auto` | `auto` (model tinh chỉnh prompt) hoặc `direct` (dùng nguyên văn). Không hợp lệ → `auto`. |
+| `reasoning` | string | ❌ | `none` | Mức suy luận: `none`, `low`, `medium`, `high`, `xhigh`, `max`. Không hợp lệ → `none`. |
+| `web_search` | bool | ❌ | `false` | Cho phép tra cứu web trước khi tạo. |
+| `reference_images` | array | ❌ | `[]` | Tối đa **5** ảnh base64 (xem §6). Truyền theo **vị trí** — GPT Image 2 **không** hỗ trợ `@tag`. |
+
+```json
+{
+  "prompt": "a modern minimalist house, golden hour",
+  "aspect_ratio": "16:9",
+  "quality": "high",
+  "prompt_mode": "auto",
+  "reasoning": "none",
+  "web_search": false,
+  "reference_images": ["data:image/png;base64,iVBORw0KGgo..."]
+}
+```
+
+> **Không cần trường `model`** — endpoint chỉ có một model (GPT Image 2). Gửi `model`
+> cũng bị bỏ qua.
+> **Độ phân giải native bị cap ~1.57 MP** ở backend OpenAI (giữ đúng tỉ lệ, không ra
+> đủ 2K/4K theo số pixel tuyệt đối). Endpoint này **không** có `upscale`. Xem §9.
+
+### 5.6 Bảng tham chiếu Model
 
 | Giá trị API (`model` / `mode`) | Tên hiển thị | Đầu ra / Tỉ lệ |
 |------|--------------|--------|
@@ -321,6 +356,7 @@ các endpoint kia, ảnh tham chiếu được truyền qua **trường có tên
 | Meta `mode=t2v` | Meta AI Văn bản → Video (480p/720p) | `9:16, 16:9, 1:1` |
 | Meta `mode=i2i` | Meta AI Ảnh → Ảnh (thành phần) | `9:16, 16:9, 1:1` |
 | Meta `mode=i2v` | Meta AI Ảnh → Video (đầu/cuối) | `9:16, 16:9, 1:1` |
+| OpenAI `GPT_IMAGE` | GPT Image 2 (~1.57 MP, không upscale) | `1:1, 3:2, 4:3, 16:9, 2:3, 3:4, 9:16` |
 
 ---
 
@@ -342,8 +378,8 @@ Ràng buộc:
 - Kiểu giải mã hỗ trợ: PNG, JPG/JPEG, WEBP (nhận diện qua header data-URI; mặc định
   PNG khi không có header).
 - Dữ liệu giải mã dưới ~100 byte sẽ bị bỏ (coi là không hợp lệ).
-- Số lượng tối đa theo endpoint: **ảnh = 10**, **grok = 5**, **video = 3**. Phần dư
-  vượt quá mức tối đa sẽ bị bỏ qua.
+- Số lượng tối đa theo endpoint: **ảnh = 10**, **grok = 5**, **openai = 5**,
+  **video = 3**. Phần dư vượt quá mức tối đa sẽ bị bỏ qua.
 
 ### 6.1 Gắn ảnh theo tên bằng `@tag`
 
@@ -356,7 +392,7 @@ webhook đi qua chính các hàm xử lý đó nên payload gửi Flow API khớ
   thứ tự trong `reference_images` thắng.
 - **Tác dụng**: gắn đúng ảnh đó vào đúng vị trí danh từ trong câu (Flow structured prompt
   "Mode-2"), thay vì truyền tất cả ảnh như tham chiếu chung vô danh.
-- **Phạm vi**: dùng cho **image (Flow)** và **video (Veo)**; **Grok không hỗ trợ** `@tag`.
+- **Phạm vi**: dùng cho **image (Flow)** và **video (Veo)**; **Grok** và **OpenAI (GPT Image 2)** **không hỗ trợ** `@tag` (ref đi theo vị trí).
 - Tên file được làm sạch (bỏ thành phần thư mục và ký tự không hợp lệ) trước khi dùng.
 - **Tag không khớp** được giữ nguyên là văn bản — không gây lỗi.
 - **Không gửi `name`**: ảnh vẫn dùng như tham chiếu theo vị trí như trước (tương thích ngược).
@@ -506,6 +542,11 @@ Lưu ý riêng của app này:
   (tab Meta AI) — `image_enabled` cho `t2i`/`i2i`, `video_enabled` cho `t2v`/`i2v`.
   Dùng tài khoản hợp lệ đầu tiên (không xoay vòng); tài khoản đầu hết hạn sẽ làm task
   thất bại.
+- **OpenAI (GPT Image 2)** cần tài khoản ChatGPT/OpenAI đã đăng nhập và **đang bật**
+  trong app (GPT Image 2 → tài khoản ChatGPT). Tài khoản dùng **xoay vòng** (round-robin)
+  và **fail-over** sang tài khoản kế khi lỗi ở mức tài khoản (hết hạn/quota/5xx). Token
+  được làm mới tự động trước mỗi lượt. Trần luồng = **5 luồng mỗi tài khoản** (số tài
+  khoản đang bật × 5), giống Flow/Meta. Ảnh ra bị cap ~1.57 MP (không 2K/4K, không upscale).
 - **Task lưu trong bộ nhớ.** Trạng thái task và ánh xạ `task_id` → kết quả nằm trong
   app đang chạy; sẽ mất nếu app khởi động lại. Hãy gửi, hỏi trạng thái và tải về
   trong cùng một phiên chạy app.
@@ -573,6 +614,16 @@ curl -X POST http://127.0.0.1:8765/api/meta/generate \
 curl -X POST http://127.0.0.1:8765/api/meta/generate \
   -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
   -d '{"prompt":"pan across the scene","mode":"i2v","aspect_ratio":"16:9","resolution":"720p","start_image":"data:image/png;base64,...","end_image":"data:image/png;base64,..."}'
+
+# --- OpenAI GPT Image 2: văn bản → ảnh ---
+curl -X POST http://127.0.0.1:8765/api/openai/generate \
+  -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"prompt":"a modern minimalist house, golden hour","aspect_ratio":"16:9","quality":"high"}'
+
+# --- OpenAI GPT Image 2: kèm ảnh tham chiếu (theo vị trí, không @tag) ---
+curl -X POST http://127.0.0.1:8765/api/openai/generate \
+  -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"prompt":"same subject on a beach","aspect_ratio":"1:1","reference_images":["data:image/png;base64,..."]}'
 
 # --- Tải file kết quả ---
 curl -o out.png "http://127.0.0.1:8765/api/files/image_001.png"
@@ -673,7 +724,7 @@ console.log(urls);
 
 1. Bật máy chủ Webhook trong app; sao chép **port** và **API key**.
 2. Luôn gửi `X-API-Key` ở các call generate/status/result/tasks.
-3. `POST /api/{image|video|grok}/generate` với body hợp lệ (`prompt` bắt buộc).
+3. `POST /api/{image|video|grok|meta|openai}/generate` với body hợp lệ (`prompt` bắt buộc).
 4. Đọc `task_id` từ response `202`.
 5. Hỏi `GET /api/status/{task_id}` mỗi 3–5 giây tới khi `completed` hoặc `failed`.
 6. Khi `completed`: `GET` từng URL trong `results` để tải file.
