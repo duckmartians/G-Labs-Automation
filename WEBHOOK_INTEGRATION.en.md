@@ -7,8 +7,8 @@
 
 This document describes the API exposed by the **Webhook** tab of the G-Labs
 Automation desktop app (v5.0.8+). It lets external tools (n8n, Make.com, custom
-scripts, AI agents) drive image / video / Grok / Meta AI generation over a simple
-REST API.
+scripts, AI agents) drive image / video / Grok / Meta AI / OpenAI generation — and
+local image upscaling — over a simple REST API.
 
 ---
 
@@ -31,8 +31,11 @@ REST API.
   1. `POST` a generate request → get a `task_id` immediately (HTTP `202`).
   2. `GET /api/status/{task_id}` repeatedly until `status` is `completed` or `failed`.
   3. On `completed`, download the files from the returned `results` URLs.
-- **Concurrency.** The server accepts many requests at once but processes up to
-  **10 tasks concurrently** (extra tasks wait their turn).
+- **Concurrency.** The server accepts many requests at once. Up to **10 tasks are
+  parsed concurrently**; how many then *generate* at once depends on the endpoint:
+  Image/Video/Meta/OpenAI scale with your account count (roughly 5 per account),
+  Grok is capped at **10**, and Upscale runs **one at a time** (a single GPU —
+  see §5.6).
 - **Generation runs on the app's logged-in accounts.** Image/Video use the
   Google (Flow/Veo) accounts configured in the app; Grok uses the connected
   Super Grok session; **Meta AI** uses a logged-in Meta (vibes.ai) account;
@@ -70,6 +73,7 @@ handled, so browser-based clients work.
 | `POST` | `/api/grok/generate`  | ✅ | Queue a **Grok** image/video task |
 | `POST` | `/api/meta/generate`  | ✅ | Queue a **Meta AI** image/video task |
 | `POST` | `/api/openai/generate` | ✅ | Queue an **OpenAI GPT Image 2** task |
+| `POST` | `/api/upscale/generate` | ✅ | Upscale an image with the **local Real-ESRGAN** engine |
 | `GET`  | `/api/status/{task_id}` | ✅ | Poll task status; returns result or error |
 | `GET`  | `/api/result/{task_id}` | ✅ | Get result (only once `completed`) |
 | `GET`  | `/api/files/{filename}` | ❌ | Download a generated output file |
@@ -159,6 +163,7 @@ raw bytes. `Content-Type` is set by file extension (`image/png`, `image/jpeg`,
 - **Grok** → always exactly 1 file.
 - **Meta AI** → `count` files (1–4): `count` images (one batch) or `count` video clips.
 - **OpenAI (GPT Image 2)** → always exactly 1 file.
+- **Upscale** → always exactly 1 file (one image in, one image out).
 
 (So `len(results)` and their order match the resolutions you asked for.)
 
@@ -166,8 +171,14 @@ raw bytes. `Content-Type` is set by file extension (`image/png`, `image/jpeg`,
 
 ## 5. Request body schemas
 
-All bodies are JSON. `prompt` is **required** for every endpoint; an empty/missing
-prompt fails the task with `Missing required field: prompt`.
+All bodies are JSON. `prompt` is **required** for every generation endpoint; an
+empty/missing prompt fails the task with `Missing required field: prompt`. The one
+exception is `/api/upscale/generate` (§5.6), which takes an image and no prompt.
+
+**Body size cap: 50 MB** on every endpoint. Base64 inflates binary data by ~4/3, so
+roughly 37 MB of raw image data fits in one request. Over the cap the `POST` itself
+returns `413` — the task is never created. Sending many large reference images in one
+request is the usual way to hit it.
 
 ### 5.1 Image — `POST /api/image/generate`
 
@@ -342,7 +353,110 @@ result). Reference images are **positional** (no `@tag`).
 > honored, absolute 2K/4K pixel sizes are not). There is no `upscale` option on this
 > endpoint. See §9.
 
-### 5.6 Model reference table
+### 5.6 Image Upscale — `POST /api/upscale/generate`
+
+Upscales one image with the **local Real-ESRGAN engine** — the same engine behind the
+**Image Upscaler** tab. No account, no credits, no quota: it runs on your own GPU.
+
+Unlike every other endpoint, this one has **no `prompt`** — the image is the whole
+request.
+
+| Field | Type | Required | Default | Notes |
+|-------|------|:--------:|---------|-------|
+| `image_path` | string | ⚠️ | — | Absolute path to the source image **on the machine running G-Labs**. Use this *or* `image`. |
+| `image` | string | ⚠️ | — | Source image as base64 (see §6). Use when the client runs on another machine. |
+| `filename` | string | ❌ | — | Only with `image`: seeds the output file name — see the naming rules below. Without it the output is called `wh_ups_<random>_upscaled_x4.png`. |
+| `model` | string | ❌ | Upscaler tab's model | Must be an installed model, e.g. `upscayl-standard-4x`, `remacri-4x`, `digital-art-4x`. Unknown → `400 UNKNOWN_MODEL` listing what *is* installed. |
+| `scale` | int | ❌ | `4` | Final scale, `2`–`8`. Models are natively 4x; other values are resized from the 4x result. Out of range → `4`. |
+| `format` | string | ❌ | `auto` | `auto` (same as source), `png`, `jpg`, `webp`. |
+| `suffix` | string | ❌ | `_upscaled` | Appended to the output filename before `_x<scale>`. Empty string → falls back to `_upscaled`. |
+| `tile` | int | ❌ | `0` | Engine tile size; `0` = auto. Lower it if the GPU runs out of VRAM. |
+| `tta` | bool | ❌ | `false` | TTA mode — slightly better, **much** slower. |
+
+Exactly one of `image_path` / `image` is required; `image_path` wins if both are sent.
+
+```json
+{ "image_path": "E:/photos/cat.png", "scale": 4, "model": "upscayl-standard-4x" }
+```
+
+```json
+{
+  "image": "data:image/png;base64,iVBORw0KGgo...",
+  "filename": "cat.png",
+  "scale": 2,
+  "format": "png"
+}
+```
+
+**One image per request.** Send several requests for a batch — each gets its own
+`task_id`.
+
+> ⚠️ **Requests run one at a time.** The engine is a GPU process; running several at
+> once would fight over VRAM. Extra requests sit in a FIFO queue and report
+> `pending`, then `running` when their turn comes. This is the one endpoint that
+> does **not** parallelise — the others scale across *accounts*, this one is bound
+> to a single GPU.
+
+> 💡 **Prefer `image_path` when the caller is on the same machine** (n8n, a local
+> script). Base64 inflates the payload by ~4/3 and the body cap is 50 MB, so a
+> large 4K PNG can exceed it. `image_path` has no size limit and skips the encode
+> entirely.
+
+#### Where the file lands, and what it is called
+
+**Folder**, in this order:
+
+1. The **Output folder** set on the app's **Image Upscaler** tab, if it is not empty.
+2. Otherwise `<G-Labs output folder>/upscale_output` — next to `image_output`,
+   `veo_output`, etc.
+
+Never beside the source image (which is what the Upscaler *tab* does): a webhook
+source is often a temp file, so the result would land in the OS temp folder and get
+swept away. The **Save mode / per-task subfolder** option on the Upscaler tab is also
+**not** applied — webhook results always go straight into the folder above.
+
+**File name:**
+
+```
+<base><suffix>_x<scale>.<ext>
+```
+
+| Part | Where it comes from |
+|------|---------------------|
+| `<base>` | With `image_path`: the source file's name without extension. With `image`: the `filename` you sent, plus a short random string (the payload is written to a temp file first). Neither given → `wh_ups_<random>`. |
+| `<suffix>` | The `suffix` field — default `_upscaled`. An **empty string falls back to `_upscaled`**, same as leaving the field blank on the Upscaler tab; there is no way to produce a name with no suffix. |
+| `<scale>` | The `scale` field — default `4`. |
+| `<ext>` | The `format` field. `auto` (default) copies the source extension, falling back to `png` for anything that is not png/jpg/webp; `jpeg` is normalised to `jpg`. |
+
+Examples:
+
+```
+image_path=E:/photos/cat.png, scale=4              → cat_upscaled_x4.png
+image_path=E:/photos/cat.heic, scale=2, format=webp → cat_upscaled_x2.webp
+image + filename="cat.png", scale=4                → cat_a1b2c3d4_upscaled_x4.png
+```
+
+**Name collisions never overwrite.** If the target name already exists, `_2`, `_3`, …
+is appended before the extension — so upscaling the same source twice gives you
+`cat_upscaled_x4.png` and `cat_upscaled_x4_2.png`, not one file silently replaced.
+
+The API only returns `/api/files/...` URLs; it does **not** expose the local path. The
+file name inside the URL is the one built above, so you can recognise it — but download
+via the URL rather than guessing the path on disk.
+
+**Error codes specific to this endpoint:**
+
+| `error_code` | `error` | Meaning |
+|---|---|---|
+| 503 | `ENGINE_MISSING` | Real-ESRGAN binary not installed in `bin/`. |
+| 503 | `NO_VULKAN_DEVICE` | No Vulkan-capable GPU found. |
+| 507 | `GPU_OUT_OF_MEMORY` | The GPU ran out of VRAM. Lower `tile` (e.g. `256`) or use a smaller source image. Distinct from `NO_VULKAN_DEVICE`: the GPU is fine, the image just didn't fit. |
+| 400 | `UNKNOWN_MODEL` | `model` is not installed; the message lists the installed ones. |
+| 400 | `UNREADABLE_IMAGE` | Source file is corrupt or an unsupported format. |
+| 500 | `RESIZE_FAILED` | Engine succeeded but resizing to the requested `scale` failed. |
+| 500 | `OUTPUT_DIR_UNWRITABLE` | Output folder cannot be created (drive unplugged?). |
+
+### 5.7 Model reference table
 
 | API value (`model` / `mode`) | Display | Output / Ratios |
 |------|---------|--------|
@@ -352,8 +466,9 @@ result). Reference images are **positional** (no `@tag`).
 | `veo_31_fast` | Veo 3.1 Fast | `16:9, 9:16` |
 | `veo_31_lite` | Veo 3.1 Lite | `16:9, 9:16` |
 | `veo_31_quality` | Veo 3.1 Quality | `16:9, 9:16` |
-| `veo_31_lite_relaxed` | Veo 3.1 Lite Relaxed (ULTRA only) | `16:9, 9:16` |
+| `veo_31_lite_relaxed` | Veo 3.1 Lite Lower Priority [0 Credit] (ULTRA only) | `16:9, 9:16` |
 | `omni_flash` | Omni Flash (video; 4/6/8/10s; up to 7 refs; no ULTRA) | `16:9, 9:16` |
+| *upscale* `model` | Whatever is installed in `bin/realesrgan/models/` — the Webhook tab's model table lists your actual set. Stock build: `upscayl-standard-4x`, `upscayl-lite-4x`, `digital-art-4x`, `high-fidelity-4x`, `remacri-4x`, `ultramix-balanced-4x`, `ultrasharp-4x` | scale `2`–`8` (aspect ratio unchanged) |
 | Grok `mode=t2i` | Text → Image (1K) | `9:16, 16:9, 1:1, 2:3, 3:2` |
 | Grok `mode=i2i` | Image → Image (1K) | `9:16, 16:9, 1:1, 2:3, 3:2` |
 | Grok `mode=t2v` | Text → Video (480p/720p) | `9:16, 16:9, 1:1, 2:3, 3:2` |
@@ -368,24 +483,49 @@ result). Reference images are **positional** (no `@tag`).
 
 ## 6. Reference image format
 
-Each entry of `reference_images` is either:
+Every endpoint that takes images accepts them **two ways** — inline base64, or a
+path to a file already on the machine running G-Labs. This is uniform across
+`/api/image`, `/api/video`, `/api/grok`, `/api/meta` and `/api/upscale`.
+
+> ⚠️ **`path` only works when the caller and the app are on the same machine.** The
+> app opens that path on its own filesystem — it never fetches it from you. A client
+> on another machine (or a container) must send base64; a path that does not exist
+> there fails the whole task with `reference path not found: <path>`.
+
+Each entry of `reference_images` is one of:
 
 1. **A base64 string** — a data URI or raw base64:
    - `"data:image/png;base64,iVBORw0KGgo..."`
    - `"data:image/jpeg;base64,/9j/4AAQ..."`
    - raw `"iVBORw0KGgo..."` (treated as PNG)
-2. **An object**: `{"data": "data:image/...;base64,...", "category": "subject", "name": "red_car.png"}`
-   - `category` is optional: `subject` | `scene` | `style`. It is accepted but
-     **ignored for Flow image** models (they use a single generic reference slot).
-   - `name` (or `filename`) is optional: the image's original filename. When present,
-     you can bind this image to a position in the prompt via `@<keyword>` (see §6.1).
+2. **An object with `data`**: `{"data": "data:image/...;base64,...", "category": "subject", "name": "red_car.png"}`
+3. **An object with `path`**: `{"path": "E:/photos/red_car.png", "category": "subject"}`
+   - The file is read in place — never copied, never deleted. Your originals are
+     safe: only images G-Labs decoded from base64 get cleaned up after the task.
+   - `name` is unnecessary here — `@tag` binding (§6.1) uses the real filename.
+
+`category` and `name` work the same for both forms:
+- `category` is optional: `subject` | `scene` | `style`. It is accepted but
+  **ignored for Flow image** models (they use a single generic reference slot).
+- `name` (or `filename`) is optional and applies to the **base64** form: the image's
+  original filename, used to bind it in the prompt via `@<keyword>` (see §6.1).
+
+A **bare string is always read as base64**, never as a path — base64 uses `/` and `+`,
+so there is no reliable way to tell the two apart. To pass a path, use the object form.
+
+You can mix both forms in one request.
 
 Constraints:
 - Supported decoded types: PNG, JPG/JPEG, WEBP (detected from the data-URI header;
-  defaults to PNG when no header).
-- Decoded data under ~100 bytes is skipped (treated as invalid).
+  defaults to PNG when no header). A `path` may point at any format the engine reads.
+- Decoded base64 under ~100 bytes is skipped (treated as invalid). A missing `path`,
+  by contrast, **fails the task** — a typo shouldn't silently produce a render with
+  one reference missing.
 - Per-endpoint maximum count: **image = 10**, **grok = 5**, **openai = 5**,
-  **video = 3**. Extra entries beyond the max are ignored.
+  **video = 3** (**Omni Flash `components` = 7**). Extra entries beyond the max are ignored.
+- **Why `path` is worth using:** base64 inflates the payload by ~4/3 and every request
+  is capped at 50 MB (§5). A local path has no size limit and skips the encode/decode
+  on both sides.
 
 ### 6.1 Binding images by name with `@tag`
 
@@ -431,6 +571,9 @@ API matches what you'd get creating directly in the app).
 ```
 
 ### 6.2 Meta AI named reference fields
+
+Each of these fields takes **either** a base64 string **or** `{"path": "..."}` —
+the same two forms as `reference_images` (§6), with the same same-machine caveat.
 
 **Meta AI (`/api/meta/generate`) does NOT use the `reference_images` list.** It has
 dedicated named fields, each a base64 image in the same forms as §6 (data URI or
@@ -484,10 +627,18 @@ raw base64; PNG/JPG/WEBP; <~100 bytes skipped):
 | HTTP | Body | When |
 |------|------|------|
 | `400` | `{"error": "Empty body"}` | POST with no body |
+| `400` | `{"error": "Invalid Content-Length"}` | Malformed `Content-Length` header |
 | `401` | `{"error": "Invalid or missing API key"}` | Missing/invalid `X-API-Key` |
+| `403` | `{"error": "Webhook requires MAX plan"}` | Server reachable but the license is not MAX |
 | `404` | `{"error": "Not found"}` | Unknown route |
 | `404` | `{"error": "Task <id> not found"}` | Unknown task in status/result |
 | `404` | `{"error": "File not found: <name>"}` | Unknown/expired file |
+| `413` | `{"error": "Payload too large (max 52428800 bytes)"}` | Body over the **50 MB** cap — see §5 |
+| `500` | `{"error": "Failed to read file"}` | Result file exists in the registry but could not be read |
+
+These are **transport-level** failures returned by the `POST`/`GET` itself. A request
+that gets past them returns `202` and any later problem shows up as a `failed` task
+with `error_code` / `error` (§8) — not as an HTTP error.
 
 ---
 
@@ -524,6 +675,9 @@ Notes specific to this app:
   ULTRA account) → `failed`.
 - **Image** that requests `upscale` (`2K`/`4K`) that cannot be produced → `failed`
   with the upscale reason (it does not return the smaller base image).
+- **Upscale** has its own codes (`503 ENGINE_MISSING`, `503 NO_VULKAN_DEVICE`,
+  `507 GPU_OUT_OF_MEMORY`, `400 UNKNOWN_MODEL`, …) — see the table in §5.6. It never
+  returns `429`: there is no quota to exhaust.
 - **Meta AI**: an expired account cookie → `failed` `401` (`Meta cookie expired`);
   quota reached → `429` (`Meta quota exhausted`); no enabled Meta account for the
   requested kind → `error_code 0` (`No enabled Meta account for image/video`);
@@ -556,6 +710,12 @@ Notes specific to this app:
   tokens are refreshed automatically before each run. Concurrency is capped at
   **5 threads per account** (enabled accounts × 5), same as Flow/Meta. Output is
   capped at ~1.57 MP (no 2K/4K, no upscale).
+- **Upscale** needs **no account and no tier** — it runs the Real-ESRGAN engine on
+  your own GPU, so it consumes no credits and no quota. It does need the engine +
+  models present in `bin/realesrgan/` (otherwise `503 ENGINE_MISSING`) and a
+  Vulkan-capable GPU. Requests are processed **one at a time**; a burst queues up
+  rather than running in parallel (several engine processes would fight over VRAM).
+  Note the endpoint still sits behind the Webhook server, which is MAX-only.
 - **Tasks are in-memory.** Task state and the `task_id` → result mapping live in
   the running app; they are lost if the app restarts. Submit, poll, and download
   within the same app session.
@@ -634,6 +794,15 @@ curl -X POST http://127.0.0.1:8765/api/openai/generate \
 curl -X POST http://127.0.0.1:8765/api/openai/generate \
   -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
   -d '{"prompt":"same subject on a beach","aspect_ratio":"1:1","reference_images":["data:image/png;base64,..."]}'
+
+# --- Image with a reference read from disk (same machine, no base64) ---
+curl -X POST http://127.0.0.1:8765/api/image/generate   -H "Content-Type: application/json" -H "X-API-Key: $KEY"   -d '{"prompt":"the @car on a mountain road","reference_images":[{"path":"E:/photos/car.png"}]}'
+
+# --- Upscale: source already on this machine (no size limit, nothing to encode) ---
+curl -X POST http://127.0.0.1:8765/api/upscale/generate   -H "Content-Type: application/json" -H "X-API-Key: $KEY"   -d '{"image_path":"E:/photos/cat.png","scale":4,"model":"upscayl-standard-4x"}'
+
+# --- Upscale: source sent as base64 (client on another machine) ---
+curl -X POST http://127.0.0.1:8765/api/upscale/generate   -H "Content-Type: application/json" -H "X-API-Key: $KEY"   -d '{"image":"data:image/png;base64,...","filename":"cat.png","scale":2,"format":"png"}'
 
 # --- Download the result file ---
 curl -o out.png "http://127.0.0.1:8765/api/files/image_001.png"
@@ -734,7 +903,8 @@ console.log(urls);
 
 1. Start the Webhook server in the app; copy the **port** and **API key**.
 2. Always send `X-API-Key` on generate/status/result/tasks calls.
-3. `POST /api/{image|video|grok|meta|openai}/generate` with a valid body (`prompt` required).
+3. `POST /api/{image|video|grok|meta|openai}/generate` with a valid body (`prompt` required),
+   or `POST /api/upscale/generate` with `image_path` / `image` and **no** `prompt`.
 4. Read `task_id` from the `202` response.
 5. Poll `GET /api/status/{task_id}` every 3–5 s until `completed` or `failed`.
 6. On `completed`: `GET` each URL in `results` to download the files.

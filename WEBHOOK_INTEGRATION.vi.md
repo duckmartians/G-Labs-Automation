@@ -29,8 +29,10 @@ viết, AI agent) điều khiển việc tạo ảnh / video / Grok / Meta AI qu
   1. `POST` yêu cầu tạo → nhận `task_id` ngay lập tức (HTTP `202`).
   2. `GET /api/status/{task_id}` lặp lại cho đến khi `status` là `completed` hoặc `failed`.
   3. Khi `completed`, tải file từ các URL trong `results`.
-- **Đồng thời.** Máy chủ nhận nhiều request cùng lúc nhưng xử lý tối đa **10 task
-  song song** (các task dư sẽ chờ tới lượt).
+- **Đồng thời.** Máy chủ nhận nhiều request cùng lúc. Tối đa **10 task được bóc
+  tách song song**; còn *chạy tạo* được bao nhiêu cái một lúc thì tùy endpoint:
+  Ảnh/Video/Meta/OpenAI co giãn theo số tài khoản (khoảng 5 mỗi tài khoản), Grok
+  trần **10**, riêng Upscale chạy **lần lượt từng cái** (chỉ có một GPU — xem §5.6).
 - **Tạo nội dung dùng tài khoản đã đăng nhập trong app.** Ảnh/Video dùng tài khoản
   Google (Flow/Veo) cấu hình trong app; Grok dùng phiên Super Grok đã kết nối;
   **Meta AI** dùng tài khoản Meta (vibes.ai) đã đăng nhập; **OpenAI (GPT Image 2)**
@@ -67,6 +69,7 @@ client trên trình duyệt cũng dùng được.
 | `POST` | `/api/grok/generate`  | ✅ | Đưa task **Grok** (ảnh/video) vào hàng đợi |
 | `POST` | `/api/meta/generate`  | ✅ | Đưa task **Meta AI** (ảnh/video) vào hàng đợi |
 | `POST` | `/api/openai/generate` | ✅ | Đưa task **OpenAI GPT Image 2** vào hàng đợi |
+| `POST` | `/api/upscale/generate` | ✅ | Nâng cấp ảnh bằng engine **Real-ESRGAN chạy local** |
 | `GET`  | `/api/status/{task_id}` | ✅ | Hỏi trạng thái task; trả kết quả hoặc lỗi |
 | `GET`  | `/api/result/{task_id}` | ✅ | Lấy kết quả (chỉ khi đã `completed`) |
 | `GET`  | `/api/files/{filename}` | ❌ | Tải file kết quả đã tạo |
@@ -161,8 +164,14 @@ file (`image/png`, `image/jpeg`, `video/mp4`, …). File lưu nội bộ trên m
 
 ## 5. Schema body của request
 
-Mọi body đều là JSON. `prompt` là **bắt buộc** cho mọi endpoint; prompt rỗng/thiếu sẽ
-làm task thất bại với lỗi `Missing required field: prompt`.
+Mọi body đều là JSON. `prompt` là **bắt buộc** cho mọi endpoint tạo nội dung; prompt
+rỗng/thiếu sẽ làm task thất bại với lỗi `Missing required field: prompt`. Ngoại lệ duy
+nhất là `/api/upscale/generate` (§5.6) — nhận ảnh, không có prompt.
+
+**Trần kích thước body: 50 MB** cho mọi endpoint. Base64 làm dữ liệu nhị phân phình
+~4/3, nên một request chứa được khoảng 37 MB dữ liệu ảnh thô. Vượt trần thì chính lệnh
+`POST` trả `413` — task không được tạo. Cách hay vấp nhất là nhét nhiều ảnh tham chiếu
+lớn vào cùng một request.
 
 ### 5.1 Ảnh — `POST /api/image/generate`
 
@@ -336,7 +345,111 @@ theo **VỊ TRÍ** (không có `@tag`).
 > **Độ phân giải native bị cap ~1.57 MP** ở backend OpenAI (giữ đúng tỉ lệ, không ra
 > đủ 2K/4K theo số pixel tuyệt đối). Endpoint này **không** có `upscale`. Xem §9.
 
-### 5.6 Bảng tham chiếu Model
+### 5.6 Nâng cấp ảnh — `POST /api/upscale/generate`
+
+Phóng to một ảnh bằng **engine Real-ESRGAN chạy local** — đúng engine của tab
+**Image Upscaler**. Không cần tài khoản, không tốn credit, không đụng quota: chạy
+trên GPU của chính máy bạn.
+
+Khác mọi endpoint còn lại, endpoint này **không có `prompt`** — ảnh chính là toàn bộ
+nội dung request.
+
+| Trường | Kiểu | Bắt buộc | Mặc định | Ghi chú |
+|-------|------|:--------:|---------|-------|
+| `image_path` | string | ⚠️ | — | Đường dẫn tuyệt đối tới ảnh nguồn **trên máy đang chạy G-Labs**. Dùng cái này *hoặc* `image`. |
+| `image` | string | ⚠️ | — | Ảnh nguồn dạng base64 (xem §6). Dùng khi client nằm ở máy khác. |
+| `filename` | string | ❌ | — | Chỉ dùng kèm `image`: làm gốc tên cho ảnh ra — xem quy tắc đặt tên bên dưới. Không có thì ảnh ra tên `wh_ups_<ngẫu nhiên>_upscaled_x4.png`. |
+| `model` | string | ❌ | model đang chọn ở tab Upscaler | Phải là model đã cài, ví dụ `upscayl-standard-4x`, `remacri-4x`, `digital-art-4x`. Model lạ → `400 UNKNOWN_MODEL` kèm danh sách model *đang có*. |
+| `scale` | int | ❌ | `4` | Tỉ lệ cuối, `2`–`8`. Model chạy gốc 4x; giá trị khác được resize từ kết quả 4x. Ngoài khoảng → `4`. |
+| `format` | string | ❌ | `auto` | `auto` (theo ảnh gốc), `png`, `jpg`, `webp`. |
+| `suffix` | string | ❌ | `_upscaled` | Nối vào tên ảnh ra, trước phần `_x<scale>`. Chuỗi rỗng → quay về `_upscaled`. |
+| `tile` | int | ❌ | `0` | Kích thước ô xử lý của engine; `0` = tự động. Hạ xuống nếu GPU hết VRAM. |
+| `tta` | bool | ❌ | `false` | Chế độ TTA — đẹp hơn chút, chậm hơn **rất** nhiều. |
+
+Bắt buộc có đúng một trong hai `image_path` / `image`; gửi cả hai thì `image_path` thắng.
+
+```json
+{ "image_path": "E:/anh/meo.png", "scale": 4, "model": "upscayl-standard-4x" }
+```
+
+```json
+{
+  "image": "data:image/png;base64,iVBORw0KGgo...",
+  "filename": "meo.png",
+  "scale": 2,
+  "format": "png"
+}
+```
+
+**Mỗi request một ảnh.** Muốn chạy lô thì gửi nhiều request — mỗi cái có `task_id`
+riêng.
+
+> ⚠️ **Các request chạy lần lượt, không song song.** Engine là một tiến trình GPU;
+> chạy nhiều cái cùng lúc là tranh nhau VRAM. Request thừa nằm trong hàng đợi FIFO,
+> báo `pending` rồi chuyển `running` khi tới lượt. Đây là endpoint duy nhất **không**
+> song song hoá — các endpoint khác chia tải theo *tài khoản*, còn cái này bị buộc
+> vào một GPU.
+
+> 💡 **Cùng máy thì nên dùng `image_path`** (n8n, script chạy local). Base64 làm
+> payload phình ~4/3 mà trần body là 50 MB, nên một ảnh PNG 4K lớn có thể vượt trần.
+> `image_path` không giới hạn kích thước và bỏ qua luôn bước mã hoá.
+
+#### File nằm ở đâu và được đặt tên thế nào
+
+**Thư mục**, xét theo thứ tự:
+
+1. **Thư mục lưu** đã đặt ở tab **Image Upscaler** trong app, nếu không để trống.
+2. Không thì `<thư mục output của G-Labs>/upscale_output` — nằm cạnh `image_output`,
+   `veo_output`…
+
+Không bao giờ lưu cạnh ảnh nguồn (đó là cách *tab* Upscaler làm): nguồn qua webhook
+thường là file tạm, để vậy thì ảnh kết quả rơi vào thư mục temp của hệ điều hành rồi
+bị dọn mất. Tuỳ chọn **Chế độ lưu / thư mục con theo lượt** ở tab Upscaler cũng
+**không** được áp dụng — kết quả qua webhook luôn đi thẳng vào thư mục trên.
+
+**Tên file:**
+
+```
+<base><suffix>_x<scale>.<ext>
+```
+
+| Thành phần | Lấy từ đâu |
+|------|---------------------|
+| `<base>` | Dùng `image_path`: tên file nguồn, bỏ phần mở rộng. Dùng `image`: tên bạn gửi ở `filename`, cộng thêm một chuỗi ngẫu nhiên ngắn (payload được ghi ra file tạm trước). Không gửi cả hai → `wh_ups_<ngẫu nhiên>`. |
+| `<suffix>` | Trường `suffix` — mặc định `_upscaled`. Gửi **chuỗi rỗng thì vẫn quay về `_upscaled`**, giống hệt khi bỏ trống ô ở tab Upscaler; không có cách nào ra tên không hậu tố. |
+| `<scale>` | Trường `scale` — mặc định `4`. |
+| `<ext>` | Trường `format`. `auto` (mặc định) lấy theo phần mở rộng ảnh nguồn, thứ gì không phải png/jpg/webp thì về `png`; `jpeg` quy về `jpg`. |
+
+Ví dụ:
+
+```
+image_path=E:/anh/meo.png, scale=4                 → meo_upscaled_x4.png
+image_path=E:/anh/meo.heic, scale=2, format=webp   → meo_upscaled_x2.webp
+image + filename="meo.png", scale=4                → meo_a1b2c3d4_upscaled_x4.png
+```
+
+**Trùng tên không bao giờ ghi đè.** Nếu tên đích đã tồn tại, phần mở rộng sẽ được chèn
+thêm `_2`, `_3`, … phía trước — nên nâng cùng một ảnh hai lần bạn nhận được
+`meo_upscaled_x4.png` và `meo_upscaled_x4_2.png`, chứ không phải một file bị lặng lẽ
+thay thế.
+
+API chỉ trả URL `/api/files/...`, **không** lộ đường dẫn cục bộ. Tên file trong URL
+chính là tên dựng theo quy tắc trên nên bạn nhận ra được — nhưng hãy tải qua URL thay
+vì đoán đường dẫn trên đĩa.
+
+**Mã lỗi riêng của endpoint này:**
+
+| `error_code` | `error` | Nghĩa |
+|---|---|---|
+| 503 | `ENGINE_MISSING` | Chưa cài binary Real-ESRGAN trong `bin/`. |
+| 503 | `NO_VULKAN_DEVICE` | Không tìm thấy GPU hỗ trợ Vulkan. |
+| 507 | `GPU_OUT_OF_MEMORY` | GPU hết VRAM. Hạ `tile` (vd `256`) hoặc dùng ảnh nguồn nhỏ hơn. Khác `NO_VULKAN_DEVICE`: GPU vẫn tốt, chỉ là ảnh không vừa bộ nhớ. |
+| 400 | `UNKNOWN_MODEL` | `model` chưa được cài; thông báo có kèm danh sách model đang có. |
+| 400 | `UNREADABLE_IMAGE` | Ảnh nguồn hỏng hoặc định dạng không đọc được. |
+| 500 | `RESIZE_FAILED` | Engine chạy xong nhưng resize về đúng `scale` thất bại. |
+| 500 | `OUTPUT_DIR_UNWRITABLE` | Không tạo được thư mục đích (ổ đĩa bị rút?). |
+
+### 5.7 Bảng tham chiếu Model
 
 | Giá trị API (`model` / `mode`) | Tên hiển thị | Đầu ra / Tỉ lệ |
 |------|--------------|--------|
@@ -346,8 +459,9 @@ theo **VỊ TRÍ** (không có `@tag`).
 | `veo_31_fast` | Veo 3.1 Fast | `16:9, 9:16` |
 | `veo_31_lite` | Veo 3.1 Lite | `16:9, 9:16` |
 | `veo_31_quality` | Veo 3.1 Quality | `16:9, 9:16` |
-| `veo_31_lite_relaxed` | Veo 3.1 Lite Relaxed (chỉ ULTRA) | `16:9, 9:16` |
+| `veo_31_lite_relaxed` | Veo 3.1 Lite Lower Priority [0 Credit] (chỉ ULTRA) | `16:9, 9:16` |
 | `omni_flash` | Omni Flash (video; 4/6/8/10s; tối đa 7 ảnh ref; không cần ULTRA) | `16:9, 9:16` |
+| *upscale* `model` | Tuỳ những gì đang có trong `bin/realesrgan/models/` — bảng model ở tab Webhook liệt kê đúng bộ trên máy bạn. Bản gốc: `upscayl-standard-4x`, `upscayl-lite-4x`, `digital-art-4x`, `high-fidelity-4x`, `remacri-4x`, `ultramix-balanced-4x`, `ultrasharp-4x` | scale `2`–`8` (giữ nguyên khung ảnh) |
 | Grok `mode=t2i` | Text → Image (1K) | `9:16, 16:9, 1:1, 2:3, 3:2` |
 | Grok `mode=i2i` | Image → Image (1K) | `9:16, 16:9, 1:1, 2:3, 3:2` |
 | Grok `mode=t2v` | Text → Video (480p/720p) | `9:16, 16:9, 1:1, 2:3, 3:2` |
@@ -362,24 +476,50 @@ theo **VỊ TRÍ** (không có `@tag`).
 
 ## 6. Định dạng ảnh tham chiếu
 
-Mỗi phần tử trong `reference_images` là một trong hai dạng:
+Mọi endpoint có nhận ảnh đều chấp nhận **hai kiểu** — base64 nhúng thẳng, hoặc đường
+dẫn tới file đã có sẵn trên máy đang chạy G-Labs. Quy ước này giống nhau ở
+`/api/image`, `/api/video`, `/api/grok`, `/api/meta` và `/api/upscale`.
+
+> ⚠️ **`path` chỉ dùng được khi client và app nằm CÙNG một thiết bị.** App mở đường dẫn
+> đó trên hệ thống file của chính nó — nó không tải file từ phía bạn về. Client ở máy
+> khác (hoặc trong container) bắt buộc phải gửi base64; đường dẫn không tồn tại bên đó
+> sẽ làm hỏng cả task với lỗi `reference path not found: <đường dẫn>`.
+
+Mỗi phần tử trong `reference_images` là một trong ba dạng:
 
 1. **Chuỗi base64** — data URI hoặc base64 thô:
    - `"data:image/png;base64,iVBORw0KGgo..."`
    - `"data:image/jpeg;base64,/9j/4AAQ..."`
    - base64 thô `"iVBORw0KGgo..."` (được coi là PNG)
-2. **Object**: `{"data": "data:image/...;base64,...", "category": "subject", "name": "red_car.png"}`
-   - `category` không bắt buộc: `subject` | `scene` | `style`. Được chấp nhận nhưng
-     **bị bỏ qua với model ảnh Flow** (chúng dùng một ô tham chiếu chung).
-   - `name` (hoặc `filename`) không bắt buộc: tên file gốc của ảnh. Khi có, bạn có thể
-     gắn ảnh này vào đúng vị trí trong prompt bằng `@<từ_khoá>` (xem §6.1).
+2. **Object có `data`**: `{"data": "data:image/...;base64,...", "category": "subject", "name": "red_car.png"}`
+3. **Object có `path`**: `{"path": "E:/anh/xe_do.png", "category": "subject"}`
+   - File được đọc tại chỗ — không copy, không xoá. Ảnh gốc của bạn an toàn: chỉ
+     những ảnh G-Labs tự giải mã từ base64 mới bị dọn sau khi task xong.
+   - Không cần `name` ở dạng này — cơ chế `@tag` (§6.1) dùng luôn tên file thật.
+
+`category` và `name` áp dụng như nhau cho cả hai:
+- `category` không bắt buộc: `subject` | `scene` | `style`. Được chấp nhận nhưng
+  **bị bỏ qua với model ảnh Flow** (chúng dùng một ô tham chiếu chung).
+- `name` (hoặc `filename`) không bắt buộc, dành cho dạng **base64**: tên file gốc của
+  ảnh, dùng để gắn vào prompt bằng `@<từ_khoá>` (xem §6.1).
+
+**Chuỗi trần luôn được hiểu là base64**, không bao giờ là đường dẫn — base64 dùng cả
+`/` lẫn `+` nên không có cách nào phân biệt chắc chắn. Muốn truyền đường dẫn thì phải
+dùng dạng object.
+
+Trộn cả hai dạng trong cùng một request cũng được.
 
 Ràng buộc:
 - Kiểu giải mã hỗ trợ: PNG, JPG/JPEG, WEBP (nhận diện qua header data-URI; mặc định
-  PNG khi không có header).
-- Dữ liệu giải mã dưới ~100 byte sẽ bị bỏ (coi là không hợp lệ).
+  PNG khi không có header). Dạng `path` thì trỏ tới định dạng nào engine đọc được cũng được.
+- Base64 giải mã ra dưới ~100 byte sẽ bị bỏ (coi là không hợp lệ). Ngược lại, `path`
+  không tồn tại sẽ **làm hỏng task** — gõ nhầm đường dẫn mà vẫn lặng lẽ render thiếu
+  một ảnh tham chiếu thì tệ hơn nhiều.
 - Số lượng tối đa theo endpoint: **ảnh = 10**, **grok = 5**, **openai = 5**,
-  **video = 3**. Phần dư vượt quá mức tối đa sẽ bị bỏ qua.
+  **video = 3** (**Omni Flash `components` = 7**). Phần dư vượt mức tối đa bị bỏ qua.
+- **Vì sao nên dùng `path`:** base64 làm payload phình ~4/3 và mỗi request bị chặn ở
+  50 MB (§5). Đường dẫn cục bộ không giới hạn kích thước và bỏ qua luôn khâu mã hoá/
+  giải mã ở cả hai đầu.
 
 ### 6.1 Gắn ảnh theo tên bằng `@tag`
 
@@ -426,8 +566,10 @@ webhook đi qua chính các hàm xử lý đó nên payload gửi Flow API khớ
 ### 6.2 Trường ảnh tham chiếu có tên của Meta AI
 
 **Meta AI (`/api/meta/generate`) KHÔNG dùng mảng `reference_images`.** Nó có các
-trường riêng có tên, mỗi trường là một ảnh base64 theo đúng định dạng ở §6 (data URI
-hoặc base64 thô; PNG/JPG/WEBP; dưới ~100 byte bị bỏ):
+trường riêng có tên, mỗi trường nhận **hoặc** chuỗi base64 theo đúng định dạng ở §6
+(data URI hoặc base64 thô; PNG/JPG/WEBP; dưới ~100 byte bị bỏ) **hoặc**
+`{"path": "..."}` — cùng hai dạng như `reference_images`, và cũng kèm điều kiện phải
+cùng thiết bị:
 
 | Trường | Mode | Vai trò |
 |--------|------|---------|
@@ -477,10 +619,18 @@ hoặc base64 thô; PNG/JPG/WEBP; dưới ~100 byte bị bỏ):
 | HTTP | Body | Khi nào |
 |------|------|---------|
 | `400` | `{"error": "Empty body"}` | POST không có body |
+| `400` | `{"error": "Invalid Content-Length"}` | Header `Content-Length` sai định dạng |
 | `401` | `{"error": "Invalid or missing API key"}` | Thiếu/sai `X-API-Key` |
+| `403` | `{"error": "Webhook requires MAX plan"}` | Kết nối được máy chủ nhưng license không phải MAX |
 | `404` | `{"error": "Not found"}` | Route không tồn tại |
 | `404` | `{"error": "Task <id> not found"}` | task không tồn tại ở status/result |
 | `404` | `{"error": "File not found: <name>"}` | File không tồn tại/đã hết hạn |
+| `413` | `{"error": "Payload too large (max 52428800 bytes)"}` | Body vượt trần **50 MB** — xem §5 |
+| `500` | `{"error": "Failed to read file"}` | File kết quả có trong registry nhưng không đọc được |
+
+Đây là các lỗi ở **tầng truyền tải**, do chính lệnh `POST`/`GET` trả về. Request đã đi
+qua được các lỗi này sẽ nhận `202`, và mọi trục trặc sau đó hiện ra dưới dạng task
+`failed` kèm `error_code` / `error` (§8) chứ không phải lỗi HTTP.
 
 ---
 
@@ -547,6 +697,12 @@ Lưu ý riêng của app này:
   và **fail-over** sang tài khoản kế khi lỗi ở mức tài khoản (hết hạn/quota/5xx). Token
   được làm mới tự động trước mỗi lượt. Trần luồng = **5 luồng mỗi tài khoản** (số tài
   khoản đang bật × 5), giống Flow/Meta. Ảnh ra bị cap ~1.57 MP (không 2K/4K, không upscale).
+- **Upscale** không cần tài khoản, không cần hạng nào — engine Real-ESRGAN chạy trên
+  GPU máy bạn nên không tốn credit, không đụng quota. Chỉ cần có sẵn engine + model
+  trong `bin/realesrgan/` (thiếu thì `503 ENGINE_MISSING`) và một GPU hỗ trợ Vulkan.
+  Các request được xử lý **lần lượt từng cái**; gửi dồn thì xếp hàng chứ không chạy
+  song song (nhiều tiến trình engine sẽ tranh nhau VRAM). Lưu ý endpoint này vẫn nằm
+  sau máy chủ Webhook, mà cái đó chỉ mở cho gói MAX.
 - **Task lưu trong bộ nhớ.** Trạng thái task và ánh xạ `task_id` → kết quả nằm trong
   app đang chạy; sẽ mất nếu app khởi động lại. Hãy gửi, hỏi trạng thái và tải về
   trong cùng một phiên chạy app.
@@ -624,6 +780,15 @@ curl -X POST http://127.0.0.1:8765/api/openai/generate \
 curl -X POST http://127.0.0.1:8765/api/openai/generate \
   -H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" \
   -d '{"prompt":"same subject on a beach","aspect_ratio":"1:1","reference_images":["data:image/png;base64,..."]}'
+
+# --- Ảnh kèm tham chiếu đọc thẳng từ đĩa (cùng máy, khỏi base64) ---
+curl -X POST http://127.0.0.1:8765/api/image/generate   -H "Content-Type: application/json" -H "X-API-Key: $KEY"   -d '{"prompt":"chiếc @xe trên đường đèo","reference_images":[{"path":"E:/anh/xe.png"}]}'
+
+# --- Upscale: ảnh nguồn có sẵn trên máy này (không giới hạn cỡ, khỏi mã hoá) ---
+curl -X POST http://127.0.0.1:8765/api/upscale/generate   -H "Content-Type: application/json" -H "X-API-Key: $KEY"   -d '{"image_path":"E:/anh/meo.png","scale":4,"model":"upscayl-standard-4x"}'
+
+# --- Upscale: gửi ảnh dạng base64 (client ở máy khác) ---
+curl -X POST http://127.0.0.1:8765/api/upscale/generate   -H "Content-Type: application/json" -H "X-API-Key: $KEY"   -d '{"image":"data:image/png;base64,...","filename":"meo.png","scale":2,"format":"png"}'
 
 # --- Tải file kết quả ---
 curl -o out.png "http://127.0.0.1:8765/api/files/image_001.png"
@@ -724,7 +889,8 @@ console.log(urls);
 
 1. Bật máy chủ Webhook trong app; sao chép **port** và **API key**.
 2. Luôn gửi `X-API-Key` ở các call generate/status/result/tasks.
-3. `POST /api/{image|video|grok|meta|openai}/generate` với body hợp lệ (`prompt` bắt buộc).
+3. `POST /api/{image|video|grok|meta|openai}/generate` với body hợp lệ (`prompt` bắt buộc),
+   hoặc `POST /api/upscale/generate` với `image_path` / `image` và **không** có `prompt`.
 4. Đọc `task_id` từ response `202`.
 5. Hỏi `GET /api/status/{task_id}` mỗi 3–5 giây tới khi `completed` hoặc `failed`.
 6. Khi `completed`: `GET` từng URL trong `results` để tải file.
