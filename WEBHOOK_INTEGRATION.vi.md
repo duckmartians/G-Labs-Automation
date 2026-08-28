@@ -203,11 +203,12 @@ lớn vào cùng một request.
 | `prompt` | string | ✅ | — | Mô tả chuyển động / khung cảnh. |
 | `model` | string | ❌ | `veo_31_fast` | Một trong `veo_31_fast`, `veo_31_lite`, `veo_31_quality`, `veo_31_lite_relaxed`, `omni_flash`. Không hợp lệ → `veo_31_fast`. `veo_31_lite_relaxed` cần tài khoản **ULTRA**. **`omni_flash`**: xem ghi chú `mode`. |
 | `aspect_ratio` | string | ❌ | `16:9` | `16:9` hoặc `9:16`. |
-| `mode` | string | ❌ | `text_to_video` | `text_to_video` (0 ảnh) · `start_image` (1 ảnh) · `start_end_image` (2 ảnh) · `components` (Veo tối đa 3 ảnh, Omni Flash tối đa 7; hỗ trợ `voice`). **Omni Flash KHÔNG hỗ trợ `start_end_image`** (chưa có khung cuối) — gửi sẽ bị từ chối; các mode còn lại đều dùng được. |
-| `reference_images` | array | ❌ | `[]` | Tối đa **3** ảnh base64 (Veo); **Omni Flash `components` tối đa 7**. **Bắt buộc khi `mode != text_to_video`.** Mỗi ảnh có thể kèm `name` để gắn theo `@tên` trong prompt — Veo (§6.1). |
-| `resolution` | array | ❌ | `["720p"]` | Bất kỳ `"720p"`, `"1080p"`, `"4K"`. `1080p`/`4K` tạo bằng upscale; **chỉ `4K` cần tài khoản ULTRA** (`1080p` không cần ULTRA). Giá trị sai → `720p`. Mỗi độ phân giải tạo ra một file. |
+| `mode` | string | ❌ | `text_to_video` | `text_to_video` (0 ảnh) · `start_image` (1 ảnh) · `start_end_image` (2 ảnh: khung đầu + khung cuối) · `components` (Veo tối đa 3 ảnh, Omni Flash tối đa 7; hỗ trợ `voice` và `reference_video`). **Mọi mode dùng được cho cả Veo lẫn Omni Flash** (`start_end_image` của Omni Flash cần server config có mapping `i2v_end` — thiếu sẽ bị từ chối kèm lý do rõ). |
+| `reference_images` | array | ❌ | `[]` | Tối đa **3** ảnh base64 (Veo); **Omni Flash `components` tối đa 7** (có `reference_video` thì tối đa **5**). **Bắt buộc khi `mode != text_to_video`** — riêng `components` có thể thay bằng `reference_video`. Mỗi ảnh có thể kèm `name` để gắn theo `@tên` trong prompt — Veo (§6.1). |
+| `reference_video` | string/object | ❌ | — | **Chỉ Omni Flash + mode `components`** — luồng **edit video**: clip (≤ **10s**) được dựng lại theo prompt, có thể kèm tối đa 5 ảnh thành phần. Nhận chuỗi base64/data-URI (`data:video/mp4;base64,...`) hoặc `{"path": "...", "name": "..."}` (file có sẵn trên máy chạy app). Luôn xuất **720p** (không dùng cùng `"360p"`). Clip dài quá 10s bị từ chối — cắt trước khi gửi. |
+| `resolution` | array | ❌ | `["720p"]` | Bất kỳ `"360p"`, `"720p"`, `"1080p"`, `"4K"`. **`360p` chỉ có ở Omni Flash** (server config quyết định) — bản gốc tạo ở 360p, rẻ credit hơn; **nguồn 360p chỉ upscale được lên 720p** nên tổ hợp hợp lệ là `["360p"]` hoặc `["360p", "720p"]` (kèm `1080p`/`4K` sẽ bị từ chối). `1080p`/`4K` tạo bằng upscale từ nguồn 720p; **chỉ `4K` cần tài khoản ULTRA**. Giá trị sai → `720p`. Mỗi độ phân giải tạo ra một file. |
 | `voice` | string | ❌ | `""` | Tên giọng (chữ thường). Chỉ dùng ở mode `components`. |
-| `video_length` | int | ❌ | (mặc định model) | Độ dài clip (giây). Veo: `4`/`6`/`8`; Omni Flash: `4`/`6`/`8`/`10`. Giá trị không hỗ trợ → dùng mặc định (8s). **Veo `4`/`6` cần tài khoản ULTRA** (Omni Flash không cần). |
+| `video_length` | int | ❌ | (mặc định model) | Độ dài clip (giây). Veo: `4`/`6`/`8`; Omni Flash: `4`/`6`/`8`/`10`. Giá trị không hỗ trợ → dùng mặc định (8s). **Veo `4`/`6` cần tài khoản ULTRA** (Omni Flash không cần). Luồng edit (`reference_video`) bỏ qua trường này — độ dài theo clip gốc. |
 
 ```json
 {
@@ -228,11 +229,35 @@ lớn vào cùng một request.
 > `text_to_video` (bỏ qua ảnh tham chiếu). Chỉ `components` đọc trường `voice`
 > (Veo tối đa 3 ảnh tham chiếu, Omni Flash tối đa 7).
 > **Dùng được cả Veo lẫn Omni Flash.** Omni Flash (`model: "omni_flash"`) hỗ trợ
-> `text_to_video`, `start_image`, và `components` — **không** hỗ trợ
-> `start_end_image` (chưa có khung cuối). Nó không cần tài khoản ULTRA và có thêm
-> mốc `video_length` **10s**.
+> đủ `text_to_video`, `start_image`, `start_end_image`, `components` — và riêng nó
+> có thêm: mốc `video_length` **10s**, độ phân giải **360p**, và luồng **edit video**
+> (`reference_video` trong mode `components`). Nó không cần tài khoản ULTRA.
 > `resolution` có thể liệt kê nhiều giá trị; mỗi giá trị được tạo nếu hạng tài khoản
 > cho phép.
+
+Ví dụ Omni Flash — khung đầu + khung cuối, bản nháp 360p:
+
+```json
+{
+  "prompt": "animate",
+  "model": "omni_flash",
+  "mode": "start_end_image",
+  "reference_images": ["data:image/png;base64,...", "data:image/png;base64,..."],
+  "resolution": ["360p"]
+}
+```
+
+Ví dụ Omni Flash — edit video (dựng lại clip ≤10s theo prompt):
+
+```json
+{
+  "prompt": "make it snow heavily",
+  "model": "omni_flash",
+  "mode": "components",
+  "reference_video": "data:video/mp4;base64,...",
+  "reference_images": ["data:image/png;base64,..."]
+}
+```
 
 ### 5.3 Grok — `POST /api/grok/generate`
 
@@ -460,7 +485,7 @@ vì đoán đường dẫn trên đĩa.
 | `veo_31_lite` | Veo 3.1 Lite | `16:9, 9:16` |
 | `veo_31_quality` | Veo 3.1 Quality | `16:9, 9:16` |
 | `veo_31_lite_relaxed` | Veo 3.1 Lite Lower Priority [0 Credit] (chỉ ULTRA) | `16:9, 9:16` |
-| `omni_flash` | Omni Flash (video; 4/6/8/10s; tối đa 7 ảnh ref; không cần ULTRA) | `16:9, 9:16` |
+| `omni_flash` | Omni Flash (video; 4/6/8/10s; tối đa 7 ảnh ref; 360p hoặc 720p; edit video ≤10s qua `reference_video`; không cần ULTRA) | `16:9, 9:16` |
 | *upscale* `model` | Tuỳ những gì đang có trong `bin/realesrgan/models/` — bảng model ở tab Webhook liệt kê đúng bộ trên máy bạn. Bản gốc: `upscayl-standard-4x`, `upscayl-lite-4x`, `digital-art-4x`, `high-fidelity-4x`, `remacri-4x`, `ultramix-balanced-4x`, `ultrasharp-4x` | scale `2`–`8` (giữ nguyên khung ảnh) |
 | Grok `mode=t2i` | Text → Image (1K) | `9:16, 16:9, 1:1, 2:3, 3:2` |
 | Grok `mode=i2i` | Image → Image (1K) | `9:16, 16:9, 1:1, 2:3, 3:2` |

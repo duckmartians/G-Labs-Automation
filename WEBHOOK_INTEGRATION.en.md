@@ -211,11 +211,12 @@ request is the usual way to hit it.
 | `prompt` | string | ✅ | — | Motion / scene description. |
 | `model` | string | ❌ | `veo_31_fast` | One of `veo_31_fast`, `veo_31_lite`, `veo_31_quality`, `veo_31_lite_relaxed`, `omni_flash`. Unknown → `veo_31_fast`. `veo_31_lite_relaxed` requires **ULTRA** accounts. **`omni_flash`**: see the `mode` note. |
 | `aspect_ratio` | string | ❌ | `16:9` | `16:9` or `9:16`. |
-| `mode` | string | ❌ | `text_to_video` | `text_to_video` (0 refs) · `start_image` (1 ref) · `start_end_image` (2 refs) · `components` (Veo up to 3 refs, Omni Flash up to 7; supports `voice`). **Omni Flash does NOT support `start_end_image`** (no end frame yet) — such requests are rejected; all other modes work. |
-| `reference_images` | array | ❌ | `[]` | Up to **3** base64 images (Veo); **Omni Flash `components` up to 7**. **Required when `mode != text_to_video`.** Each image may include a `name` to bind it via `@name` in the prompt — Veo (§6.1). |
-| `resolution` | array | ❌ | `["720p"]` | Any of `"720p"`, `"1080p"`, `"4K"`. `1080p`/`4K` are produced by upscaling; **only `4K` requires an ULTRA account** (`1080p` works without ULTRA). Invalid values → `720p`. One output file per produced resolution. |
+| `mode` | string | ❌ | `text_to_video` | `text_to_video` (0 refs) · `start_image` (1 ref) · `start_end_image` (2 refs: start + end frame) · `components` (Veo up to 3 refs, Omni Flash up to 7; supports `voice` and `reference_video`). **Every mode works on both Veo and Omni Flash** (Omni Flash `start_end_image` needs the server config's `i2v_end` mapping — without it the request is rejected with a clear reason). |
+| `reference_images` | array | ❌ | `[]` | Up to **3** base64 images (Veo); **Omni Flash `components` up to 7** (up to **5** when a `reference_video` is present). **Required when `mode != text_to_video`** — except `components`, which may use `reference_video` instead. Each image may include a `name` to bind it via `@name` in the prompt — Veo (§6.1). |
+| `reference_video` | string/object | ❌ | — | **Omni Flash + `components` mode only** — the **edit-video** flow: the clip (≤ **10s**) is restyled per the prompt, optionally with up to 5 ingredient images. Accepts a base64/data-URI string (`data:video/mp4;base64,...`) or `{"path": "...", "name": "..."}` (file on the app machine). Always renders **720p** (cannot be combined with `"360p"`). Clips over 10s are rejected — trim before sending. |
+| `resolution` | array | ❌ | `["720p"]` | Any of `"360p"`, `"720p"`, `"1080p"`, `"4K"`. **`360p` is Omni Flash only** (server-config gated) — the base video generates at 360p, cheaper on credits; **a 360p source upscales to 720p only**, so valid combos are `["360p"]` or `["360p", "720p"]` (adding `1080p`/`4K` is rejected). `1080p`/`4K` are produced by upscaling a 720p base; **only `4K` requires an ULTRA account**. Invalid values → `720p`. One output file per produced resolution. |
 | `voice` | string | ❌ | `""` | Lowercase voice name. Only used in `components` mode. |
-| `video_length` | int | ❌ | (model default) | Clip length in seconds. Veo: `4`/`6`/`8`; Omni Flash: `4`/`6`/`8`/`10`. Unsupported values → default (8s). **Veo `4`/`6` require an ULTRA account** (Omni Flash doesn't). |
+| `video_length` | int | ❌ | (model default) | Clip length in seconds. Veo: `4`/`6`/`8`; Omni Flash: `4`/`6`/`8`/`10`. Unsupported values → default (8s). **Veo `4`/`6` require an ULTRA account** (Omni Flash doesn't). The edit flow (`reference_video`) ignores this — length follows the source clip. |
 
 ```json
 {
@@ -236,10 +237,34 @@ request is the usual way to hit it.
 > `text_to_video` (references are ignored). Only `components` reads the `voice`
 > field (Veo up to 3 reference images, Omni Flash up to 7).
 > **Both Veo and Omni Flash are available.** Omni Flash (`model: "omni_flash"`)
-> supports `text_to_video`, `start_image`, and `components` — **not**
-> `start_end_image` (no end frame yet). It needs no ULTRA account and adds a **10s**
-> `video_length` option.
+> supports all of `text_to_video`, `start_image`, `start_end_image`, `components` —
+> and exclusively adds: the **10s** `video_length` option, **360p** output, and the
+> **edit-video** flow (`reference_video` in `components` mode). It needs no ULTRA account.
 > `resolution` may list multiple values; each is produced if the account tier allows it.
+
+Omni Flash example — start + end frame, cheap 360p draft:
+
+```json
+{
+  "prompt": "animate",
+  "model": "omni_flash",
+  "mode": "start_end_image",
+  "reference_images": ["data:image/png;base64,...", "data:image/png;base64,..."],
+  "resolution": ["360p"]
+}
+```
+
+Omni Flash example — edit video (restyle a ≤10s clip per the prompt):
+
+```json
+{
+  "prompt": "make it snow heavily",
+  "model": "omni_flash",
+  "mode": "components",
+  "reference_video": "data:video/mp4;base64,...",
+  "reference_images": ["data:image/png;base64,..."]
+}
+```
 
 ### 5.3 Grok — `POST /api/grok/generate`
 
@@ -467,7 +492,7 @@ via the URL rather than guessing the path on disk.
 | `veo_31_lite` | Veo 3.1 Lite | `16:9, 9:16` |
 | `veo_31_quality` | Veo 3.1 Quality | `16:9, 9:16` |
 | `veo_31_lite_relaxed` | Veo 3.1 Lite Lower Priority [0 Credit] (ULTRA only) | `16:9, 9:16` |
-| `omni_flash` | Omni Flash (video; 4/6/8/10s; up to 7 refs; no ULTRA) | `16:9, 9:16` |
+| `omni_flash` | Omni Flash (video; 4/6/8/10s; up to 7 refs; 360p or 720p; edit video ≤10s via `reference_video`; no ULTRA) | `16:9, 9:16` |
 | *upscale* `model` | Whatever is installed in `bin/realesrgan/models/` — the Webhook tab's model table lists your actual set. Stock build: `upscayl-standard-4x`, `upscayl-lite-4x`, `digital-art-4x`, `high-fidelity-4x`, `remacri-4x`, `ultramix-balanced-4x`, `ultrasharp-4x` | scale `2`–`8` (aspect ratio unchanged) |
 | Grok `mode=t2i` | Text → Image (1K) | `9:16, 16:9, 1:1, 2:3, 3:2` |
 | Grok `mode=i2i` | Image → Image (1K) | `9:16, 16:9, 1:1, 2:3, 3:2` |
