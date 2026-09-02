@@ -69,19 +69,34 @@ print-on-demand sellers and agencies running AI production at scale.
 
 ## Built for batch work
 
-- **Multi-account rotation** — add several accounts per provider; the app round-robins them and skips
-  any account that hits its quota, so a long run keeps going.
-- **Per-account proxy** — assign a proxy to each account: HTTP, SOCKS4 or SOCKS5.
+- **Your own accounts, in one place** — if you hold more than one account with a provider, add them all
+  and switch between them without signing in and out by hand. Each account keeps its own plan and its own
+  limits; the app does not lift them.
+- **Proxy support** — if your network requires a proxy, configure HTTP, SOCKS4 or SOCKS5.
 - **Queue manager** — group prompts into tasks, edit a task's settings after queueing, re-run failures,
   skip or delete whole tasks. Each task runs at its own thread count.
 - **Threading with pacing** — configurable parallel threads plus a randomized delay between requests.
-- **Retry and failover** — transient errors retry on a different account; policy blocks stop instead of
-  burning quota.
+- **Retry** — transient errors are retried; a policy block from the provider stops the run instead of
+  retrying against it.
 - **Sessions** — save a working table and reload it later with prompts, references, settings and results intact.
 - **Reference auto-match** — name your files `REF_CHR_DEAN.jpg` and every prompt mentioning that name
   picks the image up automatically. Exact-name or partial-keyword matching.
 - **Bulk prompt import** from `.txt` or Excel (drag and drop), session export back to `.xlsx`, plus a
   detailed log for auditing a run.
+
+---
+
+## Responsible use
+
+G-Labs Automation drives services **you** already have access to, from your own machine and your own
+accounts. It ships no AI model and generates nothing by itself.
+
+- Use only accounts you own, and stay within the terms and usage limits of each provider.
+- Do not use it to generate the likeness of a real person without that person's consent, or to produce
+  deceptive, infringing or unlawful content.
+- Full terms: [Terms of Service](https://duckspace.net/terms.html) ·
+  [Privacy Policy](https://duckspace.net/privacy.html) ·
+  [Refund Policy](https://duckspace.net/refunds.html)
 
 ---
 
@@ -130,9 +145,9 @@ The interface ships in 11 languages: **English, Tiếng Việt, 中文 (简体),
 ai automation tool · ai image generator · ai video generator · batch image generation · batch video
 generation · google flow automation · google labs flow · veo 3 · veo 3.1 · nano banana pro · nano
 banana 2 · grok imagine · grok ai image · grok ai video · meta ai vibes · chatgpt image generation ·
-gpt image 2 · text to image · image to image · text to video · image to video · multi account
-rotation · account round robin · proxy support · prompt queue · batch prompt runner · prompt library ·
-character consistency · reference image matching · image upscaler · real-esrgan upscale · video editor ·
+gpt image 2 · text to image · image to image · text to video · image to video · prompt queue ·
+batch prompt runner · prompt library · character consistency · reference image matching ·
+image upscaler · real-esrgan upscale · video editor ·
 webhook api · content creation tool · faceless channel · print on demand · ai content pipeline ·
 windows desktop app · macos desktop app · no-code ai tool
 
